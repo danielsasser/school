@@ -1,0 +1,98 @@
+/*
+    Copyright 2013, Edline.
+    All Rights Reserved.
+
+    Shows a simple tooltip.
+
+    USAGE:
+
+     <div class="myClass" tooltip="This is the text that will show in the tooltip!">
+        This is an element I want a tooltip to fly out from.
+     </div>
+
+     //basic
+     $(".myClass").edlineTooltip();
+
+
+     //with more options set
+     $('.myClass').edlineTooltip({
+                            dialogWidth     : '400px', //optional
+                            dialogShowArrow : true,    //optional
+                            dialogClass     : "pndg"   //extra css class to apply, optional
+                        });
+
+ */
+(function( $ ) {
+
+    $.fn.edlineTooltip = function(method) {
+        if (methods[method]) {
+            return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
+        } else if (typeof method === 'object' || !method) {
+            return methods.init.apply(this, arguments);
+        } else {
+            $.error('Method ' + method + ' does not exist.');
+        }
+    };
+
+    var methods = {},
+
+    defaults = {
+        dialogWidth         : "400px",
+        dialogShowArrow     : true,
+        dialogClass         : ""
+    }
+
+    methods.init = function(options) {
+
+        options = $.extend({}, defaults, options);
+
+        return this.each(function() {
+            var obj = $(this),
+                data = obj.data('contextDialog');
+
+            if (!data) {
+
+                obj.contextDialog({
+                    dialogPlacement : 'top',
+                    dialogAlign     : 'center',
+                    dialogTitle     : '',
+                    dialogContent   : obj.attr('tooltip'),
+                    dialogWidth     : options.dialogWidth,
+                    dialogManualMode: true,
+                    dialogFadeSpeed : 'fast',
+                    dialogShowTitleBar: false,
+                    dialogShowArrow : options.dialogShowArrow,
+                    dialogClass     : options.dialogClass
+                })
+                .bind('mouseover', function() {
+                    obj.edlineTooltip("show");
+                })
+                .bind('mouseout', function() {
+                    obj.edlineTooltip("hide");
+                });
+
+                obj.data('edlineTooltip', options);
+                obj.data('edlineTooltip').dialogElm = obj.data('edlineTooltip').dialogElm;
+            }
+        });
+    }
+
+    methods.show = function() {
+        return this.each(function() {
+            $(this).contextDialog("show");
+        });
+    }
+
+    methods.hide = function() {
+        return this.each(function() {
+            $(this).contextDialog("hide");
+        });
+    }
+
+    methods.destroy = function() {
+        return this.each(function() {
+            $(this).contextDialog("destroy");
+        });
+    }
+
+})( jQuery );

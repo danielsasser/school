@@ -1,0 +1,514 @@
+
+
+
+@font-face {
+font-family: 'judson-bold-webfont';
+src: url('/fonts/Serif/Judson/judson-bold-webfont.woff') format('woff'),
+     url('/fonts/Serif/Judson/judson-bold-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Judson/judson-bold-webfont.svg#judson-bold-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'merriweather-light-webfont';
+src: url('/fonts/Serif/Merriweather/merriweather-light-webfont.woff') format('woff'),
+     url('/fonts/Serif/Merriweather/merriweather-light-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Merriweather/merriweather-light-webfont.svg#merriweather-light-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'bilbo-regular-webfont';
+src: url('/fonts/Script/Bilbo/bilbo-regular-webfont.woff') format('woff'),
+     url('/fonts/Script/Bilbo/bilbo-regular-webfont.ttf') format('truetype'),
+     url('/fonts/Script/Bilbo/bilbo-regular-webfont.svg#bilbo-regular-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'josefinslab-regular-webfont';
+src: url('/fonts/Serif/Josefin_Slab/josefinslab-regular-webfont.woff') format('woff'),
+     url('/fonts/Serif/Josefin_Slab/josefinslab-regular-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Josefin_Slab/josefinslab-regular-webfont.svg#josefinslab-regular-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'judson-regular-webfont';
+src: url('/fonts/Serif/Judson/judson-regular-webfont.woff') format('woff'),
+     url('/fonts/Serif/Judson/judson-regular-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Judson/judson-regular-webfont.svg#judson-regular-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'lato-lightitalic-webfont';
+src: url('/fonts/Sans/Lato/lato-lightitalic-webfont.woff') format('woff'),
+     url('/fonts/Sans/Lato/lato-lightitalic-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Lato/lato-lightitalic-webfont.svg#lato-lightitalic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'judson-italic-webfont';
+src: url('/fonts/Serif/Judson/judson-italic-webfont.woff') format('woff'),
+     url('/fonts/Serif/Judson/judson-italic-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Judson/judson-italic-webfont.svg#judson-italic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'lato-blackitalic-webfont';
+src: url('/fonts/Sans/Lato/lato-blackitalic-webfont.woff') format('woff'),
+     url('/fonts/Sans/Lato/lato-blackitalic-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Lato/lato-blackitalic-webfont.svg#lato-blackitalic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'josefinslab-thinitalic-webfont';
+src: url('/fonts/Serif/Josefin_Slab/josefinslab-thinitalic-webfont.woff') format('woff'),
+     url('/fonts/Serif/Josefin_Slab/josefinslab-thinitalic-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Josefin_Slab/josefinslab-thinitalic-webfont.svg#josefinslab-thinitalic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'pt_sans-web-bolditalic-webfont';
+src: url('/fonts/Sans/PT_Sans/pt_sans-web-bolditalic-webfont.woff') format('woff'),
+     url('/fonts/Sans/PT_Sans/pt_sans-web-bolditalic-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/PT_Sans/pt_sans-web-bolditalic-webfont.svg#pt_sans-web-bolditalic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'droidserif-bold-webfont';
+src: url('/fonts/Serif/Droid_Serif/droidserif-bold-webfont.woff') format('woff'),
+     url('/fonts/Serif/Droid_Serif/droidserif-bold-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Droid_Serif/droidserif-bold-webfont.svg#droidserif-bold-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'merriweather-bold-webfont';
+src: url('/fonts/Serif/Merriweather/merriweather-bold-webfont.woff') format('woff'),
+     url('/fonts/Serif/Merriweather/merriweather-bold-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Merriweather/merriweather-bold-webfont.svg#merriweather-bold-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'merriweather-regular-webfont';
+src: url('/fonts/Serif/Merriweather/merriweather-regular-webfont.woff') format('woff'),
+     url('/fonts/Serif/Merriweather/merriweather-regular-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Merriweather/merriweather-regular-webfont.svg#merriweather-regular-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'kaushanscript-regular-webfont';
+src: url('/fonts/Script/Kaushan_Script/kaushanscript-regular-webfont.woff') format('woff'),
+     url('/fonts/Script/Kaushan_Script/kaushanscript-regular-webfont.ttf') format('truetype'),
+     url('/fonts/Script/Kaushan_Script/kaushanscript-regular-webfont.svg#kaushanscript-regular-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'matesc-regular-webfont';
+src: url('/fonts/Serif/Mate_SC/matesc-regular-webfont.woff') format('woff'),
+     url('/fonts/Serif/Mate_SC/matesc-regular-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Mate_SC/matesc-regular-webfont.svg#matesc-regular-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'josefinsans-semibold-webfont';
+src: url('/fonts/Sans/Josefin_Sans/josefinsans-semibold-webfont.woff') format('woff'),
+     url('/fonts/Sans/Josefin_Sans/josefinsans-semibold-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Josefin_Sans/josefinsans-semibold-webfont.svg#josefinsans-semibold-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'crimsontext-bolditalic-webfont';
+src: url('/fonts/Serif/Crimson_Text/crimsontext-bolditalic-webfont.woff') format('woff'),
+     url('/fonts/Serif/Crimson_Text/crimsontext-bolditalic-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Crimson_Text/crimsontext-bolditalic-webfont.svg#crimsontext-bolditalic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'crimsontext-semibold-webfont';
+src: url('/fonts/Serif/Crimson_Text/crimsontext-semibold-webfont.woff') format('woff'),
+     url('/fonts/Serif/Crimson_Text/crimsontext-semibold-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Crimson_Text/crimsontext-semibold-webfont.svg#crimsontext-semibold-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'crimsontext-italic-webfont';
+src: url('/fonts/Serif/Crimson_Text/crimsontext-italic-webfont.woff') format('woff'),
+     url('/fonts/Serif/Crimson_Text/crimsontext-italic-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Crimson_Text/crimsontext-italic-webfont.svg#crimsontext-italic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'lato-bolditalic-webfont';
+src: url('/fonts/Sans/Lato/lato-bolditalic-webfont.woff') format('woff'),
+     url('/fonts/Sans/Lato/lato-bolditalic-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Lato/lato-bolditalic-webfont.svg#lato-bolditalic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'mrdafoe-regular-webfont';
+src: url('/fonts/Script/Mr_Dafoe/mrdafoe-regular-webfont.woff') format('woff'),
+     url('/fonts/Script/Mr_Dafoe/mrdafoe-regular-webfont.ttf') format('truetype'),
+     url('/fonts/Script/Mr_Dafoe/mrdafoe-regular-webfont.svg#mrdafoe-regular-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'josefinslab-bolditalic-webfont';
+src: url('/fonts/Serif/Josefin_Slab/josefinslab-bolditalic-webfont.woff') format('woff'),
+     url('/fonts/Serif/Josefin_Slab/josefinslab-bolditalic-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Josefin_Slab/josefinslab-bolditalic-webfont.svg#josefinslab-bolditalic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'lato-italic-webfont';
+src: url('/fonts/Sans/Lato/lato-italic-webfont.woff') format('woff'),
+     url('/fonts/Sans/Lato/lato-italic-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Lato/lato-italic-webfont.svg#lato-italic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'lato-hairline-webfont';
+src: url('/fonts/Sans/Lato/lato-hairline-webfont.woff') format('woff'),
+     url('/fonts/Sans/Lato/lato-hairline-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Lato/lato-hairline-webfont.svg#lato-hairline-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'josefinslab-light-webfont';
+src: url('/fonts/Serif/Josefin_Slab/josefinslab-light-webfont.woff') format('woff'),
+     url('/fonts/Serif/Josefin_Slab/josefinslab-light-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Josefin_Slab/josefinslab-light-webfont.svg#josefinslab-light-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'josefinslab-italic-webfont';
+src: url('/fonts/Serif/Josefin_Slab/josefinslab-italic-webfont.woff') format('woff'),
+     url('/fonts/Serif/Josefin_Slab/josefinslab-italic-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Josefin_Slab/josefinslab-italic-webfont.svg#josefinslab-italic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'droidserif-bolditalic-webfont';
+src: url('/fonts/Serif/Droid_Serif/droidserif-bolditalic-webfont.woff') format('woff'),
+     url('/fonts/Serif/Droid_Serif/droidserif-bolditalic-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Droid_Serif/droidserif-bolditalic-webfont.svg#droidserif-bolditalic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'mavenpro-regular-webfont';
+src: url('/fonts/Sans/Maven_Pro/mavenpro-regular-webfont.woff') format('woff'),
+     url('/fonts/Sans/Maven_Pro/mavenpro-regular-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Maven_Pro/mavenpro-regular-webfont.svg#mavenpro-regular-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'crimsontext-semibolditalic-webfont';
+src: url('/fonts/Serif/Crimson_Text/crimsontext-semibolditalic-webfont.woff') format('woff'),
+     url('/fonts/Serif/Crimson_Text/crimsontext-semibolditalic-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Crimson_Text/crimsontext-semibolditalic-webfont.svg#crimsontext-semibolditalic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'mavenpro-black-webfont';
+src: url('/fonts/Sans/Maven_Pro/mavenpro-black-webfont.woff') format('woff'),
+     url('/fonts/Sans/Maven_Pro/mavenpro-black-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Maven_Pro/mavenpro-black-webfont.svg#mavenpro-black-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'rocksalt-webfont';
+src: url('/fonts/Script/Rock_Salt/rocksalt-webfont.woff') format('woff'),
+     url('/fonts/Script/Rock_Salt/rocksalt-webfont.ttf') format('truetype'),
+     url('/fonts/Script/Rock_Salt/rocksalt-webfont.svg#rocksalt-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'terminaldosis-regular-webfont';
+src: url('/fonts/Sans/Terminal_Dosis/terminaldosis-regular-webfont.woff') format('woff'),
+     url('/fonts/Sans/Terminal_Dosis/terminaldosis-regular-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Terminal_Dosis/terminaldosis-regular-webfont.svg#terminaldosis-regular-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'crimsontext-roman-webfont';
+src: url('/fonts/Serif/Crimson_Text/crimsontext-roman-webfont.woff') format('woff'),
+     url('/fonts/Serif/Crimson_Text/crimsontext-roman-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Crimson_Text/crimsontext-roman-webfont.svg#crimsontext-roman-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'pt_sans-web-italic-webfont';
+src: url('/fonts/Sans/PT_Sans/pt_sans-web-italic-webfont.woff') format('woff'),
+     url('/fonts/Sans/PT_Sans/pt_sans-web-italic-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/PT_Sans/pt_sans-web-italic-webfont.svg#pt_sans-web-italic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'lato-black-webfont';
+src: url('/fonts/Sans/Lato/lato-black-webfont.woff') format('woff'),
+     url('/fonts/Sans/Lato/lato-black-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Lato/lato-black-webfont.svg#lato-black-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'droidsans-webfont';
+src: url('/fonts/Sans/Droid_Sans/droidsans-webfont.woff') format('woff'),
+     url('/fonts/Sans/Droid_Sans/droidsans-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Droid_Sans/droidsans-webfont.svg#droidsans-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'josefinslab-lightitalic-webfont';
+src: url('/fonts/Serif/Josefin_Slab/josefinslab-lightitalic-webfont.woff') format('woff'),
+     url('/fonts/Serif/Josefin_Slab/josefinslab-lightitalic-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Josefin_Slab/josefinslab-lightitalic-webfont.svg#josefinslab-lightitalic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'satisfy-regular-webfont';
+src: url('/fonts/Script/Satisfy/satisfy-regular-webfont.woff') format('woff'),
+     url('/fonts/Script/Satisfy/satisfy-regular-webfont.ttf') format('truetype'),
+     url('/fonts/Script/Satisfy/satisfy-regular-webfont.svg#satisfy-regular-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'caudex-regular-webfont';
+src: url('/fonts/Serif/Caudex/caudex-regular-webfont.woff') format('woff'),
+     url('/fonts/Serif/Caudex/caudex-regular-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Caudex/caudex-regular-webfont.svg#caudex-regular-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'tenorsans-regular-webfont';
+src: url('/fonts/Sans/Tenor_Sans/tenorsans-regular-webfont.woff') format('woff'),
+     url('/fonts/Sans/Tenor_Sans/tenorsans-regular-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Tenor_Sans/tenorsans-regular-webfont.svg#tenorsans-regular-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'josefinsans-semibolditalic-webfont';
+src: url('/fonts/Sans/Josefin_Sans/josefinsans-semibolditalic-webfont.woff') format('woff'),
+     url('/fonts/Sans/Josefin_Sans/josefinsans-semibolditalic-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Josefin_Sans/josefinsans-semibolditalic-webfont.svg#josefinsans-semibolditalic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'josefinsans-italic-webfont';
+src: url('/fonts/Sans/Josefin_Sans/josefinsans-italic-webfont.woff') format('woff'),
+     url('/fonts/Sans/Josefin_Sans/josefinsans-italic-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Josefin_Sans/josefinsans-italic-webfont.svg#josefinsans-italic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'handlee-regular-webfont';
+src: url('/fonts/Script/Handlee/handlee-regular-webfont.woff') format('woff'),
+     url('/fonts/Script/Handlee/handlee-regular-webfont.ttf') format('truetype'),
+     url('/fonts/Script/Handlee/handlee-regular-webfont.svg#handlee-regular-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'droidserif-webfont';
+src: url('/fonts/Serif/Droid_Serif/droidserif-webfont.woff') format('woff'),
+     url('/fonts/Serif/Droid_Serif/droidserif-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Droid_Serif/droidserif-webfont.svg#droidserif-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'genbasr-webfont';
+src: url('/fonts/Serif/Gentium_Basic/genbasr-webfont.woff') format('woff'),
+     url('/fonts/Serif/Gentium_Basic/genbasr-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Gentium_Basic/genbasr-webfont.svg#genbasr-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'arimo-regular-webfont';
+src: url('/fonts/Sans/Arimo/arimo-regular-webfont.woff') format('woff'),
+     url('/fonts/Sans/Arimo/arimo-regular-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Arimo/arimo-regular-webfont.svg#arimo-regular-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'josefinslab-semibolditalic-webfont';
+src: url('/fonts/Serif/Josefin_Slab/josefinslab-semibolditalic-webfont.woff') format('woff'),
+     url('/fonts/Serif/Josefin_Slab/josefinslab-semibolditalic-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Josefin_Slab/josefinslab-semibolditalic-webfont.svg#josefinslab-semibolditalic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'droidserif-italic-webfont';
+src: url('/fonts/Serif/Droid_Serif/droidserif-italic-webfont.woff') format('woff'),
+     url('/fonts/Serif/Droid_Serif/droidserif-italic-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Droid_Serif/droidserif-italic-webfont.svg#droidserif-italic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'josefinslab-thin-webfont';
+src: url('/fonts/Serif/Josefin_Slab/josefinslab-thin-webfont.woff') format('woff'),
+     url('/fonts/Serif/Josefin_Slab/josefinslab-thin-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Josefin_Slab/josefinslab-thin-webfont.svg#josefinslab-thin-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'kreon-regular-webfont';
+src: url('/fonts/Serif/Kreon/kreon-regular-webfont.woff') format('woff'),
+     url('/fonts/Serif/Kreon/kreon-regular-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Kreon/kreon-regular-webfont.svg#kreon-regular-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'josefinsans-regular-webfont';
+src: url('/fonts/Sans/Josefin_Sans/josefinsans-regular-webfont.woff') format('woff'),
+     url('/fonts/Sans/Josefin_Sans/josefinsans-regular-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Josefin_Sans/josefinsans-regular-webfont.svg#josefinsans-regular-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'josefinsans-bolditalic-webfont';
+src: url('/fonts/Sans/Josefin_Sans/josefinsans-bolditalic-webfont.woff') format('woff'),
+     url('/fonts/Sans/Josefin_Sans/josefinsans-bolditalic-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Josefin_Sans/josefinsans-bolditalic-webfont.svg#josefinsans-bolditalic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'asap-regular-webfont';
+src: url('/fonts/Sans/Asap/asap-regular-webfont.woff') format('woff'),
+     url('/fonts/Sans/Asap/asap-regular-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Asap/asap-regular-webfont.svg#asap-regular-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'josefinsans-light-webfont';
+src: url('/fonts/Sans/Josefin_Sans/josefinsans-light-webfont.woff') format('woff'),
+     url('/fonts/Sans/Josefin_Sans/josefinsans-light-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Josefin_Sans/josefinsans-light-webfont.svg#josefinsans-light-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'josefinsans-lightitalic-webfont';
+src: url('/fonts/Sans/Josefin_Sans/josefinsans-lightitalic-webfont.woff') format('woff'),
+     url('/fonts/Sans/Josefin_Sans/josefinsans-lightitalic-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Josefin_Sans/josefinsans-lightitalic-webfont.svg#josefinsans-lightitalic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'opensans-condlight-webfont';
+src: url('/fonts/Sans/Open_Sans_Condensed/opensans-condlight-webfont.woff') format('woff'),
+     url('/fonts/Sans/Open_Sans_Condensed/opensans-condlight-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Open_Sans_Condensed/opensans-condlight-webfont.svg#opensans-condlight-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'lato-light-webfont';
+src: url('/fonts/Sans/Lato/lato-light-webfont.woff') format('woff'),
+     url('/fonts/Sans/Lato/lato-light-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Lato/lato-light-webfont.svg#lato-light-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'pt_sans-web-regular-webfont';
+src: url('/fonts/Sans/PT_Sans/pt_sans-web-regular-webfont.woff') format('woff'),
+     url('/fonts/Sans/PT_Sans/pt_sans-web-regular-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/PT_Sans/pt_sans-web-regular-webfont.svg#pt_sans-web-regular-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'josefinsans-thinitalic-webfont';
+src: url('/fonts/Sans/Josefin_Sans/josefinsans-thinitalic-webfont.woff') format('woff'),
+     url('/fonts/Sans/Josefin_Sans/josefinsans-thinitalic-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Josefin_Sans/josefinsans-thinitalic-webfont.svg#josefinsans-thinitalic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'josefinslab-bold-webfont';
+src: url('/fonts/Serif/Josefin_Slab/josefinslab-bold-webfont.woff') format('woff'),
+     url('/fonts/Serif/Josefin_Slab/josefinslab-bold-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Josefin_Slab/josefinslab-bold-webfont.svg#josefinslab-bold-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'pt_sans-web-bold-webfont';
+src: url('/fonts/Sans/PT_Sans/pt_sans-web-bold-webfont.woff') format('woff'),
+     url('/fonts/Sans/PT_Sans/pt_sans-web-bold-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/PT_Sans/pt_sans-web-bold-webfont.svg#pt_sans-web-bold-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'lato-hairlineitalic-webfont';
+src: url('/fonts/Sans/Lato/lato-hairlineitalic-webfont.woff') format('woff'),
+     url('/fonts/Sans/Lato/lato-hairlineitalic-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Lato/lato-hairlineitalic-webfont.svg#lato-hairlineitalic-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'merriweather-black-webfont';
+src: url('/fonts/Serif/Merriweather/merriweather-black-webfont.woff') format('woff'),
+     url('/fonts/Serif/Merriweather/merriweather-black-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Merriweather/merriweather-black-webfont.svg#merriweather-black-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'mavenpro-bold-webfont';
+src: url('/fonts/Sans/Maven_Pro/mavenpro-bold-webfont.woff') format('woff'),
+     url('/fonts/Sans/Maven_Pro/mavenpro-bold-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Maven_Pro/mavenpro-bold-webfont.svg#mavenpro-bold-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'josefinsans-thin-webfont';
+src: url('/fonts/Sans/Josefin_Sans/josefinsans-thin-webfont.woff') format('woff'),
+     url('/fonts/Sans/Josefin_Sans/josefinsans-thin-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Josefin_Sans/josefinsans-thin-webfont.svg#josefinsans-thin-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'crimsontext-bold-webfont';
+src: url('/fonts/Serif/Crimson_Text/crimsontext-bold-webfont.woff') format('woff'),
+     url('/fonts/Serif/Crimson_Text/crimsontext-bold-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Crimson_Text/crimsontext-bold-webfont.svg#crimsontext-bold-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'mavenpro-medium-webfont';
+src: url('/fonts/Sans/Maven_Pro/mavenpro-medium-webfont.woff') format('woff'),
+     url('/fonts/Sans/Maven_Pro/mavenpro-medium-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Maven_Pro/mavenpro-medium-webfont.svg#mavenpro-medium-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'lato-bold-webfont';
+src: url('/fonts/Sans/Lato/lato-bold-webfont.woff') format('woff'),
+     url('/fonts/Sans/Lato/lato-bold-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Lato/lato-bold-webfont.svg#lato-bold-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'josefinslab-semibold-webfont';
+src: url('/fonts/Serif/Josefin_Slab/josefinslab-semibold-webfont.woff') format('woff'),
+     url('/fonts/Serif/Josefin_Slab/josefinslab-semibold-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Josefin_Slab/josefinslab-semibold-webfont.svg#josefinslab-semibold-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'josefinsans-bold-webfont';
+src: url('/fonts/Sans/Josefin_Sans/josefinsans-bold-webfont.woff') format('woff'),
+     url('/fonts/Sans/Josefin_Sans/josefinsans-bold-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Josefin_Sans/josefinsans-bold-webfont.svg#josefinsans-bold-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'lato-regular-webfont';
+src: url('/fonts/Sans/Lato/lato-regular-webfont.woff') format('woff'),
+     url('/fonts/Sans/Lato/lato-regular-webfont.ttf') format('truetype'),
+     url('/fonts/Sans/Lato/lato-regular-webfont.svg#lato-regular-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'rokkitt-regular-webfont';
+src: url('/fonts/Serif/Rokkitt/rokkitt-regular-webfont.woff') format('woff'),
+     url('/fonts/Serif/Rokkitt/rokkitt-regular-webfont.ttf') format('truetype'),
+     url('/fonts/Serif/Rokkitt/rokkitt-regular-webfont.svg#rokkitt-regular-webfont') format('svg');
+}
+
+@font-face {
+font-family: 'architectsdaughter-webfont';
+src: url('/fonts/Script/Architects_Daughter/architectsdaughter-webfont.woff') format('woff'),
+     url('/fonts/Script/Architects_Daughter/architectsdaughter-webfont.ttf') format('truetype'),
+     url('/fonts/Script/Architects_Daughter/architectsdaughter-webfont.svg#architectsdaughter-webfont') format('svg');
+}
+

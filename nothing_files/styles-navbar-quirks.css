@@ -1,0 +1,92 @@
+/*Nav Bar styles*/
+#ed-navBarContainer{background-color:#eeefef;} /*bar bg color*/
+.ed-bcButton{color:#6f6f6f;} /*bar text color*/
+.ed-navDivider{color:#6f6f6f;}/*: spacer*/
+.ed-clickableArea {cursor:pointer;}
+
+#ed-navBarContainer{width:100%;height:auto;text-align:center;}   /* potentially overridden later via Javascript */
+    #ed-navBar{position:relative;width:800px; height:auto !important; margin: 0 auto; text-align:left; }
+
+	/*navBar item styles*/
+	.ed-breadCrumbItem{position:relative; width:auto !important; padding:0; margin:0; float:left; display:inline; text-transform:uppercase;}
+    .ed-breadCrumbItem a, .ed-breadCrumbItem a:hover{color:inherit; font-family:inherit; font-size:inherit; text-decoration:none;}
+    .ed-navDivider{display:block; float:left; text-align:center; height:26px; width:5px; font:bold 14px/26px "Trebuchet MS", Arial, Helvetica, sans-serif;}
+	
+		/*button styles*/
+		.ed-bcButton{white-space:nowrap; width:auto; height:26px; padding:0 2px; cursor:default;
+            font:bold 12px/26px "Trebuchet MS", Arial, Helvetica, sans-serif; text-align:center;}
+
+        .ed-bcButton div{display:inline; margin:0 0 0 11px; padding:0; float:left;}
+		.ed-bcButton div span{min-width:50px; position: relative; float:left; margin:0 11px 0 -11px; padding:0 0 0 11px;}
+
+        .ed-bcButton.hover div.bcDiv{background: url('/images/menubar/ed-bcRollOverRight.png') no-repeat top right;}
+		.ed-bcButton.hover div span{background: url('/images/menubar/ed-bcRollOverLeft.png') no-repeat top left;}
+
+		.ed-bcButton.onState div{background: url('/images/menubar/ed-bcOnRight.png') no-repeat top right;}
+		.ed-bcButton.onState div span{background: url('/images/menubar/ed-bcOnLeft.png') no-repeat top left;}
+			
+        /*common drop down styles*/
+        .ed-bcDropDown{display:none; width:233px; height:auto; color:#fff; margin:0 0 0 -4px; padding:0 0 15px 0; z-index:30; position:relative;}
+
+        .ed-bcDropDown ul{z-index:40; list-style-type:none; margin:0; padding:5px 0 25px !important;
+            background:url('/images/menubar/bg-subSubMenuBG.png') left bottom no-repeat;}
+
+        .ed-bcDropDown ul span.ed-subTopShort{display:block; width:235px; height:16px; background:url('/images/menubar/bg-subSubMenuTopShort.png') 0 0 no-repeat;
+            position:absolute; top:-16px; left:0;}
+
+        .ed-bcDropDown ul li{position:relative; padding:0; margin:0 20px 0 18px; width: 196px;}
+
+
+        .ed-bcDropDown ul li a{display:block; color:#ffffff; text-decoration:none;
+            text-transform:none; text-indent:0; padding:0 0 2px 0;}
+
+        .ed-bcDropDown ul li .dbContent{width:196px;}
+        .ed-bcDropDown ul li .dbContentActive{background:url('/images/menubar/bg-dropDownBtn1BG.png') right center no-repeat;}
+        .ed-bcDropDown ul li .dbContentInactive{background-image:none;}
+
+
+        .ed-bcDropDown ul li td {vertical-align:top;}
+
+        .ed-bcDropDown ul li td.bcIconCol{width:20px; padding-left:5px;}
+
+        .ed-bcDropDown ul li td.bcLinkCol{color:#ffffff; width:140px; max-width:140px; word-wrap:break-word; text-decoration:none;
+            font:13px/13px "Trebuchet MS", Arial, Helvetica, sans-serif;}
+
+        .ed-bcDropDown ul li td.bcLinkCol a:hover{color:#fff;}
+        .ed-bcDropDown ul li td.bcLinkCol a.bcTrail{color:#fff;}
+        .ed-bcDropDown ul li td.bcLinkCol a.bcHighlight{color:#fff;}
+
+        .ed-bcDropDown ul li td.bcArrowColEmpty{width:30px; padding-left:5px; background:none;}
+
+        .ed-bcDropDown ul li td.bcArrowColFilled{width:30px; padding-left:5px;
+            background:url('/images/menubar/bg-dropDownArrow.png') right center no-repeat; }
+
+        /*styles for the sub subs*/
+        .ed-bcDropDown ul li ul{display:none; z-index:50; width:233px; height:auto;/* min-height:85px; max-height:480px;*/ position:absolute;
+            top:-5px; right:-224px; background:url('/images/menubar/bg-subSubMenuBG.png') bottom left no-repeat !important; padding:5px 0 25px !important;}
+
+        .ed-bcDropDown ul li ul span.ed-subTop{display:block; width:235px; height:21px; background:url('/images/menubar/bg-subSubMenuTop.png') 0 0 no-repeat;
+            position:absolute; top:-21px; left:0;}
+
+        .ed-bcDropDown ul li:hover ul{display:block; padding:1px 0;}
+        .ed-bcDropDown ul li.ed-hasSub.hover ul{display:block;}
+        .ed-bcDropDown ul li ul li a{padding:0 0 2px 0;}
+
+        /* See Stylesheet.jsp for variable drop down resource icons.  Search that file for "IconNewNavBar" */
+
+/* Styles for the top and bottom edge div images */
+
+.ed-bcDropDown ul li .dbtop{width:196px; height:5px; margin:0; padding:0; font-size:0px;}
+.ed-bcDropDown ul li .dbbtm{width:196px; height:5px; margin:0; padding:0; font-size:0px;}
+.ed-bcDropDown ul li .dbTopActive{background-image:url('/images/menubar/bg-dropDownBtn1Top.png'); background-position:top left; background-repeat:no-repeat;}
+.ed-bcDropDown ul li .dbBtmActive{background-image:url('/images/menubar/bg-dropDownBtn1Btm.png'); background-position:top left; background-repeat:no-repeat;}
+.ed-bcDropDown ul li .dbTopInactive{background-image:none;}
+.ed-bcDropDown ul li .dbBtmInactive{background-image:none;}
+
+
+.ed-bcDropDown ul li ul li .dbtop{width:196px; height:5px; margin:0; padding:0; font-size:0px;}
+.ed-bcDropDown ul li ul li .dbbtm{width:196px; height:5px; margin:0; padding:0; font-size:0px;}
+.ed-bcDropDown ul li ul li .dbTopActive{background-image:url('/images/menubar/bg-dropDownBtn1Top.png') !important; background-position:top left; background-repeat:no-repeat;}
+.ed-bcDropDown ul li ul li .dbBtmActive{background-image:url('/images/menubar/bg-dropDownBtn1Btm.png') !important; background-position:top left; background-repeat:no-repeat;}
+.ed-bcDropDown ul li ul li .dbTopInactive{background-image:none;}
+.ed-bcDropDown ul li ul li .dbBtmInactive{background-image:none;}

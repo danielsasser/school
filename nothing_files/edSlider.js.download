@@ -1,0 +1,1385 @@
+//send any questions/bugs/issues to sdailey@schoolfusion.com
+//please only change options where this plugin is called - not directly in this file.
+(function($){
+	$.fn.edSlider = function(options){
+	    var defaults = {
+				delay: 5000, // time between transition
+				speed: 500, // slide transition speed
+		        transitionEffectPhotos: "fade", // values = normal, fade, or slide
+		        transitionEffectCaptions: "normal", // values = normal, fade, or slide ***needs to be added***
+				captions: 'on', // values = on, off, or hover
+				easing: 'swing', //animation easing. Only change if you're using the jQuery easing plugin
+				slideSpacing: 50, // spacing between slides
+		        //captions: "hover", // adds additional animation for captions. Targets any element (p, a, div, etc.) w/ .caption class
+				auto: true, // auto play
+				hoverPauseSlideShow: true, // pauses on hover
+				showNavControls: 'hover', //show the nav controls. values = hover, never, always
+				hoverSelect: this, // I can explain this if needed
+				carousel: 'none', //adds carousel controls. values = none, number, thumbnail
+				thumbnailSize: 'small', // sets size of thumbnail controls. values = small, medium, or large
+				carouselScroll: false, // adds controls to scroll forward/back through thumbnail controls
+				scrollAllMinus: 0, // scroll all thumbnails but X value
+				prevNext: false, // adds previous & next buttons
+				playPause: false, // adds play and pause buttons. If playPause is true, hover MUST BE FALSE
+		        folderEntId: '',
+		        elementIdSuffix: '',
+		        showFullScreen: false,
+				numberedSlides: false,
+                cropToFit: false, //previously autoCrop
+				rows: 5,
+				columns: 5,
+				debugTransitionName: false
+			},
+			settings = $.extend(defaults, options);
+
+		var $container = $(this).css('position', 'relative'), i, ii, next, $controls, resume, $prevNext, $prev, $next, $playPause, $play, $pause, sImg, $li, liIndex, hoverLoaded, isCaption, currentCaption, tName, mousePauseHide, finalThumbWidth, finalThumbHeight, fullyVisibleLi, imgDimensionsArr,
+			$parent = $container.parent('div'),
+			$controlBarContainer = $parent.find('.ed-slider-image-caption-controlbar-container.ext'), //external container
+			$controlBar = $controlBarContainer.find('.ed-slider-controlbar.ext'),
+			$captionBar = $container.find('.ed-slider-image-caption-controlbar-container'), //internal container
+			$captionHolder = $controlBar.find('.captionHolder'),
+			$slideCount = $controlBar.find('.ed-slider-countinfo'),
+			$slides = $container.children('li').css('position', 'absolute').hide(),
+            $slideImg = $slides.find('.ed-slider-image'),
+            $slideImgCache = $slides.find('.ed-slider-cached-image'),
+            conW = $container.width(),
+			conH = $container.height(),
+			liWidth = $slides.width() + settings.slideSpacing,
+			loading = $('#ed-slider-gallery-loading-' + settings.elementIdSuffix).find('img'),
+			current = 0,
+			last = $slides.length - 1,
+			$group = $container.find('.group'),
+			$block = $group.find('.block'),
+			$image = $slideImg.find('img');
+
+        if ($slides.length > 0)
+        {
+            var slidesWidth = $slides.css('width').replace('px', '');
+            if (!isNaN(slidesWidth))
+            {
+				liWidth = parseInt(slidesWidth) + settings.slideSpacing;
+			}
+
+            $($slides[0]).show();
+        }
+
+        function setSlideShowInterval(slideShowDelay)
+        {
+            if (slideShowDelay > 0)
+            {
+                resume = setInterval(function() {
+                                    nextSlide();
+                                }, slideShowDelay);
+            }
+        }
+        //used to get original img dimensions
+		function ogWidth(img) {
+			var temp = new Image(),
+				src = $(img).attr('src');
+			$(temp).attr('src', src);
+			return [temp.width, temp.height];
+		}
+
+        function ogImgDimensions() {
+            var idArr = [];
+            $slideImgCache.each(function() {
+                var $this = $(this),
+                    wXh = $this.attr('data-widthandheight').split('x');
+                idArr.push(wXh);
+            });
+            return idArr;
+        }
+
+		function autoCenter(elem, parWidth, parHeight, index) {
+            if (imgDimensionsArr == undefined) {
+                imgDimensionsArr = ogImgDimensions();
+            }
+			for (i=0; i<elem.length; i++) {
+                if (index !== null) {
+                    var imgW = imgDimensionsArr[index][0],
+                        imgH = imgDimensionsArr[index][1];
+                } else {
+                    var imgW = imgDimensionsArr[i][0],
+                        imgH = imgDimensionsArr[i][1];
+                }
+
+                var mTop = Math.floor((parHeight - imgH)/2),
+					mLeft = Math.floor((parWidth - imgW)/2),
+                    daW = imgW/parWidth,
+					daH = imgH/parHeight,
+					smH = Math.round(imgH/daW),
+					smW = Math.round(imgW/daH),
+					smTop = Math.floor((parHeight - smH)/2),
+					smLeft = Math.floor((parWidth - smW)/2),
+					conAR = parWidth/parHeight,
+					imgAR = imgW/imgH;
+
+				if ( settings.cropToFit === true ) {
+					if ( (imgW <= parWidth || imgH <= parHeight) ) {
+						$(elem[i]).css({ marginTop: 0, marginLeft: mLeft, width: 'auto', height: 'auto' });
+					} else if ( imgAR > conAR ) {
+						$(elem[i]).css({ marginTop: 0, marginLeft: smLeft, height: parHeight, width: 'auto' });
+					} else /*if ( imgAR <= conAR )*/ {
+						$(elem[i]).css({ marginTop: 0, marginLeft: 0, width: parWidth, height: 'auto' });
+					}
+				} /*else { // commented out since this is taken care of in the jsp
+					if ( (imgW <= conW && imgH <= conH) ) {
+						$(elem[i]).css({ marginTop: 0, marginLeft: mLeft });
+					} else if ( imgAR >= conAR ) {
+						$(elem[i]).css({ marginTop: '0', width: conW });
+					} else {
+						$(elem[i]).css({ marginLeft: smLeft, height: conH });
+					}
+				}*/
+			}
+		}
+//		autoCenter(loading);
+//		autoCenter($image); ////////////////////////////////////// turn this off after testing /////////////////////////////////////
+
+		function transition(current, next, dir) {
+            loadNextImage(current,next);
+            switch (settings.transitionEffectPhotos) {
+				case "normal":
+					transitionNormal(current, next);
+					break;
+				case "slide":
+					transitionSlide(current, next, dir);
+					break;
+				case "zoom":
+					transitionZoom(current, next, dir);
+					break;
+				case "mosaic":
+					transitionMosaic(current, next, dir);
+					break;
+				case "blinds":
+					transitionBlinds(current, next, dir);
+					break;
+				case "dominos":
+					transitionDominos(current, next, dir);
+					break;
+				case "blocks1":
+					transitionBlocks1(current, next, dir);
+					break;
+				case "zipper":
+					transitionZipper(current, next, dir);
+					break;
+				case "zoomFade":
+					transitionZoomFade(current, next, dir);
+					break;
+				case "random":
+					transitionRandom(current, next, dir);
+					break;
+				case "ordered":
+					transitionOrdered(current, next, dir);
+					break;
+				case "test":
+					transitionTest(current, next, dir);
+					break;
+				case "fade":
+				default:
+					transitionFade(current, next); //default transition
+					break;
+			}
+		}
+
+		function transitionRandom(current, next, dir) {
+			var transitions = [
+				'transitionSlide',
+				'transitionFade',
+				'transitionZoom',
+				'transitionMosaic',
+				'transitionBlinds',
+				'transitionDominos',
+				'transitionBlocks1',
+				'transitionZipper',
+				'transitionZoomFade'
+			];
+			var random = transitions[Math.floor(Math.random()*transitions.length)];
+			eval(random)(current, next, dir);
+		}
+
+		//ordered transitions
+		var orderNum = 0,
+			ordered = '';
+		function transitionOrdered(current, next, dir) {
+			var transitions = [
+				'transitionSlide',
+				'transitionFade',
+				'transitionZoom',
+				'transitionMosaic',
+				'transitionBlinds',
+				'transitionDominos',
+				'transitionBlocks1',
+				'transitionZipper',
+				'transitionZoomFade'
+			];
+			//plays next/previous transition without repeat, > 1 > 2 > 3 < 2 < 1
+			if (dir === 'forward') {
+				orderNum = (orderNum === transitions.length-1) ? 0 : orderNum+1;
+				ordered = transitions[orderNum];
+			} else {
+				orderNum = (orderNum <= 0) ? transitions.length-1 : orderNum-1;
+				ordered = transitions[orderNum];
+			}
+			eval(ordered)(current, next, dir);
+		}
+
+		// !start transitions
+		function transitionNormal(c,n,d) { // non animated transition
+			$slides.hide();
+			$($slides[n]).show();
+		}
+
+		function transitionSlide(c,n,d) { // standard slide transition
+			var t1 = '-', t2 = '';
+			if (d === 'forward') { t1 = '';	t2 = '-'; }
+			tName = 'standard slide transition';
+			$slides.hide();
+			$group.find('.block').hide();
+			$($slides[n]).show().css('left', t1+conW+'px').animate({left: 0}, settings.speed);
+			$($slides[c]).show().animate({left: t2+conW+'px'}, settings.speed, function() {
+				$(this).hide();
+				$slides.css('left', 0);
+			});
+		}
+
+		function transitionFade(c,n,d) { // standard fade transition
+			tName = 'standard fade transition';
+			$($slides[c]).css('zIndex', 5).fadeOut(settings.speed, function() {
+				$slides.css('zIndex', '');
+			});
+			$($slides[n]).show();
+		}
+
+		function transitionZoom(c,n,d) { // zoom - transition in
+			setGroup(n, 1, 1);
+			var $b = $group.find('.block').addClass('imgTransition'),
+				iw = $b.find('img').width(),
+				ih = $b.find('img').height();
+			tName = 'zoom - transition in';
+			$b.find('img').css({position: 'absolute', width: 0, height: 0, left: conW/2, top: conH/2})
+				.animate({width: iw, height: ih, left: 0, top: 0}, settings.speed, function() {
+					$b = $group.find('.block').removeClass('imgTransition');
+					resetPosition($b,c,n,d);
+				});
+			transitionNormal(n,c,d);
+		}
+
+		function transitionMosaic(c,n,d) { // mosaic, random blocks fade in - transition in
+			setGroup(n, settings.rows, settings.columns);
+			var $b = $group.find('.block'),
+				delay = 30;
+
+			tName = 'mosaic, random blocks fade in - transition in';
+			$b.css({opacity:0}).each(function(i) {
+				var $this = $(this),
+					rNum = Math.floor(Math.random()*$b.length);
+				setTimeout(function(){
+					$this.animate({opacity: 1}, settings.speed, function() {
+						if (i === $b.length-1) { resetPosition($b,c,n,d); }
+					});
+				}, (delay*rNum));
+			});
+			transitionNormal(n,c,d);
+		}
+
+		function transitionBlinds(c,n,d) { // horizontal blinds - transition out
+			setGroup(c, settings.rows, 1);
+			var $b = $group.find('.block').css({height: 100, opacity: 1}),
+				bh = $b.height();
+			tName = 'horizontal blinds - transition in';
+			$b.stop().animate({opacity: 0, height: 0}, settings.speed);
+			transitionNormal(c,n,d);
+		}
+
+		function transitionDominos(c,n,d) { // dominos, rows drop - transition out
+			var rows = 1,
+				columns = 7;
+			setGroup(c, rows, columns);
+			var $b = $group.find('.block'),
+				delay = 75,
+				buffer = 0;
+
+			tName = 'dominos, rows drop - transition out';
+			$b.each(function() {
+				var $this = $(this);
+				setTimeout(function(){
+					$this.animate({top: '+='+conH}, settings.speed);
+				}, (delay+buffer));
+				buffer+=100;
+			});
+			transitionNormal(c,n,d);
+		}
+
+		function transitionBlocks1(c,n,d) { // blocks shrink top/left to bottom/right - transition out
+			setGroup(c, settings.rows, settings.columns);
+			var $b = $group.find('.block'),
+				bw = $b.width(),
+				delay = 110,
+				buffer = 0;
+
+			tName = 'blocks shrink top/left to bottom/right - transition out';
+			$b.each(function() {
+				var $this = $(this);
+				setTimeout(function(){
+					$this.animate({width: 0, height: 0, opacity: 0}, settings.speed);
+				}, (delay+buffer));
+				buffer+=25;
+			});
+			transitionNormal(c,n,d);
+		}
+
+		function transitionZipper(c,n,d) { // zipper - transition in
+			var rows = 1,
+				columns = 10;
+			setGroup(n, rows, columns);
+			var $b = $group.find('.block').css({top: -conH}),
+				delay = 150,
+				buffer = 0;
+			tName = 'zipper - transition in';
+			for (var i=0, ii=$b.length; i<ii; i+=2) {
+				$($b[i]).css({top: conH});
+			}
+			$b.each(function(i) {
+				var $this = $(this);
+				setTimeout(function(){
+					$this.animate({top: 0}, settings.speed, function() {
+						if (i === $b.length-1) { resetPosition($b,c,n,d); }
+					});
+				}, (delay+buffer));
+				buffer+=50;
+			});
+			transitionNormal(n,c,d);
+		}
+
+		function transitionZoomFade(c,n,d) { // zoom-in fade - transition out
+			setGroup(c, 1, 1);
+			var $b = $group.find('.block').addClass('imgTransition'),
+				iw = $b.find('img').width(),
+				ih = $b.find('img').height();
+			tName = 'zoom-in fade - transition out';
+			$b.find('img').css({position: 'absolute', left: 0, top: 0})
+				.animate({width: iw*1.3, height: ih*1.3, opacity: 0, left: conW*-.15, top: conH*-.15 }, settings.speed, function() {
+					$b = $group.find('.block').hide();
+				});
+			transitionNormal(c,n,d);
+		}
+
+		function transitionTest(c,n,d) { // image shrink - transition out
+			setGroup(c, 1, 1);
+			var $b = $group.find('.block').addClass('imgTransition');
+			tName = 'image shrink - transition out';
+			$b.find('img').css({position: 'absolute', left: 0, top: 0})
+				.animate({width: 0, height: 0, left: conW/2, top: conH/2, opacity: 0}, settings.speed, function() {
+					$b = $group.find('.block').hide();
+				});
+			transitionNormal(c,n,d);
+		}
+
+		function transitionTest2(c,n,d) { // rows fade in - transition in
+			var rows = 1,
+				columns = 7;
+			setGroup(n, rows, columns);
+			var $b = $group.find('.block').css({opacity: 0}),
+				intNum = 0,
+				speed = settings.speed/columns; //transition time/number of blocks;
+			tName = 'rows fade in';
+			var initAnimation = setInterval(function() {
+				if (intNum < $b.length) {
+					$($b[intNum]).animate({opacity: 1}, settings.speed);
+					intNum++;
+				} else {
+					clearInterval(initAnimation);
+				}
+			}, speed);
+			transitionNormal(n,c,d);
+		}
+
+		function transitionTest3(c,n,d) { // blocks in - needs work
+			setGroup(n, settings.rows, settings.columns);
+			var $b = $group.find('.block'),
+				bw = $b.width(),
+				bh = $b.height(),
+				intNum = 0,
+				speed = settings.speed/(settings.rows*settings.columns); //transition time/number of blocks;
+			tName = '';
+			$b.css({width: 0, height: 0});
+			var initAnimation = setInterval(function() {
+				if (intNum < $b.length) {
+					$($b[intNum]).animate({width: bw, height: bh}, settings.speed);
+					intNum++;
+				} else {
+					clearInterval(initAnimation);
+				}
+			}, speed);
+			transitionNormal(n,c,d);
+		}
+
+		function transitionTest4(c,n,d) { //
+			var rows = 2,
+				columns = 11;
+			setGroup(n, rows, columns);
+			var $b = $group.find('.block').css({opacity: 0}),
+				intNum = rows*columns-1,
+				speed = settings.speed/(rows*columns); //transition time/number of blocks;
+			tName = '';
+			for (var i=0, ii=$b.length; i<ii; i++) {
+				if (i<columns) {
+					$($b[i]).css({marginTop: -(conH/2)});
+				} else {
+					$($b[i]).css({marginTop: conH/2});
+				}
+			}
+			var initAnimation = setInterval(function() {
+				if (intNum >= $b.length/2) {
+					var intNum2 = intNum-columns;
+					$($b[intNum]).animate({marginTop: 0, opacity: 1}, settings.speed);
+					$($b[intNum2]).animate({marginTop: 0, opacity: 1}, settings.speed);
+					intNum--;
+				} else {
+					clearInterval(initAnimation);
+				}
+			}, 60);
+			transitionNormal(n,c,d);
+		}
+
+		function transitionTest5(c,n,d) { //
+			var rows = 1,
+				columns = 11;
+			setGroup(n, rows, columns);
+			var $b = $group.find('.block').css({opacity: 0}),
+				intNum = Math.floor(columns/2),
+				speed = settings.speed/(rows*columns); //transition time/number of blocks;
+			tName = 'columns fall middle first - transition in';
+			for (var i=0, ii=$b.length; i<ii; i++) {
+				$($b[i]).css({marginTop: -conH});
+			}
+			var initAnimation = setInterval(function() {
+				if (intNum < $b.length) {
+					var intNum2 = columns-intNum-1;
+					$($b[intNum]).animate({marginTop: 0, opacity: 1}, settings.speed);
+					$($b[intNum2]).animate({marginTop: 0, opacity: 1}, settings.speed);
+					intNum++;
+				} else {
+					clearInterval(initAnimation);
+				}
+			}, speed);
+			transitionNormal(n,c,d);
+		}
+
+		function transitionTest6(c,n,d) { //
+			var rows = 1,
+				columns = 11;
+			setGroup(n, rows, columns);
+			var $b = $group.find('.block').css({opacity: 0}),
+				intNum = 0,
+				speed = settings.speed/(rows*columns); //transition time/number of blocks;
+			tName = 'columns fall sides first - transition in';
+			for (var i=0, ii=$b.length; i<ii; i++) {
+				$($b[i]).css({marginTop: -conH});
+			}
+			var initAnimation = setInterval(function() {
+				if (intNum < $b.length/2) {
+					var intNum2 = columns-1-intNum;
+					$($b[intNum]).animate({marginTop: 0, opacity: 1}, settings.speed);
+					$($b[intNum2]).animate({marginTop: 0, opacity: 1}, settings.speed);
+					intNum++;
+				} else {
+					clearInterval(initAnimation);
+				}
+			}, speed);
+			transitionNormal(n,c,d);
+		}
+
+		function transitionTest7(c,n,d) { //
+			var rows = 1,
+				columns = 7;
+			setGroup(n, rows, columns);
+			var $b = $group.find('.block').css({opacity: 0}),
+				intNum = 0,
+				speed = settings.speed/(rows*columns); //transition time/number of blocks;
+			tName = '';
+			for (var i=0, ii=$b.length; i<ii; i++) {
+				$($b[i]).css({marginLeft: conW});
+			}
+			var initAnimation = setInterval(function() {
+				if (intNum < $b.length) {
+					$($b[intNum]).animate({marginLeft: 0, opacity: 1}, settings.speed);
+					intNum++;
+				} else {
+					clearInterval(initAnimation);
+				}
+			}, speed/2);
+			transitionNormal(n,c,d);
+		}
+
+		function transitionTest8(c,n,d) { //
+			setGroup(n, settings.rows, settings.columns);
+			var $b = $group.find('.block'),
+				bw = $b.width(),
+				bh = $b.height(),
+				intNum = 0,
+				speed = settings.speed/(settings.rows*settings.columns); //transition time/number of blocks;
+			tName = '';
+			$b.css({marginLeft: conW/2, marginTop: conH/2, opacity: 0});
+			var initAnimation = setInterval(function() {
+				if (intNum < $b.length) {
+					$($b[intNum]).animate({ marginLeft: 0, marginTop: 0, opacity: 1}, settings.speed);
+					intNum++;
+				} else {
+					clearInterval(initAnimation);
+				}
+			}, speed/2);
+			transitionNormal(n,c,d);
+		}
+
+		function resetPosition(elem,c,n,d) {
+			var reset = setInterval(function() {
+				if (!elem.is(':animated')) {
+					clearInterval(reset);
+					transitionNormal(c,n,d);
+					elem.hide();
+				}
+			}, 10);
+		}
+
+        function fetchImage(url, cssStyle, forceWait, alternateText)
+        {
+            var imageLoaded = false;
+            var imageInsert = $('<img />').attr('src', url).attr('style',cssStyle).attr('alt', alternateText).load(function()
+                                {
+                                    imageLoaded = true;
+                                });
+            if (forceWait)
+            {
+                //set a counter
+                var iCnt = 0;
+                //wait until the image is loaded, or until the counter hits 500;
+                while (!imageLoaded  && iCnt < 500)
+                {
+                    iCnt++;
+                }
+            }
+
+            imageInsert.removeAttr('height');
+            imageInsert.removeAttr('width');
+            return imageInsert;
+        }
+
+        function fetchCachedImageAsync(startInterval, fetchNext)
+        {
+            //asynchronous fetch
+           setTimeout(function(){
+                                    var cssStyle = $($slideImgCache[fetchNext]).attr('style');
+                                    var url = $($slideImgCache[fetchNext]).html();
+                                    var alternateText = $($slideImgCache[fetchNext]).attr('data-alternateText');
+                                    var imageInsert = fetchImage(url, cssStyle, true, alternateText); //wait here until it's finished loading.
+                                    //add it to the array - by the time it's needed for display, it should be loaded.
+                                    $($slideImg[fetchNext]).append(imageInsert);
+
+                                }, startInterval);
+        }
+
+        function fetchCachedImages(next)
+        {
+            var fetchCount = 2; //fetch the next 2 cached images if they haven't already been pulled down.
+            var start = next + 1;
+
+            if (start < $slideImgCache.length-1)
+            {
+                var startInterval = 0;
+                var totalToProcess = (next + fetchCount);
+                for (var fetchNext = start; fetchNext < totalToProcess; fetchNext++)
+                {
+                    var img = $($slideImg[fetchNext]).find('img');
+                    if ($(img).length == 0)
+                    {
+                       startInterval = startInterval + 250; //stagger the intervals for fetching
+                       fetchCachedImageAsync(startInterval, fetchNext);
+                    }
+                }
+            }
+
+        }
+
+        function loadNextImage(current, next)
+        {
+
+            var img = $($slideImg[next]).find('img');
+            if ($(img).length == 0)
+            {
+                var cssStyle = $($slideImgCache[next]).attr('style');
+                var url = $($slideImgCache[next]).html();
+                var alternateText = $($slideImgCache[next]).attr('data-alternateText');
+                var imageInsert = fetchImage(url, cssStyle, true, alternateText);  //wait here until it's finished loading.
+                img = imageInsert; // added for autoCenter/cropToFit
+                //now that the image is fully down on the browser, add it to the array.
+                $($slideImg[next]).append(imageInsert);
+
+            }
+
+            if (current < next)
+            {
+                //get the cached images, but only if you're moving forward.
+                fetchCachedImages(next);
+            }
+            autoCenter(img, conW, conH, next);
+        }
+
+        function captions(next,current) {
+			switch (settings.captions) {
+				case "hover":
+					captionsHover(next,current); //default effect
+					break;
+				case "off":
+					captionsOff();
+					break;
+				case "on":
+				default:
+					captionsOn(next,current);
+					break;
+			}
+		}
+
+		function transitionCaption(next,current) {
+			switch (settings.transitionEffectCaptions) {
+				case "fade":
+					transitionCaptionFade(next,current); //default effect
+					break;
+				case "slide":
+					transitionCaptionSlide(next,current);
+					break;
+				case "normal":
+				default:
+					transitionCaptionNormal(next,current);
+					break;
+			}
+		}
+
+		function slideCount(n)
+        {
+            var t = $slides.length;
+		    var c = n  + '/' + t;
+
+            /*##/## = 5 digits max*/
+            if (t > 99)
+            {
+                if (n > 99999)
+                {
+                    c= "";
+                }
+                else
+                {
+                    c = n;
+                }
+            }
+
+            var w = $slideCount.outerWidth(true);
+
+			if (!$slideCount.length) {
+				$slideCount = $('<div class="ed-slider-countinfo" style="color:#FFF;">'+c+'</div>');
+			}
+
+			$controlBar.append($slideCount);
+			$slideCount.html(c);
+		}
+
+		function addCaption(n,c) {
+			c = (c === undefined) ? 0 : c;
+
+			if (!$captionHolder.length) {
+				$captionHolder = $('<div class="captionHolder"></div>');
+				$controlBarContainer.prepend($captionHolder);
+			}
+
+			var $captionClone = $($captionBar[n]).find('span').clone(),
+				$currentCaption = $($captionBar[c]).find('span');
+
+            var $controlBar = $controlBarContainer.find('.ed-slider-controlbar.ext');
+			$captionBar.hide();
+			$captionHolder.html($captionClone);
+			if ( $captionClone.length > 0 ) {
+				hasCaption = true;
+				$controlBarContainer.addClass('hasCaption');
+                $controlBar.removeClass('hasNoCaption');
+            } else {
+				hasCaption = false;
+				$controlBarContainer.removeClass('hasCaption');
+                $controlBar.addClass('hasNoCaption');
+            }
+			if ( $currentCaption.length > 0 ) {
+				currentCaption = true;
+			} else {
+				currentCaption = false;
+			}
+
+		}
+
+		function captionsOn(n,c) {
+			addCaption(n,c);
+		}
+
+		function captionsOff() {
+			$captionBar.hide();
+            $controlBar.addClass('captionHidden');
+		}
+
+		function captionsHover(n,c) {
+			addCaption(n,c);
+		}
+
+		function transitionCaptionNormal(n) {
+			//
+		}
+
+		function transitionCaptionFade(n,c) {
+			$captionHolder.css('opacity', '0');
+			addCaption(n,c);
+			$captionHolder.animate({ opacity: 1 }, settings.speed);
+/*
+			$captionHolder.animate({ opacity: 0 }, settings.speed/2, function() {
+				addCaption(n);
+				$captionHolder.animate({ opacity: 1 }, settings.speed/2);
+			});
+*/
+		}
+
+		function transitionCaptionSlide(n,c) {
+			$captionHolder.animate({ bottom: '-=' + 100 }, settings.speed/2, function() {
+				addCaption(n,c);
+				$captionHolder.animate({ bottom: '+=' + 100 }, settings.speed);
+			});
+/*
+			if (currentCaption === true && hasCaption === true) {
+				addCaption(n,c);
+			} else {
+				$captionHolder.animate({ bottom: '-=' + 100 }, settings.speed/2, function() {
+					addCaption(n,c);
+					$captionHolder.animate({ bottom: '+=' + 100 }, settings.speed);
+				});
+			}
+*/
+		}
+
+		function checkIfAnimated() {
+			if ($slideImg.find('img').is(':animated') || $slides.is(':animated') || $group.find('.block').is(':animated')) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+
+		function nextSlide() {
+            if (checkIfAnimated()) {
+				if (current === last) {
+					next = 0;
+				} else if (current > last) {
+					current = 0;
+					next = 1;
+				} else {
+					next = current + 1;
+				}
+
+		        transition(current, next, 'forward');
+
+		        if (settings.debugTransitionName === true) {
+					$controlBarContainer.addClass('hasCaption');
+                    $captionHolder.html('<span class="ed-slider-image-caption-' + settings.elementIdSuffix + '">'+tName+'</span>');
+		        } else if (settings.transitionEffectCaptions === 'normal') {
+					captions(next);
+		        } else {
+					transitionCaption(next,current);
+		        }
+
+				if (settings.carousel === 'number' || settings.carousel === 'thumbnail') {
+					$controls.children().removeClass('selected');
+					$controls.children().eq(next).addClass('selected');
+				}
+
+				if (settings.numberedSlides === true) {
+					slideCount(next + 1);
+				}
+
+                if (settings.carouselScroll !== false) {
+                	scrollControls(next);
+                }
+
+				if (current === last) {
+					current = 0;
+				} else {
+					current ++;
+				}
+			}
+		}
+
+		function prevSlide() {
+            if (checkIfAnimated()) {
+				if (current === 0) {
+					next = last;
+				} else {
+					next = current - 1;
+				}
+
+		        transition(current, next);
+
+		        if (settings.debugTransitionName === true) {
+					$controlBarContainer.addClass('hasCaption');
+                    $captionHolder.html('<span class="ed-slider-image-caption-' + settings.elementIdSuffix + '">'+tName+'</span>');
+		        } else if (settings.transitionEffectCaptions === 'normal') {
+					captions(next);
+		        } else {
+					transitionCaption(next,current);
+		        }
+
+				if (settings.carousel === 'number' || settings.carousel === 'thumbnail') {
+					$controls.children().removeClass('selected');
+					$controls.children().eq(next).addClass('selected');
+				}
+
+				if (settings.numberedSlides === true) {
+					slideCount(next + 1);
+				}
+
+                if (settings.carouselScroll !== false) {
+                	scrollControls(next);
+                }
+
+				if (current === 0) {
+					current = last;
+				} else {
+					current --;
+				}
+			}
+		}
+
+		function hoverShow(e,speed) {
+            var hHide = '',	hShow = '';
+            speed = (speed === undefined) ? 250 : speed;
+            if (hoverLoaded !== 'loaded') {
+                $(e).each(function() {
+                    if ($(this).attr('class') === 'captionHolder') {
+                        $controlBar.addClass('captionHidden');
+                    }
+                    $(this).hide();
+                });
+            }
+            hoverLoaded = 'loaded';
+            $parent.bind('mouseenter', function() {
+                clearTimeout(hHide);
+                hShow = setTimeout(function() {
+                    $(e).each(function() {
+                        if ($(this).attr('class') === 'captionHolder') {
+                            $controlBar.removeClass('captionHidden');
+                        }
+                        $(this).show();
+                    });
+                }, speed);
+            }).bind('mouseleave', function() {
+                clearTimeout(hShow);
+                hHide = setTimeout(function() {
+                    $(e).each(function() {
+                        if ($(this).attr('class') === 'captionHolder') {
+                            $controlBar.addClass('captionHidden');
+                        }
+                        $(this).hide();
+                    });
+                }, speed);
+            }).bind('mousemove', function() {
+                clearTimeout(mousePauseHide);
+                $(e).each(function() {
+                    if ($(this).attr('class') === 'captionHolder') {
+                        $controlBar.removeClass('captionHidden');
+                    }
+                    $(this).show();
+                });
+                mousePauseHide = setTimeout(function() {
+                    $(e).each(function() {
+                        if ($(this).attr('class') === 'captionHolder') {
+                            $controlBar.addClass('captionHidden');
+                        }
+                        $(this).hide();
+                    });
+                }, 5000);
+            });
+		}
+
+		function addControlBarContainer() {
+			if (!$controlBarContainer.length) {
+				$controlBarContainer = $('<div class="ed-slider-image-caption-controlbar-container ext"><div class="ed-slider-controlbar ext"></div></div>');
+				//$parent.append($controlBarContainer);
+				$container.after($controlBarContainer);
+				$controlBar = $controlBarContainer.find('.ed-slider-controlbar.ext');
+			}
+		}
+
+		function setGroup(next, rows, columns) {
+			next = (next === undefined) ? 0 : next;
+			rows = (rows === undefined) ? settings.rows : rows;
+			columns = (columns === undefined) ? settings.columns : columns;
+
+			if (!$group.length) {
+				//$group = $('<div class="group"></div>').appendTo($container.parent()).css({ position: 'absolute', zIndex: 2, top: 0, left: 0 });
+				$group = $('<div class="group"></div>').appendTo($container).css({ position: 'absolute', zIndex: 2, top: 0, left: 0 });
+			} else {
+				$group.html('');
+			}
+			var divs = [],
+				columnWidth = Math.ceil($container.width()/columns),
+				rowHeight = Math.ceil($container.height()/rows),
+                $nextImg = $($slides[next]).find('.ed-slider-image'),
+                nextSrc = $nextImg.find('img').attr('src').replace(/\s+/g, '');
+
+			for(var j=0; j<rows; j++){//rows
+				for(var i=0; i<columns; i++){//columns
+					divs[((j*columns)+i)]=$('<div class="block"></div>').css({
+						position: 'absolute',
+						overflow: 'hidden',
+						width: columnWidth,
+						height: rowHeight,
+						left: (columnWidth*i),
+						top: (rowHeight*j)
+					});
+					$group.append(divs[((j*columns)+i)]);
+					var div = $('<div/>').html($nextImg.html()).css({ marginTop: -(rowHeight*j), marginLeft: -(columnWidth*i) });
+					divs[((j*columns)+i)].append(div).find('img').attr('src', nextSrc);
+				}
+			}
+		}
+
+		function debugTransitionName() {
+			var transitionName = $('');
+		}
+
+		function setThumbnailSize() {
+			var $thumbImg = $controls.find('img'),
+				thumbnailSize = Math.round(conH*.15); // 15% = small size - default
+
+			if (settings.thumbnailSize === 'medium') {
+				thumbnailSize = Math.round(conH*.20) // 20% = medium size
+			} else if (settings.thumbnailSize === 'large') {
+				thumbnailSize = Math.round(conH*.30) // 30% = large size
+			}
+
+			if (thumbnailSize < 20) { thumbnailSize = 20; }
+			return thumbnailSize;
+		}
+
+		function setControlBarWidth() {
+			var cbWidth = 0;
+         	$controlBar.children().each(function() {
+         		cbWidth+=30;
+        	});
+			if (settings.numberedSlides === true) {
+				if ($slides.length > 999) {
+					cbWidth+=50;
+				} else if ($slides.length > 99) {
+					cbWidth+=30;
+				} else {
+					cbWidth+=20;
+				}
+			}
+        	$controlBar.css('width', cbWidth);
+		}
+
+        function initKeyboardAccessibility() {
+            $parent.attr('aria-label', 'Image gallery')
+                .prop('tabindex', "0")
+                .bind('keydown', function(e) {
+                    var code = e.keyCode || e.which;
+                    switch (code) {
+                        case 37: //left
+                            if (settings.prevNext === true)
+                                prevSlide();
+                            break;
+                        case 13: //enter
+                        case 39: //right
+                            if (settings.prevNext === true)
+                                nextSlide();
+                            break;
+                        case 27: //esc
+                            if (settings.playPause === true)
+                                $(this).find('.playPause a').not('.selected').click();
+                            break;
+                        default:
+                            return;
+                    }
+
+                    e.preventDefault();
+                });
+        }
+
+		$.fn.hoverPauseSlideShow = function() {
+			$(this).hover(function(){
+				clearInterval(resume);
+			}, function() {
+				setSlideShowInterval(settings.delay);
+			});
+		};
+
+        if ($slides.length > 0) {
+
+            if ($slides.length == 1)
+            {
+                // When there is only one slide, it behaves as if there is also a blank one (if it "advances"
+                // to the "next slide").  When controls are shown with a one-image slideshow, manual advancing
+                // shows the "blank" slide (or an empty region).  Tried to find out why, but gave up.
+
+                // The following essentially prevents an automatic advance to a "blank" slide when only 1 present.
+
+                settings.delay = 8640000;   // 1 day
+            }
+
+            if (settings.carousel === 'number' || settings.carousel === 'thumbnail') {
+                $parent.append('<ul class="carousel"></ul>');
+                $controls = $parent.find('.carousel');
+
+                for (i = 0, ii=$slides.length; i < ii; i++) {
+                    var sImg = "";
+                    if (settings.carousel === 'thumbnail') {
+                        var slideImg = $($slides[i]).find('img');
+                        var alternateTextCarousel = "";
+                        if ($(slideImg).length <= 0)
+                        {
+                            //get it from cache.
+                            sImg = $($slideImgCache[i]).html();
+                            alternateTextCarousel = $($slideImgCache[i]).attr('data-alternateText');
+                        }
+                        else
+                        {
+                            sImg = $(slideImg).attr('src');
+                            alternateTextCarousel = $(slideImg).attr('alt');
+                        }
+
+                        // Fix for EDL-10009. Slideshow document summary containing anchor tag sometimes causes carousel in thumbnail mode to not display all of its images.
+                        // The problem is that the alt text alternateTextCarousel copied from an image's "alt" tag (see above) originally comes from the document summary. The doc summary is
+                        // input by hand, and therefore it could contain HTML tags, apostrophes and such. The alt text is HTML encoded in the original images (above) but fetching using .attr() results
+                        // in non-HTML-encoded text. So, we HTML encode here.
+                        var alternateTextCarouselHtmlEncoded = suHtmlEncode(alternateTextCarousel);
+
+	                    $controls.append('<li aria-hidden="true"><a href="#"><img alt="' + alternateTextCarouselHtmlEncoded + '" src=' + sImg + ' /></a></li>');
+                    } else if (settings.carousel === 'number'){
+						$controls.append('<li aria-hidden="true"><a href="#">'+(i+1)+'</a></li>');
+                    }
+                }
+
+				if (settings.carousel === 'thumbnail') {
+					var $thumbImg = $controls.find('img'),
+						thumbnailSize = setThumbnailSize();
+
+					$controls.find('a').css({ height: thumbnailSize, width: Math.round(thumbnailSize*(4/3)) });
+					finalThumbWidth = thumbnailSize;
+					finalThumbHeight = Math.round(thumbnailSize*(4/3)); 
+
+                    if (settings.cropToFit) {
+                        autoCenter($thumbImg, finalThumbWidth, finalThumbHeight, null);
+                    } else {
+                        for (i=0, ii=$thumbImg.length; i<ii; i++) {
+                            var imgWidth = $($thumbImg[i]).width(),
+                                imgHeight = $($thumbImg[i]).height();
+
+                            if (imgWidth/imgHeight > 1) {
+                                var thumbImgWidth = imgWidth/(imgHeight/thumbnailSize),
+                                    thumbLeft = (thumbImgWidth-thumbnailSize)/2;
+
+                                $($thumbImg[i]).css({ height: '100%', width: 'auto' });
+                                //removed for 4:3 ar
+                                //$($thumbImg[i]).css({ marginLeft: -thumbLeft });
+                            } else {
+                                $($thumbImg[i]).css({ width: '100%', height: 'auto' });
+                            }
+                        }
+                    }
+                }
+
+                $controls.children().eq(0).addClass('selected');
+                $controls.find('a').bind('click', function(){
+		            if (checkIfAnimated()) {
+	                    $li = $(this).parent();
+	                    liIndex = $li.parent().children().index($li);
+
+	                    if (current !== liIndex && !$slides.is(':animated')) {
+	                        $controls.children().removeClass('selected');
+
+					        if (settings.transitionEffectCaptions === 'normal') {
+								captions(liIndex);
+					        } else {
+								transitionCaption(liIndex);
+					        }
+							if (settings.numberedSlides === true) {
+								slideCount(liIndex + 1);
+							}
+							if (current < liIndex) {
+								transition(current, liIndex, 'forward');
+							} else {
+								transition(current, liIndex);
+							}
+	                        $li.addClass('selected');
+	                        current = liIndex;
+	                    }
+	                    if (settings.carouselScroll !== false) {
+	                    	scrollControls(liIndex);
+	                    }
+	                    if (settings.playPause === true) {
+							clearInterval(resume);
+							$play.removeClass('selected');
+							$pause.addClass('selected');
+		                }
+	                }
+                    return false;
+                });
+
+                if (settings.carouselScroll) {
+					$parent.append('<div aria-hidden="true" class="ncWrap"><a class="prev" href="#">Previous</a><a class="next" href="#">Next</a><div class="carouselContainer"></div></div>');
+					var $ncWrap = $parent.find('.ncWrap'),
+						$carouselContainer = $ncWrap.find('.carouselContainer'),
+						liHeight = $controls.find('li').outerHeight(true),
+						btnWidth = $('.prev', $ncWrap).outerWidth(true)+10;
+
+					$controls.appendTo($carouselContainer);
+					$parent.prepend('<div class="galleryWrap"></div>'); //needed to keep sliding caption contained
+					$parent.find('.galleryWrap').append($container, $controlBarContainer);
+					$carouselContainer.css({width: conW-(btnWidth*2), height: liHeight+50, marginLeft: btnWidth});
+
+					if ($.browser.msie&&$.browser.version==8.0) { $ncWrap.addClass('ie8'); } //needed for ie8 specific css opacity bug
+
+					var $single = $('.carousel li', $carouselContainer),
+						singleW = $single.outerWidth(true),
+						totalLi = $single.length,
+						totalW = totalLi * singleW,
+						carouselWidth = $carouselContainer.width(),
+						visibleLi = carouselWidth/singleW,
+						fullyVisibleLi = Math.floor(visibleLi),
+						sl = $carouselContainer.scrollLeft(),
+                        scrollAmount = singleW*(fullyVisibleLi-settings.scrollAllMinus),
+                        cancelScroll = false;
+
+                    //resize thumbnails if one is only partially visible
+                    if (fullyVisibleLi !== visibleLi && thumbnailSize) {
+	                    var fullyVisibleLi = Math.round(visibleLi);
+                        var newWidth = carouselWidth;
+                        if (fullyVisibleLi > 0)
+                        {
+                            newWidth = carouselWidth/fullyVisibleLi;
+                        }
+
+                        var newWidthRound = Math.round(newWidth),
+	                    	anchorWidth = $controls.find('a').width(),
+	                    	minusValue = singleW - newWidthRound,
+	                    	widthAdjust = Math.round((newWidth % 1)*visibleLi);
+
+                    	finalThumbWidth = anchorWidth-minusValue;
+                    	finalThumbHeight = Math.round(finalThumbWidth/(4/3));
+
+	                    //resize thumbnails
+	                    $controls.find('a').css({width: finalThumbWidth, height: finalThumbHeight});
+                        if (settings.cropToFit) {
+                            autoCenter($controls.find('img'), finalThumbWidth, finalThumbHeight, null);
+                        }
+
+                        //redefine variables
+						$single = $('.carousel li', $carouselContainer);
+						singleW = $single.outerWidth(true);
+	                    scrollAmount = singleW*(fullyVisibleLi-settings.scrollAllMinus);
+	                    totalW = totalLi * singleW;
+						liHeight = $controls.find('li').outerHeight(true);
+
+	                    //resize container
+                        var carouselWidth = fullyVisibleLi*singleW;
+                        if (carouselWidth == 0)
+                        {
+                            carouselWidth = singleW;
+                        }
+						$carouselContainer.css({width: carouselWidth, height: liHeight+50, marginLeft: btnWidth});
+                    }
+
+					if (liHeight < 24) { liHeight = 24 }
+
+					$ncWrap.css('height', liHeight);
+                    $parent.css('height', $('.galleryWrap', $parent).outerHeight() + $ncWrap.outerHeight(true));
+					$('.carousel', $carouselContainer).css('width', totalW+singleW);
+
+					if (totalW < conW-(btnWidth*2)) {
+						$('.next, .prev', $ncWrap).hide();
+						cancelScroll = true;
+					}
+
+					if ($ncWrap.height() < 36) {
+						$('.prev', $ncWrap).attr('class', 'prevSmall');
+						$('.next', $ncWrap).attr('class', 'nextSmall');
+					}
+
+					$('.next, .nextSmall', $ncWrap).bind('click', function() {
+						sl = $carouselContainer.scrollLeft();
+						if (sl < totalW-(singleW*fullyVisibleLi) && !$carouselContainer.is(':animated')) {
+							$carouselContainer.animate({
+								scrollLeft: '+=' + singleW*(fullyVisibleLi-settings.scrollAllMinus)
+							}, 400);
+						} else if (sl >= totalW-(singleW*fullyVisibleLi) && !$carouselContainer.is(':animated')) {
+							$carouselContainer.animate({
+								scrollLeft: 0
+							}, 400);
+						}
+	                    if (settings.playPause === true) {
+							clearInterval(resume);
+							$play.removeClass('selected');
+							$pause.addClass('selected');
+		                }
+						return false;
+					});
+
+					$('.prev, .prevSmall', $ncWrap).bind('click', function() {
+						sl = $carouselContainer.scrollLeft();
+						if (sl > 0 && !$carouselContainer.is(':animated')) {
+							$carouselContainer.animate({
+								scrollLeft: '-=' + singleW*(fullyVisibleLi-settings.scrollAllMinus)
+							}, 400);
+						} else if (sl <= 0 && !$carouselContainer.is(':animated')) {
+							$carouselContainer.animate({
+								scrollLeft: totalW-(singleW*fullyVisibleLi)
+							}, 400);
+						}
+	                    if (settings.playPause === true) {
+							clearInterval(resume);
+							$play.removeClass('selected');
+							$pause.addClass('selected');
+		                }
+						return false;
+					});
+
+					function scrollControls(index) {
+						if (!cancelScroll) {
+							$carouselContainer.animate({
+								scrollLeft: singleW*(index-1)
+							}, 400);
+						}
+					}
+                }
+            }
+
+            if (settings.prevNext === true) {
+				addControlBarContainer();
+                //using div elements inside anchor to fix quirks mode issue
+                $container.after('<div class="ed-slider-prevNext">' +
+                                '<a class="ed-slider-prev"><div><span>Slide Show Content Previous Slide</span></div></a>'+
+                                '<a class="ed-slider-next"><div><span>Slide Show Content Next Slide</span></div></a></div>');
+
+                $prevNext = $parent.find('.ed-slider-prevNext');
+                $next = $prevNext.find('.ed-slider-next').bind('click', function() {
+	                nextSlide();
+                    this.blur();
+					clearTimeout(mousePauseHide);
+                    if (settings.playPause === true) {
+						clearInterval(resume);
+						$play.removeClass('selected');
+						$pause.addClass('selected');
+	                }
+	                return false;
+                }).find('> div').bind('mouseover', function() {
+                	$(this).addClass('hover');
+                }).bind('mouseout', function() {
+                	$(this).removeClass('hover');
+                });
+                $prev = $prevNext.find('.ed-slider-prev').bind('click', function() {
+	                prevSlide();
+                    this.blur();
+					clearTimeout(mousePauseHide);
+                    if (settings.playPause === true) {
+						clearInterval(resume);
+						$play.removeClass('selected');
+						$pause.addClass('selected');
+	                }
+	                return false;
+                }).find('> div').bind('mouseover', function() {
+                	$(this).addClass('hover');
+                }).bind('mouseout', function() {
+                	$(this).removeClass('hover');
+                });
+            }
+
+			if (settings.playPause === true) {
+				addControlBarContainer();
+                $controlBar.prepend('<div class="playPause"><a class="ed-slider-play selected" href="#">Play</a><a class="ed-slider-pause" href="#">Pause</a></div>');
+                $playPause = $parent.find('.playPause');
+                $play = $playPause.find('.ed-slider-play').bind('click', function() {
+					if ($play.hasClass('selected')) {
+						return false;
+					} else {
+						$pause.removeClass('selected');
+						$(this).addClass('selected');
+						nextSlide();
+
+                        setSlideShowInterval(settings.delay);
+
+                        this.blur();
+                        return false;
+					}
+                });
+                $pause = $playPause.find('.ed-slider-pause').bind('click', function() {
+					if ($pause.hasClass('selected')) {
+						return false;
+					} else {
+						$play.removeClass('selected');
+						$(this).addClass('selected');
+						clearInterval(resume);
+                        this.blur();
+                        return false;
+					}
+				});
+            }
+
+			if (settings.showFullScreen === true) {
+				addControlBarContainer();
+                $controlBar.prepend('<div class="fullscreen"><a class="ed-slider-fullscreen" href="#" title="Fullscreen">Fullscreen</a></div>');
+				$controlBarContainer.addClass('hasFullscreen');
+				$fullScreen = $parent.find('.ed-slider-fullscreen').bind('click', function() {
+					if (settings.folderEntid !== '')	{
+						//the entid is passed in for security purposes; don't want javascript injection attacks.
+						submitEvent('displayFolder', "folderEntid=" + settings.folderEntid);
+					}
+                    this.blur();
+                });
+			}
+            $controlBarContainer.addClass('');//for some reason, adding an empty class fixes some IE display bugs...
+
+			if (settings.auto === true) {
+				setSlideShowInterval(settings.delay);
+
+                if (settings.hoverPauseSlideShow === true) {
+	                $(settings.hoverSelect).hoverPauseSlideShow();
+	                if (settings.carousel === 'number' || settings.carousel === 'thumbnail') {
+	                    $controls.hoverPauseSlideShow();
+	                }
+	                if (settings.prevNext === true) {
+	                    $prevNext.hoverPauseSlideShow();
+	                }
+                }
+            }
+			captions(0);
+
+			if (settings.showNavControls === 'never') {
+				$controlBar.hide();
+				$prevNext.hide();
+			}
+
+			if (settings.showNavControls === 'never' && settings.captions === 'hover') {
+				hoverShow([$captionHolder]);
+			} else if (settings.captions === 'hover' && settings.showNavControls === 'hover') {
+				hoverShow([$controlBarContainer, $controlBar, $prevNext, $captionHolder]);
+			} else if (settings.captions !== 'hover' && settings.showNavControls === 'hover') {
+				hoverShow([$controlBar, $prevNext]);
+			} else if (settings.showNavControls === 'always' && settings.captions === 'hover') {
+				hoverShow([$prevNext, $captionHolder]);
+			} else if (settings.showNavControls === 'always') {
+				hoverShow([$prevNext]);
+			}
+
+			if (settings.numberedSlides === true) {
+				slideCount(1);
+			}
+			setControlBarWidth();
+		}
+        initKeyboardAccessibility();
+        $('#ed-slider-gallery-loading-' + settings.elementIdSuffix).hide();
+        $(this).show();
+    };
+})(jQuery);

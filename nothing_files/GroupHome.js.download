@@ -1,0 +1,2857 @@
+var ghHighlighterHideOnMouseMoveRequested = false;
+var ghChromeResizePending = false;
+var ghCustomerContentScrollPending = false;
+var ghCustomerContentDivFullyInited = false;
+var ghCornerzInfoArray = new Array();
+var ghBoxMouseOverContainerOriginalPositionStyle = new Array();
+var ghBoxElemSpecsWithPermissionsForMouseOver = "";
+var ghAjaxResponse;
+var ghUseAjaxSimpleResponse;
+var ghElemsWithinTinyEditors;
+var ghOnLoadFinished = false;
+var ghGaveTimeoutWarning = false;
+var ghHeaderImagePresentAndEditable = false;
+
+var GH_CUSTOMER_CONTENT_WRAPPER_ID = "ghCustomerContentWrapperDiv";
+var GH_TOOLBAR_AREA_DIV_ID = "ghToolbarAreaDiv";
+var GH_MENU_BAR_BOX_HIGHLIGHT_CLASS = "menuBarBoxHighlight";
+var GH_MENU_BAR_ITEM_BOX_HIGHLIGHT_CLASS = "menuBarItemBoxHighlight";
+var ghSlideShowOverlayQuery = null;
+var ghTranslationMonitorIntervalMs = 1000;
+var ghIsTriggeredByTranslationMonitor = false;
+
+
+/* Whenever a translation is completed, call ghOnloadPinnedDocsHandler() to get rid of scrollbars that
+     may otherwise appear for pinned documents due to a different amount of text */
+
+function ghMonitorTranslation()
+{
+    var monitorValue = $("#translateMonitor").html();
+
+    if (monitorValue != ghSavedTranslationMonitorValue)
+    {
+        ghSavedTranslationMonitorValue = monitorValue;
+        ghOnloadPinnedDocsHandler();
+        ghIsTriggeredByTranslationMonitor = true;
+        ghAdjustHeightOfCertainZones(false);
+        ghReallyAdjustContentDivHeightAndWidth(true);
+        ghIsTriggeredByTranslationMonitor = false;
+    }
+
+    // Monitor again, in case the Google Banner controls are used to translate again
+    setTimeout(function() { ghMonitorTranslation() }, ghTranslationMonitorIntervalMs);
+}
+
+
+// The following 3 functions were moved here from GroupHome.jsp to make debugging easier.  No statements were changed
+// during this move.
+
+
+function ghHideOrShowBoxContents(pContentsBoxId, pHideOrShow, pShowBoxContentsImagePath, pHideBoxContentsImagePath,
+                                 pIsHeaderIconShownAndExpandOnHoverSelected, pHasARoundedCorner, pBoxElementDivId,
+                                 pZoneFrameDivId, pBoxListHeight, pShowOrHideImageElemSuffix,
+                                 pShowBoxContentsTooltip, pHideBoxContentsTooltip)
+{
+  var contentsDiv = document.getElementById(pContentsBoxId);
+  var hideOrShowImg = document.getElementById(pContentsBoxId + pShowOrHideImageElemSuffix);
+
+  var boxElementDivQuery = $('#' + pBoxElementDivId);
+
+  if (pHideOrShow == "hide")
+  {
+      // Next line solves TT #4627
+      boxElementDivQuery.find('div.edlBoxTitle').css('margin-bottom', '0px');
+
+      // Following code block solves TT #4855
+      if (isMSIE)
+      {
+          boxElementDivQuery.css('position', '');
+      }
+
+      contentsDiv.style.display = "none";
+      hideOrShowImg.setAttribute("src", pShowBoxContentsImagePath);
+      hideOrShowImg.setAttribute("title", pShowBoxContentsTooltip);
+
+      hideOrShowImg.onclick = function() {
+          ghHideOrShowBoxContents(pContentsBoxId, 'show', pShowBoxContentsImagePath, pHideBoxContentsImagePath,
+                  pIsHeaderIconShownAndExpandOnHoverSelected, pHasARoundedCorner, pBoxElementDivId,
+                  pZoneFrameDivId, pBoxListHeight, pShowOrHideImageElemSuffix,
+                  pShowBoxContentsTooltip, pHideBoxContentsTooltip);
+      };
+
+      if (pIsHeaderIconShownAndExpandOnHoverSelected)
+      {
+          hideOrShowImg.style.display = "none";
+      }
+      else
+      {
+          hideOrShowImg.style.display = "inline";
+      }
+
+  }
+  else
+  {
+      // Following code block solves TT #4627
+      if (pBoxListHeight == 0)
+      {
+          boxElementDivQuery.find('div.edlBoxTitle').css('margin-bottom', '5px');
+      }
+
+      // Following code block solves TT #4855
+      if (isMSIE)
+      {
+          boxElementDivQuery.css('position', 'static');
+      }
+
+      contentsDiv.style.display = "block";   // inline added extra vertical spacing near top and bottom
+      hideOrShowImg.setAttribute("src", pHideBoxContentsImagePath);
+      hideOrShowImg.setAttribute("title", pHideBoxContentsTooltip);
+
+      hideOrShowImg.onclick = function() {
+          ghHideOrShowBoxContents(pContentsBoxId, 'hide', pShowBoxContentsImagePath, pHideBoxContentsImagePath,
+                  pIsHeaderIconShownAndExpandOnHoverSelected, pHasARoundedCorner, pBoxElementDivId,
+                  pZoneFrameDivId, pBoxListHeight, pShowOrHideImageElemSuffix,
+                  pShowBoxContentsTooltip, pHideBoxContentsTooltip);
+      };
+
+      hideOrShowImg.style.display = "inline";
+  }
+
+    // This block fixes TT #4470
+
+    // To fix EDL-10509, commented out "if" condition in block below.
+
+    // if (ghIsFirefox || ghIsSafari)
+    // {
+        $('#' + pZoneFrameDivId).css("height","auto");
+    // }
+
+    // To fix EDL-10509, added following function call.
+    ghAdjustHeightOfCertainZones(false);
+
+    if (isMSIE)
+    {
+	    if (pHasARoundedCorner)
+	    {
+	        boxElementDivQuery.css("height","auto");
+	        // ghRoundCornersPrepBoxForIe(pBoxElementDivId);
+	    }
+
+        // Corner rounding is intentionally done later for IE 7 or 8 when in Edit mode
+        if (!(ghIsMSIE7or8 && ghIsSiteDesignerRunning))
+        {
+            ghRoundCorners();
+        }
+
+	    // IE makes menu content disappear when this function is run; counter it
+	    ghTouchMenuBarForIE();
+    }
+
+    ghRequestBoxExpandCollapseTracking(pContentsBoxId, pHideOrShow);
+}
+
+
+function ghRequestBoxExpandCollapseTracking(pContentsBoxId, pHideOrShow)
+{
+
+    var parameters = "contentsBoxId=" + pContentsBoxId + "&hideOrShow=" + pHideOrShow;
+
+    $.ajax({
+        type: "POST",
+        url: "/BoxCollapseExpand.page",
+        async: false,
+        data: parameters,
+        complete: function(xmlRequestObject, successString){
+            ghReceiveBoxExpandCollapseTracking(xmlRequestObject, successString);
+        }
+    });
+
+}
+
+
+function ghReceiveBoxExpandCollapseTracking(ajaxReq, successString)
+{
+    // do nothing
+}
+
+
+function ghDoProcessingAfterBodyLoaded(
+
+        showingWebDocument,
+        displayDesignSidebar,
+        isDesignBordersEnabled,
+        isManageDesignBackwardCompatibilityMode,
+        useNewMenuBar,
+        folderGroupTypeString,
+        renderSiteDesignerWithNewUI,
+        suppressHeaderControls,
+        pageIsCentered,
+        headerImageWidth,
+        isHeaderReLoginNeeded,
+        hasHeaderImage
+        )
+
+{
+    if (!showingWebDocument)
+    {
+        if (ghEdlineMenuBoxLoadFn != null)
+        {
+            ghEdlineMenuBoxLoadFn();
+        }
+
+        ghLoadCustomerMenus(folderGroupTypeString, displayDesignSidebar, isDesignBordersEnabled);
+
+        if (!isManageDesignBackwardCompatibilityMode)
+        {
+            ghTouchMenuBarForIE();
+        }
+
+    }
+
+    if ( (renderSiteDesignerWithNewUI && displayDesignSidebar ) || useNewMenuBar )
+    {
+        ghAdjustContentDivHeightAndWidth(false);
+    }
+
+    if (displayDesignSidebar)
+    {
+        if (isMSIE)
+        {
+            dsAdjustResourceTreeHeightIfNecessary();
+        }
+
+    }
+
+    if (!showingWebDocument)
+    {
+        ghAdjustRootZoneAndHeaderWidths();
+
+        // Opera behaves differently for column/zone height; it doesn't like the style rule height: 100%.
+        if (ghIsOpera)
+        {
+            var mainSectionCssHeight = document.getElementById('edlThemeMainsectionZoneFrame').offsetHeight + "px";
+            ghSetHeightId('edlThemeControlZoneFrame', mainSectionCssHeight);
+            ghSetHeightId('edlThemeMainZoneFrame', mainSectionCssHeight);
+            ghSetHeightId('edlThemeSupportZoneFrame', mainSectionCssHeight);
+        }
+
+    }
+
+    if (!suppressHeaderControls)
+    {
+        ghSetWidthId('edlHeaderControlsPane', '100%');
+        ghSetWidthId('edlNavBreadcrumbPane', '100%');
+        ghSetWidthId('edlHeaderControlsLoginPane', '100%');
+    }
+
+    ghSetWidthId('edlThemedHeaderGraphicArea', '100%');
+
+    // If header image is STILL wider than header bar above it, adjust the header bar to match the image width.
+    if ( !showingWebDocument && hasHeaderImage && !suppressHeaderControls )
+    {
+        var headerControlsPaneElem = document.getElementById('edlHeaderControlsPane');
+
+        /* S Swett: The following null/undefined check was added to take care of an immediate problem, but some bigger
+             change must have been made to no longer write the "edlHeaderControlsPane" element.  Header area alignment
+             will likely be hosed until that is researched and adjusted. */
+
+        if (  (headerControlsPaneElem != null) && (headerControlsPaneElem != undefined))
+        {
+            var headerControlsPaneWidth = headerControlsPaneElem.offsetWidth;
+
+            if (headerImageWidth > headerControlsPaneWidth)
+            {
+                var newCssWidth = headerImageWidth + "px";
+                ghSetWidthId('edlHeaderArea',              newCssWidth);
+                ghSetWidthId('edlHeaderControlsPane',      newCssWidth);
+                ghSetWidthId('edlNavBreadcrumbPane',       newCssWidth);
+                ghSetWidthId('ed-navBarContainer',         newCssWidth);
+                ghSetWidthId('edlHeaderControlsLoginPane', newCssWidth);
+                ghSetWidthId('edlThemedHeaderGraphicArea', newCssWidth);
+            }
+        }
+    }
+
+    if ( (renderSiteDesignerWithNewUI && displayDesignSidebar ) || useNewMenuBar )
+    {
+        ghSlideToolbarIcons(pageIsCentered);
+    }
+
+    ghOverrideIFrameSize();
+
+    ghPotentiallyWidenRssDivs();
+
+    if (displayDesignSidebar)
+    {
+        /* Call the "ghDisableMouseClickingInPreviewArea" function if IE.
+           This needs to be done this way and at this timing so that it is the very last thing run
+           (after other  functions dynamically added to "pageBody.onload" elsewhere). */
+
+        if (isMSIE)
+        {
+           ghDisableMouseClickingInPreviewArea();
+        }
+    }
+
+    if (isHeaderReLoginNeeded)
+    {
+        hcLogin();
+    }
+
+}
+
+
+function ghPrepNavMenu(pRootMenuWrapperDivId, pIsVerticalMenu, pIconSetPath)
+{
+    var rootMenuWrapperDivQuery = $("#" + pRootMenuWrapperDivId);
+
+    var zoneFrameWidth = rootMenuWrapperDivQuery.closest(".zoneFrame").width();
+
+    if (!ghIsSiteDesignerRunning)
+    {
+        rootMenuWrapperDivQuery.buildMenu(
+        {
+          /* template:"menuVoices.html", */   /* probably don't need this if not doing ajax */
+          /* menuWidth:zoneFrameWidth, */
+          menuWidth:250,
+          rootWhiteSpace:"normal",   /* the default is nowrap, which means I'd need to truncate long titles somehow if I used that */
+          openOnRight:pIsVerticalMenu,
+          menuSelector: "." + pRootMenuWrapperDivId + "DropDownMenuContainer",   /* This is used to tag the drop-down menus that get built dynamically */
+          iconPath:pIconSetPath,   /* this is for icons that appear to the left of item titles */
+          hasImages:true,
+          fadeInTime:200,
+          fadeOutTime:200,
+          adjustLeft:0,
+          adjustTop:0,
+          opacity:.98,
+          openOnClick:false,
+          minZindex:200,
+          shadow:false,
+          hoverIntent:0,
+          submenuHoverIntent:0,
+          onBeforeShowContainerMenuReturningWhetherMoved: ghOnBeforeShowNavContainerMenuReturningWhetherMoved,
+          closeOnMouseOut:true   /* Can be set to false for troubleshooting with Web Developer */
+        });
+    }
+
+
+}
+
+
+function ghOnBeforeShowNavContainerMenuReturningWhetherMoved(pTriggeringElemQuery, pMbMenuOptions)
+{
+    var wasMoved = false;
+
+    var windowHeight = $(window).height();
+    var triggeringElemTopEdge = pTriggeringElemQuery.offset().top;
+    var menuContainer = pTriggeringElemQuery.menuContainer;
+    var menuContainerHeight = menuContainer.outerHeight(false);
+    var isSubMenu = pTriggeringElemQuery.hasClass("line");
+
+    // Reset scrollbars to make sure no carry over from previous display
+    menuContainer.css( { overflow:"auto" } );
+
+
+    // Menu opens to the right of the triggering element:
+    if (pMbMenuOptions.openOnRight || isSubMenu)
+    {
+        var customerContentTopEdge = $("#" + GH_CUSTOMER_CONTENT_WRAPPER_ID).offset().top;
+        var customerContentAvailableHeight = windowHeight - customerContentTopEdge;
+        var menuContainerParent = menuContainer.parent();
+
+        if (menuContainerHeight > customerContentAvailableHeight)
+        {
+            var current1MenuParentTop = parseInt(menuContainerParent.css("top")) || 0;
+            var new1MenuParentTop = current1MenuParentTop - triggeringElemTopEdge + customerContentTopEdge;
+            menuContainerParent.css("top", new1MenuParentTop + "px");
+            menuContainer.css( { maxHeight: (customerContentAvailableHeight - 20) + "px", overflowX:"hidden", overflowY:"scroll" } );
+            wasMoved = true;
+        }
+        else
+        {
+            var bottomOfMenuContainer = triggeringElemTopEdge + menuContainerHeight;
+
+            if (bottomOfMenuContainer > windowHeight)
+            {
+                var bottomDiff = bottomOfMenuContainer - windowHeight;
+                var current2MenuParentTop = parseInt(menuContainerParent.css("top")) || 0;
+                var new2MenuParentTop = current2MenuParentTop - bottomDiff - 20;
+                menuContainerParent.css("top", new2MenuParentTop + "px");
+                wasMoved = true;
+            }
+
+            var current3MenuParentTop = menuContainerParent.offset().top;
+
+            if (current3MenuParentTop < customerContentTopEdge)
+            {
+                var topDiff = customerContentTopEdge - current3MenuParentTop;
+                var new3MenuParentTop = current3MenuParentTop + topDiff;
+                menuContainerParent.css("top", new3MenuParentTop + "px");
+                wasMoved = true;
+            }
+        }
+    }
+
+    // Menu opens below the triggering element:
+    else
+    {
+        var triggeringElemBottomEdge = triggeringElemTopEdge + pTriggeringElemQuery.outerHeight(false);
+        var maxMenuHeight = windowHeight - triggeringElemBottomEdge - 10;
+
+        if (menuContainerHeight > maxMenuHeight)
+        {
+            menuContainer.css( { maxHeight: maxMenuHeight + "px", overflowX:"hidden", overflowY:"scroll" } );
+        }
+    }
+
+    return wasMoved;
+}
+
+
+function ghSetGradientsForNavBoxes()
+{
+    for (var elementSpec in ghNavBoxes)
+    {
+        var navBoxInfo = ghNavBoxes[elementSpec];
+        ghSetGradientForNavBox(navBoxInfo);
+    }
+}
+
+
+function ghSetGradientForNavBox(pNavBoxInfo)
+{
+    var targetDiv = document.getElementById(pNavBoxInfo.divIdForGradient);
+
+    if (targetDiv == null)
+    {
+        return;
+    }
+
+    var startColor = pNavBoxInfo.gradientStartColor.replace("#", "");
+    var endColor = pNavBoxInfo.gradientEndColor.replace("#", "");
+
+    iuSetDynamicGradientImageBackground(targetDiv, pNavBoxInfo.isVerticalGradient, startColor, endColor);
+}
+
+
+function ghInitPinnedDocsLoadEventHandler()
+{
+    // Handles all browsers except IE
+
+    for (var key in ghPinnedDocsToLoad)
+    {
+        var ghPinnedDocInfo = ghPinnedDocsToLoad[key];
+
+        var iframeQuery = $("#" + ghPinnedDocInfo.iFrameId);
+
+        iframeQuery.load(function() {
+            // console.log("iframe loaded for pinned doc " + this.id);
+            var idParts = this.id.split("_");
+            dbOnloadDoc(idParts[2]);
+        });
+
+        if (ghPinnedDocInfo.hostZoneWidthStr == "*" && !iframeQuery.length)
+        {
+            var widenerQuery = $("#dbWidener_" + ghPinnedDocInfo.entidFromActualDoc);
+
+            if (widenerQuery.length)
+            {
+                widenerQuery.css("width",
+                        dbGetDynamicHostZoneFrameWidth(ghPinnedDocInfo.hostZoneFrameId,
+                                ghPinnedDocInfo.sumOfAllHorizontalPaddingMarginBorder + ghPinnedDocInfo.highlightBorderPadding) + "px");
+            }
+        }
+    }
+}
+
+// NOTE: The My Edline Menu and some iframes haven't yet rendered by this point
+function ghOnDocumentReady(pUseNewMenuBar, pDisplayDesignSidebar)
+{
+    hdrFixNavAccessibility();
+    ghOverrideOverflowForMouseOverDivContainers();
+    ghSetGradientsForNavBoxes();
+
+    if (!isMSIE)
+    {
+        ghInitPinnedDocsLoadEventHandler();
+    }
+
+    if (pUseNewMenuBar && !pDisplayDesignSidebar)
+    {
+        var menuBarContainerQuery = $("#ed-menuBarContainer");
+        var toolbarAreaQuery = $("#" + GH_TOOLBAR_AREA_DIV_ID);
+        var mbContainerHeight = menuBarContainerQuery.outerHeight(false);
+
+        // TODO sms 3/28/13 - is there an alternative to the following problem?
+
+        // PROBLEM: event handlers get dropped when menuBarContainerQuery.remove() is run after grabbing the html.
+        // Unfortunately, we'll probably have to live with it until the append can work better or until we take a
+        // different approach to positioning/displaying the browser-wide silver menu bar at the top of the page.
+
+        var mbcHtml = menuBarContainerQuery.html();
+        menuBarContainerQuery.remove();
+
+        // In order to be compatible with IE 8 in standards mode, HAD TO use a String vs. a jQuery reference as the
+        // parameter to the append method below.  This also had some visual benefits to other browsers in standards
+        // mode.
+        toolbarAreaQuery.append(mbcHtml);
+
+        menuBarContainerQuery.css( { display:"inline", visibility:"visible" });
+        ghSetHeightQuery($("#" + GH_TOOLBAR_AREA_DIV_ID), mbContainerHeight + "px");
+    }
+
+    // Event handler init is done later for IE to show initial page more quickly
+    if (!isMSIE)
+    {
+        ghInitEventHandlers();
+    }
+}
+
+
+// This function will run very frequently, so it must be optimized for performance.  Also, this function had to be
+// defined here instead of DesignSidebar.js because of external Javascript file load timing issues in IE.
+function ghHandleMouseOverBody(pEvent)
+{
+    // Apparently, IE calls this function immediately while the page is being loaded.  Bail in that case because
+    // the following variable coming from DesignSidebar.js has not yet been established.
+    if (typeof dsMouseOverGroupInfoBox == "undefined")
+    {
+        return;
+    }
+
+    // console.log("in dsHandleBodyMouseOver; dsMouseOverGroupInfoBox = " + dsMouseOverGroupInfoBox);
+
+    if (!ghRenderSiteDesignerWithNewUI || !ghOnLoadFinished || ghDragDropInProgress ||
+        dsTinyInlineEditingInProgress || dsTextAreaInlineEditingInProgress)
+    {
+        return;
+    }
+
+    if (dsMouseOverGroupInfoBox)
+    {
+        ghHandleMouseOverGroupInfoBox(pEvent);
+    }
+    else if (ghHeaderImagePresentAndEditable)
+    {
+        ghHandleMousePotentiallyOverHeaderImage(pEvent);
+    }
+}
+
+function ghHandleMouseOverGroupInfoBox(pEvent)
+{
+    $("#hpdbImage")
+            .mouseover(function() {
+                if($("#hpdbImageReplacementDiv").css('display') != "block")
+    {
+        ghShowImageReplacementDiv("hpdbImage", "hpdbImageReplacementDiv");
+    }
+
+            });
+}
+
+function ghHandleMousePotentiallyOverHeaderImage(pEvent)
+{
+    $("#edlHeaderImage")
+            .mouseover(function() {
+                if($("#hdrImageReplacementDiv").css('display') != "block")
+    {
+                    ghShowImageReplacementDiv("edlHeaderImage", "hdrImageReplacementDiv");
+    }
+
+            });
+    }
+
+//
+//function ghHandleMouseOverGroupInfoBox(pEvent)
+//{
+//    if (dsGroupInfoImgCoordinates == null)
+//    {
+//        dsGroupInfoImgCoordinates = dsddGetCoordinatesForElement("hpdbImage");
+//    }
+//
+//    if (pEvent.pageX)
+//    {
+//        var mouseX = pEvent.pageX;
+//        var mouseY = pEvent.pageY;
+//    }
+//    else
+//    {
+//        mouseX = pEvent.clientX;
+//        mouseY = pEvent.clientY;
+//    }
+//
+//    if (mouseX >= dsGroupInfoImgCoordinates.ULx &&
+//        mouseX <= dsGroupInfoImgCoordinates.LRx &&
+//        mouseY >= dsGroupInfoImgCoordinates.ULy &&
+//        mouseY <= dsGroupInfoImgCoordinates.LRy
+//            )
+//    {
+//         if($("#hdrImageReplacementDiv").css('display') != undefined)
+//         {
+//             ghHideImageReplacementDiv("hdrImageReplacementDiv");            //Hide Header Image ReplacementDiv; if present
+//         }
+//        ghShowImageReplacementDiv("hpdbImage", "hpdbImageReplacementDiv");
+//    }
+//
+//}
+//
+//
+//function ghHandleMousePotentiallyOverHeaderImage(pEvent)
+//{
+//    if (dsHeaderImgCoordinates == null)
+//    {
+//        dsHeaderImgCoordinates = dsddGetCoordinatesForElement("edlHeaderImage");
+//    }
+//
+//    if (pEvent.pageX)
+//    {
+//        var mouseX = pEvent.pageX;
+//        var mouseY = pEvent.pageY;
+//    }
+//    else
+//    {
+//        mouseX = pEvent.clientX;
+//        mouseY = pEvent.clientY;
+//    }
+//
+//    /*
+//    console.log("mouse coords are (" +
+//                mouseX + "," +
+//                mouseY + ")" +
+//                "  header img coords: UL (" +
+//                    dsHeaderImgCoordinates.ULx + "," +
+//                    dsHeaderImgCoordinates.ULy + ") and LR (" +
+//                    dsHeaderImgCoordinates.LRx + "," +
+//                    dsHeaderImgCoordinates.LRy + ")"
+//            );
+//    */
+//
+//    if (mouseX >= dsHeaderImgCoordinates.ULx &&
+//        mouseX <= dsHeaderImgCoordinates.LRx &&
+//        mouseY >= dsHeaderImgCoordinates.ULy &&
+//        mouseY <= dsHeaderImgCoordinates.LRy
+//     )
+//    {
+//        ghShowImageReplacementDiv("edlHeaderImage", "hdrImageReplacementDiv");
+//    }
+//
+//}
+
+
+function ghShowImageReplacementDiv(pImageId, pImageReplacementDivId)
+{
+    var imageQuery = $("#" + pImageId);
+    var imageReplacementDivQuery = $("#" + pImageReplacementDivId);
+
+    if (imageReplacementDivQuery.css("display") == "block")
+    {
+        return;
+    }
+
+    var imageOffset = imageQuery.offset();
+
+    var imageOuterWidth = imageQuery.outerWidth(false);
+    var imageTopCenterX = imageOffset.left + (imageOuterWidth / 2);
+    var imageTopCenterY = imageOffset.top;
+
+    var imgReplacementDivOuterWidth = $("#" + pImageReplacementDivId).outerWidth(false);
+
+    var contentQuery = $("#" + GH_CUSTOMER_CONTENT_WRAPPER_ID);
+    var customerContentTopPadding = parseInt(contentQuery.css("paddingTop"),10) || 0;
+    var topAdj = customerContentTopPadding == 0 ? GH_EDIT_TOOLBAR_HEIGHT : 0;
+
+    $("#" + pImageReplacementDivId).css( {
+        top: (imageTopCenterY - topAdj + 2 + contentQuery.scrollTop() ) + "px",
+        left: (imageTopCenterX - (imgReplacementDivOuterWidth / 2) + contentQuery.scrollLeft() ) + "px",
+        zIndex: 2,
+        display: "block"
+    } );
+}
+
+
+function ghHideImageReplacementDiv(pImageReplacementDivId)
+{
+	var divQuery = $("#" + pImageReplacementDivId);
+    //divQuery.css( { display: "none" } );
+	divQuery.hide();
+}
+
+
+function ghAdjustContentDivHeightAndWidth(pIsLastTimeCalled)
+{
+    if ( (ghRenderSiteDesignerWithNewUI && ghIsSiteDesignerRunning) || ghUseNewMenuBar)
+    {
+        if (ghIsChrome)
+        {
+            if (!ghChromeResizePending)
+            {
+                ghChromeResizePending = true;
+                setTimeout(function() { ghDoChromeResize(pIsLastTimeCalled); } , 20);
+            }
+        }
+        else
+        {
+            ghReallyAdjustContentDivHeightAndWidth(pIsLastTimeCalled);
+        }
+    }
+}
+
+
+function ghPotentiallyGiveBoxPermissionForMouseOver(pElemSpec, pEditScript)
+{
+    if (pEditScript.length > 0)
+    {
+        if (ghBoxElemSpecsWithPermissionsForMouseOver.length > 0)
+        {
+            ghBoxElemSpecsWithPermissionsForMouseOver += ",";
+        }
+
+        ghBoxElemSpecsWithPermissionsForMouseOver += pElemSpec;
+    }
+}
+
+function adjustNavBarWidthInDesignerMode(outerMostTableQuery, pPageIsCentered)
+{
+    var newMenuBarWidth = outerMostTableQuery.outerWidth(false);
+
+    var edNavBarQuery = $("#ed-navBar");
+    ghSetWidthQuery(edNavBarQuery,(newMenuBarWidth < 700 ? 700 : newMenuBarWidth) + "px");
+
+    var wind = $(window).width();
+
+    if (newMenuBarWidth > wind)
+    {
+    	ghSetWidthQuery(edNavBarQuery,(wind - 100) + "px");
+    }
+
+    if (!pPageIsCentered)
+    {
+        edNavBarQuery.css("margin", "0");
+        $("#ed-navBarContainer").css("text-align", "left");
+    }
+}
+
+
+// pTimesCalledAgain is optional and normally not specified on a call to this function
+function ghSlideToolbarIcons(pPageIsCentered, pTimesCalledAgain)
+{
+    // TODO sms 10/7/10: Simplify this some time.  If some containers/wrappers were added to the content within
+    // div#ghToolbarAreaDiv in GroupHome.jsp, the "if (ghIsSiteDesignerRunning)" block below could probably be
+    // made almost as simple as the "else" block that follows it.  Use better HTML/CSS and less Javascript.
+
+    var outerMostTableQuery = $("#ghOuterMostTable");
+    
+    if (ghIsSiteDesignerRunning)
+    {
+        //EDL-7236; Navbar Width Alignment
+        adjustNavBarWidthInDesignerMode(outerMostTableQuery, pPageIsCentered);
+        //END EDL-7236 Fix
+
+        var inlineEditingInProgress = dsTinyInlineEditingInProgress || dsTextAreaInlineEditingInProgress;
+
+        var toolbarDoneButtonQuery = null;
+
+        var wd = outerMostTableQuery.outerWidth(false);
+
+        if ($("#" + GH_CUSTOMER_CONTENT_WRAPPER_ID).scrollLeft() == 0 && $(window).width() > wd)
+        {
+            var outerMostTableLeft = Math.round(outerMostTableQuery.offset().left);
+            var targetRightEdge = outerMostTableLeft + wd - 10;
+            $("#tbLeftEdgeDiv").css("margin-left", outerMostTableLeft + "px");
+
+            if (dsTinyInlineEditingInProgress)
+            {
+                $("#tbLeftEdgeTinyDiv").css("margin-left", outerMostTableLeft + "px");
+            }
+
+            if (dsTextAreaInlineEditingInProgress)
+            {
+                $("#tbLeftEdgeTextAreaDiv").css("margin-left", outerMostTableLeft + "px");
+            }
+        }
+        else
+        {
+            targetRightEdge = $(window).width() - 10;
+            $("#tbLeftEdgeDiv").css("margin-left", "0");
+
+            if (dsTinyInlineEditingInProgress)
+            {
+                $("#tbLeftEdgeTinyDiv").css("margin-left", "0");
+            }
+
+            if (dsTextAreaInlineEditingInProgress)
+            {
+                $("#tbLeftEdgeTextAreaDiv").css("margin-left", "0");
+            }
+
+            if (!inlineEditingInProgress)
+            {
+                toolbarDoneButtonQuery = $("#" + dsToolbarDoneButtonId);
+                toolbarDoneButtonQuery.css("margin-left", "0");
+            }
+        }
+
+        if (inlineEditingInProgress)
+        {
+            var targetRightMargin = $(window).width() - targetRightEdge;
+
+            if (dsTinyInlineEditingInProgress)
+            {
+                $("#tbRightEdgeTinyDiv").css("margin-right", targetRightMargin + "px");
+            }
+
+            if (dsTextAreaInlineEditingInProgress)
+            {
+                $("#tbRightEdgeTextAreaDiv").css("margin-right", targetRightMargin + "px");
+            }
+        }
+        else
+        {
+            var siteDesignerCtrlsQry = $("#ghSiteDesignerControls");
+            siteDesignerCtrlsQry.css("display", "inline");
+
+
+            var helpIconQueryOuterWidthExcludingMargin = 0;
+            var helpIconQueryOffsetLeft = 0;
+            var helpIconQuery = $("#tbHelpIcon");
+            if (helpIconQuery.length === 1)
+            {
+                helpIconQueryOuterWidthExcludingMargin = helpIconQuery.outerWidth(false);
+                helpIconQueryOffsetLeft = Math.round(helpIconQuery.offset().left);
+            }
+
+            if (toolbarDoneButtonQuery == null)
+            {
+                toolbarDoneButtonQuery = $("#" + dsToolbarDoneButtonId);
+            }
+
+            // If Safari or Chrome hasn't loaded these images yet, try again momentarily TT 6399
+            if ( ( ghIsSafari || ghIsChrome ) && ( helpIconQueryOuterWidthExcludingMargin == 0 || toolbarDoneButtonQuery.outerWidth(false) == 0 ) )
+            {
+                setTimeout(function() { ghSlideToolbarIcons(pPageIsCentered); }, 100);
+                return;
+            }
+
+            var doneLeftMargin = targetRightEdge - helpIconQueryOffsetLeft - helpIconQueryOuterWidthExcludingMargin - toolbarDoneButtonQuery.outerWidth(false) ;
+
+            // Check if historyIcon is Present; reset left margin (i.e calculated from the HISTORY ICON) else leave left margin unchanged (i.e based on HELP ICON)
+            var historyIconQuery = $("#tbHistoryIcon");
+            if (historyIconQuery.length)       // If historyIcon is Present;
+            {
+                 doneLeftMargin =    targetRightEdge - Math.round( historyIconQuery.offset().left ) - historyIconQuery.outerWidth(false) - toolbarDoneButtonQuery.outerWidth(false) ;
+            }
+
+            if (doneLeftMargin >= 0)
+            {
+                toolbarDoneButtonQuery.css("margin-left", doneLeftMargin + "px");
+            }
+
+            toolbarDoneButtonQuery.show();
+
+            /* The following block is a hack meant to deal with Chrome's inability to handle the browser resize
+                event when going from a fully maximized window to a "restore down" state or vice versa (at least on
+                Windows 7).  The page "guts" is centered using a table.  However, the table itself REALLY doesn't
+                get centered by the time the resize event fires.  For some reason, the table centering happens
+                slightly AFTER the resize event is run.  Use "pTimesCalledAgain" to avoid a never-ending loop.
+            */
+
+            if (ghIsChrome && $(window).width() > wd)
+            {
+                var timesCalled = typeof pTimesCalledAgain == "undefined" ? 0 : pTimesCalledAgain;
+
+                // This is the first retry attempt
+                if (timesCalled < 1 && pPageIsCentered)
+                {
+                    // If table isn't yet centered in the page, retry
+                    var amtLeftOfTable = outerMostTableQuery.offset().left;
+                    var amtRightOfTable = $(window).width() - targetRightEdge;
+                    var variance = Math.abs(amtLeftOfTable - amtRightOfTable);
+
+                    if (variance > 20)
+                    {
+                        setTimeout(function() { ghSlideToolbarIcons(pPageIsCentered, timesCalled + 1); }, 100);
+                        return;
+                    }
+                }
+
+                // This is the second retry attempt
+                if (timesCalled < 2)
+                {
+                    // If toolbar icons wrap around to a second row, also retry
+                    if (siteDesignerCtrlsQry.outerHeight() > $("#" + GH_TOOLBAR_AREA_DIV_ID).outerHeight())
+                    {
+                        setTimeout(function() { ghSlideToolbarIcons(pPageIsCentered, timesCalled + 1); }, 100);
+                        return;
+                    }
+                }
+            }
+        }
+
+    }
+
+    else
+    {
+        var newMenuBarWidth = outerMostTableQuery.outerWidth(false);
+
+        var edMenuBarQuery = $("#ed-menuBar");
+        var wd = (newMenuBarWidth <= 702 ? 702 : newMenuBarWidth) + "px";
+        ghSetWidthQuery(edMenuBarQuery,wd  );
+
+        var edNavBarQuery = $("#ed-navBar");
+        ghSetWidthQuery(edNavBarQuery,wd  );
+
+        var wind = $(window).width();
+
+        if (newMenuBarWidth > wind)
+        {
+                ghSetWidthQuery(edMenuBarQuery,(wind-100) + "px"  );
+                ghSetWidthQuery(edNavBarQuery,(wind-100) + "px"  );
+        }
+
+        if (!pPageIsCentered)
+        {
+            edMenuBarQuery.css("margin", "0");
+            edNavBarQuery.css("margin", "0");
+
+            $("#ed-menuBarContainer").css("text-align", "left");
+            $("#ed-navBarContainer").css("text-align", "left");
+        }
+    }
+}
+
+
+function GhCornerzInfo(pElementId,
+                       pAreAllBordersPresentAndWithIdenticalWidthsOrAllAbsent,
+                       pCornerSize,
+                       pBackgroundColor,
+                       pCornersToRound,
+                       pBorderWidthStringForAllCorners,
+                       pBorderColor)
+{
+    this.elementId = pElementId;
+    this.areAllBordersPresentAndWithIdenticalWidthsOrAllAbsent = pAreAllBordersPresentAndWithIdenticalWidthsOrAllAbsent;
+    this.cornerSize = pCornerSize;
+    this.backgroundColor = pBackgroundColor;
+    this.cornersToRound = pCornersToRound;
+    this.borderWidthStringForAllCorners = pBorderWidthStringForAllCorners;
+    this.borderColor = pBorderColor;
+}
+
+
+function ghRoundCornerz(pElementId, pOverrideBackgroundColor, pIsDesignSidebarOpen, pBackgroundColor)
+{
+    if (ghIsMSIE7or8 && ghCssCornerRoundingForcedOffForIE8)
+    {
+        return;
+    }
+
+    $("div." + pElementId + "_cornerz").each(
+        function()
+        {
+            $(this).remove();
+        }
+    );
+
+    var elementToRoundQuery = $('#' + pElementId);
+
+    var ghCornerzInfo = ghCornerzInfoArray[pElementId];
+
+    var bgColor = pOverrideBackgroundColor ? pBackgroundColor : ghCornerzInfo.backgroundColor;
+    var borderWidthsArr = ghCornerzInfo.borderWidthStringForAllCorners.split(",");
+    var bwInfo;
+    var borderWidth;
+    if (ghCornerzInfo.areAllBordersPresentAndWithIdenticalWidthsOrAllAbsent)
+    {
+        bwInfo = borderWidthsArr[0].split(":");
+        borderWidth = parseInt(bwInfo[1],10) || 0;
+
+        elementToRoundQuery.cornerz( {
+            radius: ghCornerzInfo.cornerSize,
+            background: bgColor,
+            backgroundOverridden: pOverrideBackgroundColor,
+            corners: ghCornerzInfo.cornersToRound,
+            fixIE: false,
+            borderWidth: borderWidth,
+            borderColor: ghCornerzInfo.borderColor,
+            allowCssCorners: ghAllowCssCornerRounding || (ghCssCornerRoundingForcedOnForIE && isMSIE)
+        } );
+    } 
+
+    else
+
+    {
+
+        // Render each corner separately so we can exert more control over the border width
+        var cornersToRound = ghCornerzInfo.cornersToRound.split(" ");
+
+        for (var c = 0; c < cornersToRound.length; c++)
+        {
+            borderWidth = 0;
+
+            for (var bw in borderWidthsArr)
+            {
+                bwInfo = borderWidthsArr[bw].split(":");
+
+                if (bwInfo[0] == cornersToRound[c])
+                {
+                    borderWidth = parseInt(bwInfo[1],10) || 0;
+                    break;
+                }
+            }
+
+
+        elementToRoundQuery.cornerz( {
+            radius: ghCornerzInfo.cornerSize,
+            background: bgColor,
+            backgroundOverridden: pOverrideBackgroundColor,
+            corners: cornersToRound[c],
+            fixIE: false,
+            borderWidth: borderWidth,
+            borderColor: ghCornerzInfo.borderColor,
+            allowCssCorners: ghAllowCssCornerRounding || (ghCssCornerRoundingForcedOnForIE && isMSIE)
+        } );
+
+        }
+
+    }
+
+}
+
+
+function ghSetHighlighterCornerInfo(pCornerSize,
+                                    pSelectedElementParentBackgroundColor,
+                                    pSelectedElementBorderColor,
+                                    pCornersToRound,
+                                    pCornersWithBorders,
+                                    pCornerColor)
+{
+    ghHighlighterCornerSize = pCornerSize;
+    ghHighlighterSelectedElementParentBackgroundColor = pSelectedElementParentBackgroundColor;
+    ghHighlighterSelectedElementBorderColor = pSelectedElementBorderColor;
+    ghHighlighterCornersToRound = pCornersToRound;
+    ghHighlighterCornersWithBorders = pCornersWithBorders;
+    ghHighlighterCornerColor = pCornerColor;
+}
+
+
+function ghInitEventHandlers()
+{
+    if (!ghIsSiteDesignerRunning && ghRenderSiteDesignerWithNewUI)
+    {
+        if (isMSIE)
+        {
+            setTimeout(function() { ghPreloadImages(); }, 0);   // Queue/delay this to run after the current event finishes
+        }
+        else
+        {
+            ghPreloadImages();
+        }
+
+        // Handle mouseover box image rollovers
+
+        var ghBoxMouseOverImgQuery = $("img.ghBoxMouseOverImg");
+
+
+
+        if(ghBoxMouseOverImgQuery){
+
+        	ghBoxMouseOverImgQuery.mouseenter(
+                function() { iuSwapRolloverImage(this, "enter", "ghBoxMouseOverImg"); }
+                );
+
+        	ghBoxMouseOverImgQuery.mouseleave(
+                function() { iuSwapRolloverImage(this, "leave", "ghBoxMouseOverImg"); }
+                );
+
+        	ghBoxMouseOverImgQuery.click(
+                function() { iuSwapRolloverImage(this, "click", "ghBoxMouseOverImg"); }
+                );
+
+       		// Apply instant and styled tooltips to images
+
+ 			try{
+ 				ghBoxMouseOverImgQuery.filter("[title]").tooltip( { position: "bottom center" } ).dynamic();
+ 			}catch(e){
+ 				//eat it
+ 			}
+
+		}
+
+        // Assign mouse enter/leave handlers for containers of mouseover boxes
+
+        $("div.ghBoxMouseOverDiv").each(function(){
+            var mouseOverDivId = this.id;
+            var containerDivId = mouseOverDivId.substring( mouseOverDivId.indexOf("_") + 1 );
+            var containerDivQuery = $("#" + containerDivId);
+
+            containerDivQuery.mouseenter(
+                function() { ghShowOrHideBoxMouseOverDivForContainer(mouseOverDivId, containerDivId, true); }
+                );
+
+            containerDivQuery.mouseleave(
+                function() { ghShowOrHideBoxMouseOverDivForContainer(mouseOverDivId, containerDivId, false); }
+                );
+
+        });
+
+    }
+
+    if (ghIsSiteDesignerRunning)
+    {
+        $("#" + GH_TOOLBAR_AREA_DIV_ID).mouseenter(function() {
+            dsddHideAllBoxOverlayPanels();
+        });
+    }
+}
+
+
+function ghPreloadImages()
+{
+    iuPreloadImages("/images/site_designer/box_icons/", "ed-addSmall_Hover.png,ed-addSmall_Off.png,ed-addSmall_On.png");
+    iuPreloadImages("/images/site_designer/box_icons/", "ed-editSmall_Hover.png,ed-editSmall_Off.png,ed-editSmall_On.png");
+}
+
+
+function ghEnforceMinPageHeight()
+{
+    if (GH_PAGE_MIN_HEIGHT > 0)
+    {
+        var amtToIncreasePageHeight = Math.max(0, GH_PAGE_MIN_HEIGHT - $("#ghOuterMostDiv").outerHeight());
+
+        if (amtToIncreasePageHeight > 0)
+        {
+            // Need to gather the existing heights for all zones before applying height of any; thus the two eaches
+            var origZoneHeights = new Array();
+            var zonesToApplyQuery = $(".zoneToApplyMinHeight");
+
+            zonesToApplyQuery.each(
+                function()
+                {
+                    origZoneHeights[this.id] = $(this).height();
+                }
+            );
+
+            zonesToApplyQuery.each(
+                function()
+                {
+                    var newHeight = origZoneHeights[this.id] + amtToIncreasePageHeight;
+                    ghSetHeightEl(this, newHeight + "px");
+                }
+            );
+
+            ghReallyAdjustContentDivHeightAndWidth(false);
+        }
+    }
+}
+
+
+function ghDoOnloadCompletelyFinishedHandling(pIsCacheHintsEnabled)
+{
+    ghOverrideOverflowForMouseOverDivContainers();
+
+    // Following is to counter intermittent bug EPB-7897
+    if (ghIsMSIE7or8 && ghIsSiteDesignerRunning)
+    {
+        setTimeout(function() { ghRoundCorners(); }, 10);
+    }
+
+    ghOnLoadFinished = true;
+
+    if (pIsCacheHintsEnabled)
+    {
+        $.ajax({
+                type: "POST",
+                url: "/GroupHome.page",
+                async: true,
+                dataType: "json",
+                data: { "pageLoadCompleteEvent" : "1"}
+               });
+    }
+}
+
+
+function ghTouchMenuBarForIE()
+{
+    if (isMSIE)
+    {
+        if (window.fmTouchMenuBarClassNames != null)
+        {
+          if (typeof(fmTouchMenuBarClassNames) == "function")
+          {
+            fmTouchMenuBarClassNames();
+          }
+        }
+
+        if (window.embTouchMenuBarClassNames != null)
+        {
+          if (typeof(embTouchMenuBarClassNames) == "function")
+          {
+            embTouchMenuBarClassNames();
+          }
+        }
+
+        if (typeof translateMenu !== "undefined")
+        {
+            var translateMenuQuery = $("#" + translateMenu.menuObj.id);
+            var menuObjClass = translateMenuQuery.attr("class") || "";
+            translateMenuQuery.removeClass(menuObjClass).addClass(menuObjClass);
+        }
+    }
+}
+
+
+function ghOnResizeHandlerPart2(
+        pPageHasBgImageTiledInBothDirections,
+        pPageHasBgImageNonTiledTopAligned,
+        pPageBgImageHeight,
+        pPageIsCentered)
+{
+    ghOverrideIFrameSize();
+    ghOverrideIFrameWidth();
+
+    if (pPageHasBgImageTiledInBothDirections || pPageHasBgImageNonTiledTopAligned)
+    {
+        ghAdjustPageHeightForBackgroundImage(pPageHasBgImageTiledInBothDirections, pPageHasBgImageNonTiledTopAligned,
+            pPageBgImageHeight);
+    }
+
+    if (  (ghRenderSiteDesignerWithNewUI && ghIsSiteDesignerRunning ) || ghUseNewMenuBar)
+    {
+        ghAdjustContentDivHeightAndWidth(true);
+        ghSlideToolbarIcons(pPageIsCentered);
+    }
+
+    if (ghIsSiteDesignerRunning)
+    {
+        dsddHideAllBoxOverlayPanels();
+    }
+
+    ghRefreshClientPositionedElements();
+}
+
+
+function ghOverrideOverflowForMouseOverDivContainers()
+{
+    // Prevent short boxes from showing a scrollbar when moused over to display add/edit icons in upper right corner:
+    $(".ghBoxMouseOverDiv").each(function() {
+        var mouseOverDivQuery = $(this);
+        var parentQuery = mouseOverDivQuery.parent();
+
+        // Only do this to short boxes to alleviate the number of boxes touched
+        if (parentQuery.height() < mouseOverDivQuery.height())
+        {
+            parentQuery.css("overflow", "hidden");
+        }
+    });
+}
+
+
+function ghShowOrHideBoxMouseOverDivForContainer(pMouseOverDivId, pContainerId, pShow)
+{
+    var displayStyle = pShow ? "inline-block" : "none";
+    var containerQuery = $("#" + pContainerId); 
+    var boxMouseOverDivQuery = $("#" + pMouseOverDivId);
+
+    if ( containerQuery.css("position") == "relative" )
+    {
+        boxMouseOverDivQuery.css( { top: "0", right: "0", display: displayStyle } );
+    }
+    else
+    {
+        var containerOffset = containerQuery.offset();
+        var customerContentWrapperQuery = $("#" + GH_CUSTOMER_CONTENT_WRAPPER_ID);
+
+        var newTop = containerOffset.top - $("#" + GH_TOOLBAR_AREA_DIV_ID).outerHeight(false) +
+                customerContentWrapperQuery.scrollTop();
+
+        var newRight = $(window).width() - ( containerOffset.left + containerQuery.outerWidth(false) );
+
+        // For IE, need to account for the width that the vertical scrollbar consumes
+        if (isMSIE &&
+            document.getElementById(GH_CUSTOMER_CONTENT_WRAPPER_ID).scrollHeight > customerContentWrapperQuery.height() )
+        {
+            newRight -= 16;
+        }
+
+        boxMouseOverDivQuery.css( { top: newTop + "px", right: newRight + "px", display: displayStyle } );
+    }
+
+    // If container has an expand/collapse icon, don't overlay it:
+    var expandCollapseImgQuery = containerQuery.find("img.expandCollapseImg");
+
+    if (expandCollapseImgQuery.length)
+    {
+        var expandCollapseImgLeftEdge = expandCollapseImgQuery.offset().left;
+        var boxMouseOverDivRightEdge = boxMouseOverDivQuery.offset().left + boxMouseOverDivQuery.width();
+        var overlapAmt = boxMouseOverDivRightEdge - expandCollapseImgLeftEdge;
+
+        if (overlapAmt > 0)
+        {
+            // Push mouse over div to the left so it doesn't overlap expand/collapse image
+            newRight += overlapAmt;
+            boxMouseOverDivQuery.css("right", newRight + "px");
+        }
+    }
+
+    // If a placeholder, show a tooltip
+
+    // First 3 chars (0 - 2) of pMouseOverDivId are "mod".  The dot-overridden element spec is in position 3 through
+    // an underscore delimiter.
+
+    var overriddenElemSpec = pMouseOverDivId.substring(3, pMouseOverDivId.indexOf("_"));
+    var elemSpec = overriddenElemSpec.replace(/YYY/g, ".");
+
+    if (typeof ghPinnedResourcesThatAreUnfilledPlaceholders[elemSpec] != "undefined")
+    {
+        var placeholderButtonInfo = ghPinnedResourcesThatAreUnfilledPlaceholders[elemSpec];
+
+        if (placeholderButtonInfo.onClickScript.length > 0)
+        {
+            var verticalOffset = containerQuery.height() - boxMouseOverDivQuery.height() + 16;
+            var horizontalOffset = 0 - ( ( containerQuery.width() - boxMouseOverDivQuery.width() ) / 2 );
+            boxMouseOverDivQuery.filter("[title]").tooltip( { position: "bottom center", offset: [verticalOffset, horizontalOffset] } );
+        }
+    }
+}
+
+
+// Example of event data: "someDataLabel:contents.box~~~otherLabel:200~~~anotherLabel:300"
+//    NOTICE triple tilde delimiter
+function ghMakeAjaxRequest(pAjaxEvent, pEventData, pUseSimpleResponse, pUseJspApproach, pJspPageSpec)
+{
+
+    var parameters = "ajaxEvent=" + pAjaxEvent +
+                     "&eventData=" + encodeURIComponent(pEventData) + 
+                     "&useSimpleResponse=" + pUseSimpleResponse;
+
+    // Note: This type of simple response only works with "async: false" below
+    ghAjaxResponse = "NULL";
+    ghUseAjaxSimpleResponse = pUseSimpleResponse;
+
+
+    $.ajax({
+        type: "POST",
+        url: pUseJspApproach ? pJspPageSpec : "/DesignSidebarAjax.page",
+        async: false,
+        data: parameters,
+        complete: function(xmlRequestObject, successString){
+            ghReceiveAjaxResponse(xmlRequestObject, successString);
+        }
+    });
+
+    if (ghGaveTimeoutWarning)
+    {
+        ghAjaxResponse = "";
+    }
+
+    return ghAjaxResponse;
+}
+
+
+function ghReceiveAjaxResponse(pAjaxReq, pSuccessString)
+{
+
+    if (pSuccessString.indexOf("error") != -1)
+    {
+        if (ghShowAjaxErrorsToWorldUsers && ghIsWorldUser)
+        {
+        	ghDisplayMessage('There was an unexpected ' + pSuccessString + ' in function ghReceiveAjaxResponse in GroupHome.js.');
+        }
+        return;
+    }
+
+    var xmlRespDoc = pAjaxReq.responseXML ? pAjaxReq.responseXML : $.parseXML(pAjaxReq.responseText);
+
+    if (  (xmlRespDoc == null) || (xmlRespDoc.firstChild == null)  )
+    {
+        ghGiveTimeoutWarning();
+        return;
+    }
+
+    if (ghUseAjaxSimpleResponse)
+    {
+        ghAjaxResponse = xmlRespDoc.getElementsByTagName("dsAjax")[0].getAttribute("simpleResponse");
+    }
+    else
+    {
+    	var SEPARATOR = "<separator />";
+        var hasSeparatorTags = pAjaxReq.responseText.indexOf(SEPARATOR) >= 0;
+
+        if (hasSeparatorTags)
+        {
+            // There should only be 2 sets of separator tags, resulting in an array with elements
+            // 0, 1, and 2.  0 and 2 contain junk at the beginning and end respectively.
+            
+            var responseTextArray = pAjaxReq.responseText.split(SEPARATOR);
+            ghAjaxResponse = responseTextArray[1];
+        }
+        else
+        {
+            ghAjaxResponse = xmlRespDoc.getElementsByTagName("dsAjax")[0].firstChild.data;
+        }
+    }
+}
+
+
+function ghGiveTimeoutWarning()
+{
+    if (!ghGaveTimeoutWarning)
+    {
+        ghGaveTimeoutWarning = true;
+        notifyAjaxFailed("The web server was unable to respond, probably due to a session time out.  Please start over.");  
+    }
+}
+
+
+function ghDoChromeResize(pIsLastTimeCalled)
+{
+    ghReallyAdjustContentDivHeightAndWidth(pIsLastTimeCalled);
+    ghChromeResizePending = false;
+}
+
+
+function ghReallyAdjustContentDivHeightAndWidth(pIsLastTimeCalled)
+{
+	var ua = navigator.userAgent;
+	if((ua.indexOf("Android") >= 0)||
+	   (ua.indexOf("iPad") >= 0)||
+	   (ua.indexOf("iPhone") >= 0)||
+	   (ua.indexOf("iPod") >= 0)){
+		return; // iPad scrolling issue caused by this function!
+	}
+    // Height:
+
+    // Must reset "height" CSS so that "onresize" will work with default values.
+    // For IE, must set to "0" vs. "" for some reason. <- This is not true anymore
+    // when using DOCTYPE - removed isMSIE check for call to ghSetHeightQuery . 10/4/12 EA
+
+	   var customerContentWrapperQuery = $("#" + GH_CUSTOMER_CONTENT_WRAPPER_ID);
+
+	    ghSetHeightQuery(customerContentWrapperQuery,"");
+
+	    // Reminder: outerHeight includes padding, but only includes margin if true passed as parm
+	    var naturalContentWrapperDivHeight = customerContentWrapperQuery.outerHeight(false);
+
+	    var imposedContentWrapperDivHeight = $(window).height() -
+                $("#" + GH_TOOLBAR_AREA_DIV_ID).outerHeight(false) - hdrGetHeightOfGoogleTranslateBanner();
+
+	    var wrapperVerticalPadding;
+
+	    {
+	        wrapperVerticalPadding = customerContentWrapperQuery.outerHeight(false) - customerContentWrapperQuery.height();
+	    }
+
+
+	    ghSetHeightQuery(customerContentWrapperQuery,(imposedContentWrapperDivHeight - wrapperVerticalPadding) + "px");
+
+	    if (naturalContentWrapperDivHeight > imposedContentWrapperDivHeight)
+	    {
+	        customerContentWrapperQuery.css( "overflow-y", "scroll" );
+	    }
+	    else
+	    {
+	        customerContentWrapperQuery.css( "overflow-y", ghIsSiteDesignerRunning ? "auto" : "hidden" );
+
+	    }
+
+
+
+	    // Width:
+
+	    // Must reset "width" CSS so that "onresize" will work with default values.
+	    ghSetWidthQuery(customerContentWrapperQuery,"");
+
+	    var wrapperDivOuterWidth;
+	    var wrapperDivWidth;
+
+	    // For all browsers except IE, need to temporarily position as absolute so that the real width can be
+	    // measured.  Otherwise, the width is from the left edge of the div to the right edge of the browser
+	    // window -- even if there is more rightward content in the div.
+
+	    if (!isMSIE)
+	    {
+	        // If Opera runs edge of wrapper div into right side of window, it stops computing its overall width;
+	        // the window edge is a "fence."  Therefore, for Opera, use negative numbers below to prevent that.
+	        var absTop;
+	        var absLeft;
+
+	        if ($.browser.opera)
+	        {
+	            absTop = -2000;
+	            absLeft = -2000;
+	        }
+	        else
+	        {
+	            absTop = 40;
+	            absLeft = 0;
+	        }
+
+	        customerContentWrapperQuery.css( { position:"absolute", top:absTop, left:absLeft } );
+
+	        wrapperDivOuterWidth = customerContentWrapperQuery.outerWidth(false);
+	        wrapperDivWidth = customerContentWrapperQuery.width();
+
+	        customerContentWrapperQuery.css( { position: "", top: "", left: "" } );
+	    }
+	    else
+	    {
+	        wrapperDivOuterWidth = customerContentWrapperQuery.outerWidth(false);
+	        wrapperDivWidth = customerContentWrapperQuery.width();
+	    }
+
+
+	    var naturalContentWrapperDivWidth = wrapperDivOuterWidth;
+	    var imposedContentWrapperDivWidth = $(window).width();
+
+	    var wrapperHorizontalPadding;
+
+	    if (isMSIE)
+	    {
+	        wrapperHorizontalPadding = 0;
+	    }
+	    else
+	    {
+	        wrapperHorizontalPadding = wrapperDivOuterWidth - wrapperDivWidth;
+	    }
+
+	    if (!$.browser.mozilla)
+	    {
+	    	ghSetWidthQuery(customerContentWrapperQuery,(imposedContentWrapperDivWidth - wrapperHorizontalPadding) + "px");
+	    }
+
+	    if (naturalContentWrapperDivWidth > imposedContentWrapperDivWidth)
+	    {
+	        customerContentWrapperQuery.css( "overflow-x", "scroll" );
+	    }
+	    else
+	    {
+	        customerContentWrapperQuery.css( "overflow-x", "hidden" );
+	    }
+
+	    if (isMSIE)
+	    {
+	        var wrapperTop = ghIsSiteDesignerRunning && !ghIsDesignSidebarInPreviewMode ? GH_EDIT_TOOLBAR_HEIGHT : GH_MENU_BAR_HEIGHT;
+	        customerContentWrapperQuery.css( { position:"absolute", top:wrapperTop + "px" } );
+	    }
+
+	    if (ghIsSiteDesignerRunning)
+	    {
+	        ghSetScrollPositionsOnPageDisplay();
+	        ghApplyScrollOffsetsToFloatingPanels();
+	    }
+
+	    if (pIsLastTimeCalled)
+	    {
+	        ghCustomerContentDivFullyInited = true;
+	    }
+}
+
+
+function ghHandleCustomerContentScroll()
+{
+    if (ghIsSiteDesignerRunning)
+    {
+        ghApplyScrollOffsetsToFloatingPanels();
+    }
+
+    // A scrollbar handle drag can trigger a BUNCH of scroll events; don't react to every little incremental event.
+    if (!ghCustomerContentScrollPending)
+    {
+        ghCustomerContentScrollPending = true;
+
+        if (ghIsSiteDesignerRunning && ghRenderSiteDesignerWithNewUI && dsUseNewBoxIconPanelLayout)
+        {
+            dsddHideAllBoxOverlayPanels();
+        }
+
+        ghHideHighlighterDiv();
+        setTimeout(function() { ghDoCustomerContentScroll(); } , 200);
+    }
+}
+
+
+function ghApplyScrollOffsetsToFloatingPanels()
+{
+    if (!ghIsSiteDesignerRunning)
+    {
+        return;
+    }
+
+    var frm = document.themeForm;
+    var customerContentElem = document.getElementById(GH_CUSTOMER_CONTENT_WRAPPER_ID);
+
+    // Diff is current minus previous.  "frm.customerContentScrollXxx" holds previous scroll position.
+    var vertScrollDiff = customerContentElem.scrollTop - frm.customerContentScrollTop.value;
+    var horScrollDiff = customerContentElem.scrollLeft - frm.customerContentScrollLeft.value;
+
+    var propertiesDivQuery = $("#dsPropertiesDiv");
+    var propertiesTop = parseInt( propertiesDivQuery.css("top"),10) || 0;
+    var propertiesNewTop = propertiesTop + vertScrollDiff;
+    var propertiesLeft = parseInt( propertiesDivQuery.css("left"),10) || 0;
+    var propertiesNewLeft = propertiesLeft + horScrollDiff;
+
+    propertiesDivQuery.css( {
+        top: propertiesNewTop + "px",
+        left: propertiesNewLeft + "px"
+    });
+
+    var sidebarDivQuery = $("#designSidebarDiv");
+    var sidebarTop = parseInt( sidebarDivQuery.css("top"),10) || 0;
+    var sidebarNewTop = sidebarTop + vertScrollDiff;
+    var sidebarLeft = parseInt( sidebarDivQuery.css("left"),10) || 0;
+    var sidebarNewLeft = sidebarLeft + horScrollDiff;
+
+    sidebarDivQuery.css( {
+        top: sidebarNewTop + "px",
+        left: sidebarNewLeft + "px"
+    });
+
+    // Remember the previous scroll values so a difference can be calculated
+    frm.customerContentScrollTop.value = customerContentElem.scrollTop;
+    frm.customerContentScrollLeft.value = customerContentElem.scrollLeft;
+}
+
+
+function ghDoCustomerContentScroll()
+{
+    ghRefreshClientPositionedElements();
+    ghCustomerContentScrollPending = false;
+}
+
+
+function ghRefreshClientPositionedElements()
+{
+    ghAdjustHighlighterDiv();
+
+    if (ghIsSiteDesignerRunning)
+    {
+        dsHideShader();
+        dsddStoreListItemContentCoordinates();
+        dsStorePopupPanelCoordinates();
+    }
+}
+
+
+function ghRunTinyMceCommand(pCommandString)
+{
+    tinyMCE.execCommand(pCommandString);
+}
+
+
+function ghRoundCornersPrepZoneForIe(pElementId, pZonePaneElementId)
+{
+    // ***** Obsolete; remove after rounded corners seems solid *****
+    return;
+
+    var elementQuery = $('#' + pElementId);
+
+    var ht = elementQuery.outerHeight(false);
+    if (ht % 2 == 1)
+    {
+    	ghSetHeightQuery(elementQuery, ht + 1);
+    }
+
+    var wd = elementQuery.outerWidth(false);
+    if (wd % 2 == 1)
+    {
+        var paneElemQuery = $('#' + pZonePaneElementId);
+
+        // For some reason, can't change width directly like we could for height; have to change "Pane's" width
+        ghSetWidthQuery(paneElemQuery,wd + 1);
+
+    }
+}
+
+
+function ghRoundCornersPrepBoxForIe(pElementId)
+{
+    // ***** Obsolete; remove after rounded corners seems solid *****
+    return;
+
+    var elementQuery = $('#' + pElementId);
+
+    var wd = elementQuery.outerWidth(false);
+    if (wd % 2 == 1)
+    {
+    	ghSetWidthQuery(elementQuery, wd + 1);
+
+    }
+
+    var ht = elementQuery.outerHeight(false);
+    if (ht % 2 == 1)
+    {
+    	ghSetHeightQuery(elementQuery, ht + 1);
+
+    }
+}
+
+
+function ghAdjustHeightOfCertainZones(pAdjustUsingAutoHeight, pOptionalInlineEditorIframeId)
+{
+    /* Zones that will be adjusted are those with class "zoneNeedingHeightAdj" or "zoneToApplyMinHeight" (search in
+       GroupHomeComponent). */
+
+    ghPotentiallyAdjustZoneHeight(ghZoneVerticalMargins, ghZoneVerticalPaddings,
+            ghZoneVerticalBorders, pAdjustUsingAutoHeight, pOptionalInlineEditorIframeId);
+}
+
+
+function ghPotentiallyAdjustZoneHeight(pZoneVerticalMarginsArray,
+                                       pZoneVerticalPaddingsArray,
+                                       pZoneVerticalBordersArray,
+                                       pAdjustUsingAutoHeight,
+                                       pOptionalInlineEditorIframeId)
+{
+    // Create unique list of parent zone IDs so related zones can be processed together
+    var parentZoneIds = new Array();
+
+    var wasHeightReset = false;
+
+    var isAdjustingAnInlineEditorZone = typeof pOptionalInlineEditorIframeId != "undefined";
+
+    if (isAdjustingAnInlineEditorZone)
+    {
+        var inlineEditorZoneElem = $("#" + pOptionalInlineEditorIframeId).closest("div.zoneFrame")[0];
+
+        if ( !$(inlineEditorZoneElem).hasClass("zoneNeedingHeightAdj") &&
+             !$(inlineEditorZoneElem).hasClass("zoneToApplyMinHeight") )
+        {
+            return;
+        }
+
+        var inlineEditorParentZoneId = $(inlineEditorZoneElem).parents("div:first").attr("id");
+        parentZoneIds[inlineEditorParentZoneId] = inlineEditorParentZoneId;
+    }
+    else
+    {
+        $("div.zoneNeedingHeightAdj,div.zoneToApplyMinHeight").each(
+            function()
+            {
+                var parentZoneId = $(this).parents("div:first").attr("id");
+
+                if (typeof parentZoneIds[parentZoneId] == "undefined")
+                {
+                    parentZoneIds[parentZoneId] = parentZoneId;
+                }
+            }
+        );
+    }
+
+
+    // Do outer loop through each parent zone
+    for (var parentZoneId in parentZoneIds)
+    {
+        var zonesToProcessForOneParentQuery =
+                $("#" + parentZoneId).find("div.zoneNeedingHeightAdj,div.zoneToApplyMinHeight");
+
+        if (ghIsTriggeredByTranslationMonitor || isAdjustingAnInlineEditorZone || (ghIsFirefox && ghIsSiteDesignerRunning) )
+        {
+            // Need to reset all zone heights in order to do a fresh measurement/calculation
+            zonesToProcessForOneParentQuery.each( function() {
+                ghSetHeightEl(this, "auto" );
+                wasHeightReset = true;
+            });
+        }
+
+        // The following "else" block helps with expand/collapse box bug EDL-10509
+        else
+        {
+            // Reset the zone heights to "auto" so we get a fresh measurement/calculation
+            zonesToProcessForOneParentQuery.each( function() {
+                ghSetHeightEl(this, "auto" );
+                wasHeightReset = true;
+            });
+        }
+
+        var tallestZoneId = "";
+        var tallestZoneHeight = 0;
+        var anyZoneHeightDiffs = false;
+        var isFirstZone = true;
+        var firstZoneHeight = 0;
+
+        // Do preprocess steps: counts/checks
+        zonesToProcessForOneParentQuery.each( function() {
+            var zoneOriginalHeight = $(this).outerHeight(true);
+
+            if (isFirstZone)
+            {
+                firstZoneHeight = zoneOriginalHeight;
+                isFirstZone = false;
+            }
+            else if (zoneOriginalHeight != firstZoneHeight)
+            {
+                anyZoneHeightDiffs = true;
+            }
+
+            if (zoneOriginalHeight > tallestZoneHeight)
+            {
+                tallestZoneId = this.id;
+                tallestZoneHeight = zoneOriginalHeight;
+            }
+        });
+
+        // Do process steps: adjust height
+        if (anyZoneHeightDiffs)
+        {
+            // Adjust heights of all zones other than the tallest:
+            zonesToProcessForOneParentQuery.each( function() {
+                ghPotentiallyAdjustZoneHeightPhase2(
+                        this,
+                        pZoneVerticalMarginsArray,
+                        pZoneVerticalPaddingsArray,
+                        pZoneVerticalBordersArray,
+                        pAdjustUsingAutoHeight,
+                true,
+                tallestZoneHeight);
+            });
+
+        }
+
+    }
+
+    if (wasHeightReset)
+    {
+        ghEnforceMinPageHeight();
+    }
+
+}
+
+
+function ghPotentiallyAdjustZoneHeightPhase2(pZoneElem, pZoneVerticalMarginsArray, pZoneVerticalPaddingsArray,
+                                             pZoneVerticalBordersArray, pAdjustUsingAutoHeight,
+                                             pAdjustUsingExplicitHeight, pExplicitHeight)
+{
+    if (pAdjustUsingAutoHeight)
+    {
+        var frameOriginalHeight = pZoneElem.offsetHeight;
+        ghSetHeightEl(pZoneElem,"auto");
+        var newHeight = pZoneElem.offsetHeight;
+
+        if (newHeight < frameOriginalHeight)
+        {
+        	ghSetHeightEl(pZoneElem,frameOriginalHeight + "px");
+        }
+    }
+    else
+    {
+        ghAdjustZoneHeight("ghPotentiallyAdjustZoneHeightPhase2", pZoneElem.id,
+                parseInt(pZoneVerticalMarginsArray[pZoneElem.id],10),
+                parseInt(pZoneVerticalPaddingsArray[pZoneElem.id],10),
+                parseInt(pZoneVerticalBordersArray[pZoneElem.id],10), pAdjustUsingExplicitHeight, pExplicitHeight  );
+    }
+}
+
+
+function ghAdjustZoneHeight(pCaller, pZoneFrameDivId, pZoneMargin, pZonePadding, pZoneBorder,
+                            pAdjustUsingExplicitHeight, pExplicitHeight)
+{
+    var verticalMarginPaddingBorder = pZoneMargin + pZonePadding + pZoneBorder;
+    var zoneFrameDivElem = document.getElementById(pZoneFrameDivId);
+    var newTotalHeightCountingMarginPaddingBorder = pAdjustUsingExplicitHeight ? pExplicitHeight : zoneFrameDivElem.parentNode.offsetHeight;
+    var newHeight = newTotalHeightCountingMarginPaddingBorder - verticalMarginPaddingBorder;
+    ghSetHeightEl(zoneFrameDivElem, newHeight + "px");
+}
+
+
+function ghDoNormalPostLoadAdjustments(pPageHasBgImageTiledInBothDirections,
+                                       pPageHasBgImageNonTiledTopAligned,
+                                       pPageBgImageHeight)
+{
+    if (pPageHasBgImageTiledInBothDirections || pPageHasBgImageNonTiledTopAligned)
+    {
+        ghAdjustPageHeightForBackgroundImage(pPageHasBgImageTiledInBothDirections,
+                pPageHasBgImageNonTiledTopAligned, pPageBgImageHeight);
+
+        ghAdjustContentDivHeightAndWidth(true);
+    }
+
+    if (isMSIE)
+    {
+        // To keep divs from vanishing (when doctype not specified), touch all zoom:1 divs:
+
+        $("div.zoomable,div.edlBoxArea,div.edlDocumentBox").each(function(){
+
+            var divQuery = $(this);
+            var ZOOM = "zoom";
+            if ( divQuery.css(ZOOM) == "1" )
+            {
+                divQuery.css(ZOOM, "0");
+                divQuery.css(ZOOM, "1");
+            }
+        });
+
+    }
+
+    ghAdjustHighlighterDiv();
+
+    setTimeout( function() { ghTouchMenuBarForIE(); }, 500);
+}
+
+
+function ghDoDelayedTranslatePostLoadAdjustments(pDsHighlightedZoneFrameId)
+{
+    // This call will get an assist from the parent zone to make sibling/peer zones same height
+    ghAdjustHeightOfCertainZones(false);
+    ghAdjustContentDivHeightAndWidth(true);
+    ghAdjustHighlighterDiv();
+}
+
+
+function ghAdjustPageHeightForBackgroundImage(pPageHasBgImageTiledInBothDirections,
+                                              pPageHasBgImageNonTiledTopAligned,
+                                              pPageBgImageHeight)
+{
+    var windowHeight = hdrGetWindowHeight(window);
+
+    var outerWrapperDivQuery = null;
+
+    if (pPageHasBgImageTiledInBothDirections)
+    {
+    	outerWrapperDivQuery = $("#ghOuterWrapperDiv");
+
+        if (outerWrapperDivQuery.height() < windowHeight)
+        {
+        	ghSetHeightQuery(outerWrapperDivQuery,windowHeight + "px");
+        }
+    }
+
+    if (pPageHasBgImageNonTiledTopAligned)
+    {
+        if (pPageBgImageHeight > $("#edlPageAlignmentTable").height())
+        {
+            if (outerWrapperDivQuery == null)
+            {
+                outerWrapperDivQuery = $("#ghOuterWrapperDiv");
+            }
+
+            ghSetHeightQuery(outerWrapperDivQuery,pPageBgImageHeight);
+        }
+    }
+
+    ghTouchMenuBarForIE();
+}
+
+
+function ghAdjustHighlighterDiv()
+{
+    // A decision was made to no longer show the red dotted outline ("highlighter").  Just in case somebody changes
+    // his mind, don't get rid of this logic ... because it was quite a feat to make it work with corner rounding, etc.
+
+    // ********** NOTE THE FOLLOWING RETURN STATEMENT ****************
+    if (ghRenderSiteDesignerWithNewUI) { return; };
+
+    var dshDivId = 'edlDesignSidebarHighlightDiv';
+    var dshDivElem = document.getElementById(dshDivId);
+
+    // If ghGlobalSelectedElementId is blank, then a zone was selected; in that case overlay
+    // div "edlDesignSidebarHighlightDiv"
+    if (  (  (dshDivElem != null) && (dshDivElem != undefined)  ) || (ghGlobalSelectedElementId != '')  )
+    {
+        if (dsIsSidebarClosed() && !dsIsPropertiesPopupOpen())
+        {
+            return;
+        }
+
+        // TODO sms 9/15/10 - the following block of code was never activated.  I think a smaller adjustment in
+        // function ghShowHighlighterAfterMouseMoveAndDelay (in this file) fixed the problem.  However, leave this
+        // commented-out block in here for a few weeks to see if needed.  If not, remove it.
+        /*
+        if (ghRenderSiteDesignerWithNewUI && dsUseNewBoxIconPanelLayout &&
+            typeof dsddGetListItemIdFromBoxOverlayPanel !== "undefined")
+        {
+            var boxOverlayShown = false;
+
+            $('.dragDropBoxOverlayPanel').each(
+                function()
+                {
+                    if ($(this).css( "display" ) == "inline")
+                    {
+                        var listItemId = dsddGetListItemIdFromBoxOverlayPanel(this.id);
+                        var contentId = dsddGetListItemContentId(document.getElementById(listItemId));
+
+                        if (contentId == ghGlobalSelectedElementId)
+                        {
+                            boxOverlayShown = true;
+                            return false;
+                        }
+                    }
+                }
+            );
+
+            if (boxOverlayShown) { return; }
+        }
+        */
+
+        var elementToOverlay;
+        var idOfElementToOverlay;
+
+        if (ghGlobalSelectedElementId != '')
+        {
+            elementToOverlay = document.getElementById(ghGlobalSelectedElementId);
+            idOfElementToOverlay = ghGlobalSelectedElementId; 
+        }
+        else
+        {
+            elementToOverlay = dshDivElem.parentNode;
+            idOfElementToOverlay = elementToOverlay.id;
+        }
+
+        var elementToOverlayQuery = $("#" + idOfElementToOverlay);
+
+        var dshOffset = elementToOverlayQuery.offset();
+
+        var dshNewBorderWidth = 3;
+
+        var dshWidth;
+        var dshHeight;
+
+        // Below doesn't give consistent results across browsers
+        // dshWidth = $("#" + idOfElementToOverlay).width();
+        // dshHeight = $("#" + idOfElementToOverlay).height();
+
+        if (isMSIE)
+        {
+            dshWidth = elementToOverlay.offsetWidth;
+            dshHeight = elementToOverlay.offsetHeight;
+        }
+        else
+        {
+            dshWidth = elementToOverlay.offsetWidth - (dshNewBorderWidth * 2);
+            dshHeight = elementToOverlay.offsetHeight - (dshNewBorderWidth * 2);
+        }
+
+        // Determine div dimensions with consideration to border; draw inside the border
+        // "|| 0" is required because IE might return "medium" no border, which parses to NaN
+        var topBorderWidth = parseInt( elementToOverlayQuery.css("border-top-width"),10) || 0;
+        var rightBorderWidth = parseInt( elementToOverlayQuery.css("border-right-width"),10) || 0;
+        var bottomBorderWidth = parseInt( elementToOverlayQuery.css("border-bottom-width"),10) || 0;
+        var leftBorderWidth = parseInt( elementToOverlayQuery.css("border-left-width"),10) || 0;
+
+        var bgColorOfElementToOverlay = elementToOverlayQuery.css("background-color");
+
+        var offsetLeft = dshOffset.left + leftBorderWidth;
+        var offsetTop = dshOffset.top + topBorderWidth;
+        var highlighterWidth = dshWidth - leftBorderWidth - rightBorderWidth;
+        var highlighterHeight = dshHeight - topBorderWidth - bottomBorderWidth;
+
+        var targetHasBorderedRoundedCorners =
+                ( ghHighlighterCornersToRound.indexOf("tl") >= 0 && ghHighlighterCornersWithBorders.indexOf("tl") >= 0 ) ||
+                ( ghHighlighterCornersToRound.indexOf("tr") >= 0 && ghHighlighterCornersWithBorders.indexOf("tr") >= 0 ) ||
+                ( ghHighlighterCornersToRound.indexOf("bl") >= 0 && ghHighlighterCornersWithBorders.indexOf("bl") >= 0 ) ||
+                ( ghHighlighterCornersToRound.indexOf("br") >= 0 && ghHighlighterCornersWithBorders.indexOf("br") >= 0 );
+
+        if (targetHasBorderedRoundedCorners)
+        {
+            highlighterHeight -= ghHighlighterCornerSize / 2;
+            highlighterWidth -= ghHighlighterCornerSize / 2;
+            offsetLeft += ghHighlighterCornerSize / 4;
+            offsetTop += ghHighlighterCornerSize / 4;
+        }
+        // The first highlighter div throws down a solid white border
+        ghDynamicallyCreateHighlightDiv("ghOverriddenHighlighterDivOne", "white", "solid", dshNewBorderWidth,
+                offsetLeft, offsetTop, highlighterWidth, highlighterHeight);
+
+        // The second highlighter div throws down a dotted red border
+        ghDynamicallyCreateHighlightDiv("ghOverriddenHighlighterDivTwo", "red", "dotted", dshNewBorderWidth,
+                offsetLeft, offsetTop, highlighterWidth, highlighterHeight);
+
+        if (ghHighlighterCornerSize > 0 && ghHighlighterCornersToRound.length > 0)
+        {
+            var bgColor;
+            var myBorderColor;
+
+            var highlighterDivOneQuery = $('#ghOverriddenHighlighterDivOne');
+            var highlighterDivTwoQuery = $('#ghOverriddenHighlighterDivTwo');
+
+            // Process the cases where the background color is the same for all corners --
+            // no corners with borders or all corners with borders:
+            if (ghHighlighterCornersWithBorders.length === 0 || ghHighlighterCornersWithBorders.length === 11)
+            {
+                bgColor = targetHasBorderedRoundedCorners ? bgColorOfElementToOverlay : ghHighlighterSelectedElementParentBackgroundColor;
+                myBorderColor = targetHasBorderedRoundedCorners ? ghHighlighterCornerColor : "red";
+
+                if (!ghIsMSIE7or8 || !ghCssCornerRoundingForcedOffForIE8)
+                {
+                    highlighterDivOneQuery.cornerz( { radius:ghHighlighterCornerSize, background:bgColor,
+                        borderColor:myBorderColor, corners:ghHighlighterCornersToRound, fixIE:false,
+                        allowCssCorners:ghAllowCssCornerRounding || (ghCssCornerRoundingForcedOnForIE && isMSIE) } );
+
+                    highlighterDivTwoQuery.cornerz( { radius:ghHighlighterCornerSize, background:bgColor,
+                        borderColor:myBorderColor, corners:ghHighlighterCornersToRound, fixIE:false,
+                        allowCssCorners:ghAllowCssCornerRounding || (ghCssCornerRoundingForcedOnForIE && isMSIE) } );
+                }
+            }
+
+            // Process the case where some corners have different background colors than others
+            else
+            {
+                var cornerIds = ["tl", "tr", "bl", "br"];
+
+                for (var c = 0; c < 4; c++)
+                {
+                    var cornerId = cornerIds[c];
+
+                    if (ghHighlighterCornersToRound.indexOf(cornerId) >= 0)
+                    {
+                        if (ghHighlighterCornersWithBorders.indexOf(cornerId) >= 0)
+                        {
+                            bgColor = targetHasBorderedRoundedCorners ? bgColorOfElementToOverlay : ghHighlighterSelectedElementBorderColor;
+                            myBorderColor = targetHasBorderedRoundedCorners ? ghHighlighterCornerColor : "red";
+                        }
+                        else
+                        {
+                            bgColor = targetHasBorderedRoundedCorners ? bgColorOfElementToOverlay : ghHighlighterSelectedElementParentBackgroundColor;
+                            myBorderColor = targetHasBorderedRoundedCorners ? ghHighlighterCornerColor : "red";
+                        }
+
+                        if (!ghIsMSIE7or8 || !ghCssCornerRoundingForcedOffForIE8)
+                        {
+                            highlighterDivOneQuery.cornerz( { radius:ghHighlighterCornerSize, background:bgColor,
+                                borderColor:myBorderColor, corners:cornerId, fixIE:false,
+                                allowCssCorners:ghAllowCssCornerRounding || (ghCssCornerRoundingForcedOnForIE && isMSIE) } );
+
+                            highlighterDivTwoQuery.cornerz( { radius:ghHighlighterCornerSize, background:bgColor,
+                                borderColor:myBorderColor, corners:cornerId, fixIE:false,
+                                allowCssCorners:ghAllowCssCornerRounding || (ghCssCornerRoundingForcedOnForIE && isMSIE) } );
+                        }
+                    }
+
+                }
+            }
+
+        }
+
+    }
+}
+
+
+function ghDynamicallyCreateHighlightDiv(pDivId, pBorderColor, pBorderStyle, pBorderWidth,
+                                         pLeft, pTop, pWidth, pHeight)
+{
+    // First remove the div if it exists (so onresize doesn't draw multiples)
+    $("#" + pDivId).remove();
+
+    var ghHighlightDivElem = document.createElement("div");
+    ghHighlightDivElem.setAttribute("id", pDivId);
+
+    // Now that a header toolbar is present, IE needs highlighter to be relative to the customer content instead
+    // of the body.  Otherwise, the sidebar, properties, and other popups slide underneath the highlighter
+    if (isMSIE && ghRenderSiteDesignerWithNewUI)
+    {
+        var contentWrapperDiv = document.getElementById(GH_CUSTOMER_CONTENT_WRAPPER_ID);
+        contentWrapperDiv.appendChild(ghHighlightDivElem);
+    }
+    else
+    {
+        document.body.appendChild(ghHighlightDivElem);
+    }
+
+    ghHighlightDivElem.style.backgroundColor = "transparent";
+    ghHighlightDivElem.style.position = "absolute";
+
+    if (isMSIE)
+    {
+        ghHighlightDivElem.style.filter = 'alpha(opacity="100")';
+    }
+
+    ghHighlightDivElem.style.left = pLeft + "px";
+
+    // Now that a header toolbar is present, IE needs highlighter to be relative to the customer content instead
+    // of the body.
+    if (isMSIE && ghRenderSiteDesignerWithNewUI)
+    {
+        contentWrapperDiv = document.getElementById(GH_CUSTOMER_CONTENT_WRAPPER_ID);
+        ghHighlightDivElem.style.top = ( pTop - $("#" + GH_TOOLBAR_AREA_DIV_ID).outerHeight(false) + contentWrapperDiv.scrollTop ) + "px";
+    }
+    else
+    {
+        ghHighlightDivElem.style.top = pTop + "px";
+    }
+
+    ghSetWidthEl(ghHighlightDivElem,pWidth + "px");
+    ghSetHeightEl(ghHighlightDivElem,pHeight + "px");
+
+    ghHighlightDivElem.style.borderColor = pBorderColor;
+    ghHighlightDivElem.style.borderWidth = pBorderWidth + "px;";
+    ghHighlightDivElem.style.borderStyle = pBorderStyle;
+
+    // Enable pinned doc "Edit" div to overlay the highlighter div (already works for IE)
+    if ( !isMSIE && pDivId == "ghOverriddenHighlighterDivTwo" )
+    {
+        // When mouse moves over highlighter, hide it so clicks "under" the highlighter are picked up.  This
+        // strategy was done AFTER the strategy below, and may be all we need in the end run (MAYBE).
+        $("#" + pDivId).mousemove(
+
+                function()
+                {
+                    if (!ghHighlighterHideOnMouseMoveRequested)
+                    {
+                        ghHideHighlighterAfterMouseMove(4000);
+                    }
+                }
+
+                );
+
+
+        // The following would work for the mouse over, but not the mouse out for some reason (likely related to
+        // which z-layer was active).  However, it works fine if jQuery is used.
+
+        // ghHighlightDivElem.onmouseover = ghHighlightDivMouseOver;
+        // ghHighlightDivElem.onmouseoout = ghHighlightDivMouseOut;
+
+        // DocumentBox.jsp defines the floating Edit div
+
+        // Note: below only works if the highlighter div is overlaying a single box vs. several boxes
+        
+        var highlightDivElemQuery = $(ghHighlightDivElem);
+
+        highlightDivElemQuery.mouseenter(
+            function()
+            {
+                var potentialFloatingEditDivElem = document.getElementById('dbFloatingEditDiv_' + ghGlobalSelectedElementId);
+                if (potentialFloatingEditDivElem)
+                {
+                    dbShowFloatingEditDiv(ghGlobalSelectedElementId);
+                }
+            }
+        );
+
+        highlightDivElemQuery.mouseleave(
+            function()
+            {
+                var potentialFloatingEditDivElem = document.getElementById('dbFloatingEditDiv_' + ghGlobalSelectedElementId);
+                if (potentialFloatingEditDivElem)
+                {
+                    dbHideFloatingEditDiv(ghGlobalSelectedElementId);
+                }
+            }
+        );
+
+        highlightDivElemQuery.mousemove(
+            function(event)
+            {
+                if (typeof dsddShowBoxOverlayPanelThroughHighlighterDiv != "undefined")
+                {
+                    dsddShowBoxOverlayPanelThroughHighlighterDiv(event);
+                }
+            }
+        );
+
+    }
+
+}
+
+
+function ghHideHighlighterAfterMouseMove(pMsBeforeRedisplay)
+{
+    ghHighlighterHideOnMouseMoveRequested = true;
+    $('#ghOverriddenHighlighterDivOne').hide();//css("display","none");
+    $('#ghOverriddenHighlighterDivTwo').hide();//css("display","none");
+    setTimeout( function() { ghShowHighlighterAfterMouseMoveAndDelay(pMsBeforeRedisplay); }, pMsBeforeRedisplay );
+}
+
+
+function ghShowHighlighterAfterMouseMoveAndDelay(pMsBeforeRedisplay)
+{
+    // If still in middle of drag and drop, try again momentarily
+    if (ghDragDropInProgress || dsTinyInlineEditingInProgress || dsTextAreaInlineEditingInProgress)
+    {
+        setTimeout( function() { ghShowHighlighterAfterMouseMoveAndDelay(pMsBeforeRedisplay); }, pMsBeforeRedisplay );
+        return;
+    }
+
+    $('#ghOverriddenHighlighterDivOne').css("display", "block");
+    $('#ghOverriddenHighlighterDivTwo').css("display", "block");
+    ghHighlighterHideOnMouseMoveRequested = false;
+
+    // When highlighter is re-displayed, hide the box overlay panels.  They should come back by moving the mouse.
+    if (typeof dsddHideAllBoxOverlayPanels != "undefined" && !(ghRenderSiteDesignerWithNewUI && dsUseNewBoxIconPanelLayout) )
+    {
+        dsddHideAllBoxOverlayPanels();
+    }
+}
+
+
+function ghHideHighlighterDiv()
+{
+    $('#ghOverriddenHighlighterDivOne').hide();//css("display","none");
+    $('#ghOverriddenHighlighterDivTwo').hide();//css("display","none");
+
+    if (!isMSIE && typeof dsddRestoreOverriddenZoneFrameOpacities != "undefined")
+    {
+        dsddRestoreOverriddenZoneFrameOpacities();
+    }
+}
+
+
+function ghDisableMouseClickingInPreviewArea()
+{
+    // The following detaches the process from the actual onload event, so that hopefully the page renders faster
+    setTimeout(function() { ghReallyDisableMouseClickingInPreviewArea(); }, 0);
+}
+
+
+function ghReallyDisableMouseClickingInPreviewArea()
+{
+    var headerAreaQuery = $("#edlHeaderArea");
+    var hasHeaderAreaElem = headerAreaQuery.length;
+
+    var headerAreaImageQuery = null;
+    var headerAreaAnchorQuery = null;
+    if (hasHeaderAreaElem)
+    {
+        headerAreaImageQuery = headerAreaQuery.find("img");
+        headerAreaAnchorQuery = headerAreaQuery.find("a");
+    }
+
+    var rootZoneFrameQuery = $("#edlThemeRootZoneFrame");
+    var rootZoneFrameImageQuery = rootZoneFrameQuery.find("img");
+    var rootZoneFrameAnchorQuery = rootZoneFrameQuery.find("a");
+
+    if (!hdrIsSafari_1_3_2())
+    {
+        if (hasHeaderAreaElem)
+        {
+            headerAreaImageQuery.unbind();
+            headerAreaAnchorQuery.unbind();
+        }
+
+        rootZoneFrameImageQuery.unbind();
+        rootZoneFrameAnchorQuery.unbind();
+    }
+
+    if (hasHeaderAreaElem)
+    {
+        headerAreaImageQuery.attr( { onclick: "ghDoNothing();", onmouseover: "ghDoNothing();" } );
+        headerAreaAnchorQuery.attr( { target: "", href: "javascript: ghDoNothing();", onclick: "ghDoNothing();", onmouseover: "ghDoNothing();" } );
+    }
+
+    ghDisableHoverIntent("a.breadcrumbLink", $("a.breadcrumbLink") );
+    ghDisableHoverIntent("#myEdlineLink", $("#myEdlineLink") );
+    ghDisableHoverIntent("#gradebookLink", $("#gradebookLink") );
+
+    var hotEditorQuery = $("div.dbHotEditor");
+    var tinyEditorExists = hotEditorQuery.length > 0;
+
+    if (tinyEditorExists)
+    {
+        ghNoteElementsWithinTinyEditors(hotEditorQuery);
+    }
+
+    // Except for drag/drop and images within a Tiny MCE editor, assign "do nothing" to image click and mouse over.
+    // If things end up scripted inside the editor in the future, consider doing "parent.ghDoNothing()" or
+    // alternative blocking.
+    rootZoneFrameImageQuery.not(".dragDropEditIcon").each(
+        function()
+        {
+            if (!tinyEditorExists || !ghIsElementWithinTinyEditor(this))
+            {
+                $(this).attr( { onclick: "ghDoNothing();", onmouseover: "ghDoNothing();" } );
+            }
+        }
+    );
+
+
+    // Except for anchors within a Tiny MCE editor, assign "do nothing" to click and mouse over.
+    // If things end up scripted inside the editor in the future, consider doing "parent.ghDoNothing()" or
+    // alternative blocking.
+    rootZoneFrameAnchorQuery.each(
+        function()
+        {
+            if (!ghIsCurrentLanguageEnglish || !tinyEditorExists || !ghIsElementWithinTinyEditor(this))
+            {
+                $(this).attr( { target: "", href: "javascript: ghDoNothing();", onclick: "ghDoNothing();", onmouseover: "ghDoNothing();" } );
+            }
+        }
+    );
+
+    $("#aeScreenName").attr( { disabled: "true" } );
+
+    $("#aeKclq").attr( { disabled: "true" } );
+
+    $("#aeSignInButton").attr( { onclick: "ghDoNothing();" } );
+}
+
+
+function ghNoteElementsWithinTinyEditors(pHotEditorJquery)
+{
+    ghElemsWithinTinyEditors = new Array();
+
+    pHotEditorJquery.find("*").each(function()
+    {
+        if (this.nodeName == 'A' || this.nodeName == 'IMG')
+        {
+            ghElemsWithinTinyEditors[ghElemsWithinTinyEditors.length] = this;
+        }
+    });
+}
+
+
+function ghIsElementWithinTinyEditor(pElement)
+{
+    for (var e = 0; e < ghElemsWithinTinyEditors.length; e++)
+    {
+        if (pElement == ghElemsWithinTinyEditors[e])
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+function ghDisableMouseClicksInFolderMenu(pRootFolderDivId)
+{
+    var rootFolderDivQuery = $("#" + pRootFolderDivId);
+    var rootFolderDivAllElementsQuery = rootFolderDivQuery.find("*");
+
+    if (!hdrIsSafari_1_3_2())
+    {
+        rootFolderDivAllElementsQuery.unbind();
+    }
+
+    rootFolderDivAllElementsQuery.not(".dragDropEditIcon").attr( { onclick: "ghDoNothing();", onmouseover: "ghDoNothing();", onmouseout: "ghDoNothing();" } );
+
+    ghDisableHoverIntent("#" + pRootFolderDivId + " div", rootFolderDivQuery.find("div") );
+}
+
+
+function ghDisableMouseClicksInEdlineMenu(pEdlineMenuDivId)
+{
+    var edlineMenuDivQuery = $("#" + pEdlineMenuDivId);
+    var edlineMenuDivAllElementsQuery = edlineMenuDivQuery.find("*");
+
+    if (!hdrIsSafari_1_3_2())
+    {
+        edlineMenuDivAllElementsQuery.unbind();
+    }
+
+    edlineMenuDivAllElementsQuery.not(".dragDropEditIcon").attr( { onclick: "ghDoNothing();", onmouseover: "ghDoNothing();", onmouseout: "ghDoNothing();" } );
+
+    ghDisableHoverIntent("#" + pEdlineMenuDivId + " div", edlineMenuDivQuery.find("div") );
+}
+
+
+function ghDisableHoverIntent(pSelector, pSelectorJquery)
+{
+    if (hdrIsSafari_1_3_2())
+    {
+        // Can only disable specific things by ID, not things by class:
+        if (pSelector.indexOf("#") >= 0)
+        {
+            var selectorElem = document.getElementById(pSelector.substring(pSelector.indexOf("#") + 1));
+            selectorElem.onmouseover = ghDoNothing;
+            selectorElem.onmouseout = ghDoNothing;
+        }
+        else if (pSelector.indexOf(".") >= 0)
+        {
+            var selectorClassName = pSelector.substring(pSelector.indexOf("#") + 1);
+            var elemList = document.getElementsByTagName("*");
+            for (var li = 0; li < elemList.length; li++)
+            {
+            	var obj = elemList[li]; 
+                if (obj.className == selectorClassName)
+                {
+                	obj.onmouseover = ghDoNothing;
+                	obj.onmouseout = ghDoNothing;
+                }
+            }
+        }
+    }
+    else
+    {
+        if (pSelectorJquery.length)
+        {
+            pSelectorJquery.hoverIntent({
+                sensitivity: 1,
+                interval: 160,
+                over: ghDoNothing,
+                timeout: 170,
+                out: ghDoNothing } );
+        }
+    }
+
+}
+
+
+function ghAdjustRootZoneAndHeaderWidths()
+{
+    var headerAreaQuery = $('#edlHeaderArea');
+    var headerLeftBorder  = parseInt(headerAreaQuery.css("border-left-width"),10) || 0;
+    var headerRightBorder = parseInt(headerAreaQuery.css("border-right-width"),10) || 0;
+    var headerHasBorders  = headerLeftBorder + headerRightBorder > 0;
+
+    var rootZoneFrameQuery = $('#edlThemeRootZoneFrame');
+    var rootZoneLeftBorder  = parseInt(rootZoneFrameQuery.css("border-left-width"),10) || 0;
+    var rootZoneRightBorder = parseInt(rootZoneFrameQuery.css("border-right-width"),10) || 0;
+    var rootZoneHasBorders  = rootZoneLeftBorder + rootZoneRightBorder > 0;
+
+    var ghOuterTableWidth = document.getElementById('ghOuterTable').offsetWidth;
+
+    ghSetWidthQuery(rootZoneFrameQuery, ghOuterTableWidth + "px");
+
+    // var newHeaderWidth = isMSIE ? ghOuterTableWidth : ghOuterTableWidth - headerLeftBorder - headerRightBorder;
+    var newHeaderWidth = ghOuterTableWidth;   // a default
+
+    if (!headerHasBorders && !rootZoneHasBorders)
+    {
+        newHeaderWidth = ghOuterTableWidth;
+    }
+    else if (headerHasBorders && !rootZoneHasBorders)
+    {
+        if (isMSIE)
+        {
+            newHeaderWidth = ghOuterTableWidth;
+        }
+        else
+        {
+            newHeaderWidth = ghOuterTableWidth - headerLeftBorder - headerRightBorder;
+        }
+    }
+    else if (!headerHasBorders && rootZoneHasBorders)
+    {
+        newHeaderWidth = ghOuterTableWidth + rootZoneLeftBorder + rootZoneRightBorder;
+    }
+    else if (headerHasBorders && rootZoneHasBorders)
+    {
+        if (isMSIE)
+        {
+            newHeaderWidth = ghOuterTableWidth + rootZoneLeftBorder + rootZoneRightBorder;
+        }
+        else
+        {
+            var rootZoneWidth = document.getElementById('edlThemeRootZoneFrame').offsetWidth;
+            newHeaderWidth = rootZoneWidth - headerLeftBorder - headerRightBorder;
+        }
+    }
+
+    if (newHeaderWidth > 0) // In some situations in IE7 the newHeaderWidth becomes 0. Do not set the width in this case
+    {
+        ghSetWidthQuery(headerAreaQuery, newHeaderWidth + "px");
+    }
+}
+
+
+function ghDoNothing()
+{
+
+}
+
+
+function ghLoadCustomerMenus(pFolderGroupTypeString, pDisplayingDesignSidebar, pIsDesignBordersEnabled)
+{
+
+// Display the customer menus, if any.  Note: ghMenusToLoad is populated by FolderMenu.jsp.
+
+    for (var folderEntid in ghMenusToLoad)
+    {
+    	var el = ghMenusToLoad[folderEntid];
+        fmFolderMenuOnload(el.rootFolderEntid,
+                           el.rootFolderDescr,
+                           el.rootFolderDivId,
+                           pFolderGroupTypeString,
+                           el.isVerticalMenu,
+                           el.rootFolderPlaceHolderDivId,
+                           el.useMenuItemSeparator,
+                           el.useGradientBackground,
+                           el.isVerticalGradient,
+                           el.gradientStartColor,
+                           el.gradientEndColor,
+                           el.hostZoneFrameId,
+                           el.hostZoneContentId,
+                           el.designSidebarOpen,
+                           el.folderEntidForData,
+                           pIsDesignBordersEnabled
+                           );
+
+        // Don't allow mouse clicks on folder menus if sidebar is open
+        if (pDisplayingDesignSidebar)
+        {
+            ghDisableMouseClicksInFolderMenu(el.rootFolderDivId);
+        }
+
+    }
+}
+
+
+function ghIsLocallyFilledFolderPlaceholder(pElementSpec)
+{
+    return typeof ghLocallyFilledFolderPlaceholdersAddContentElementSpec[pElementSpec] != "undefined";
+}
+
+
+function ghAdjustBoxListElementsForScrollbar()
+{
+    var boxContentElements = new Array();
+
+    $("div.edlBoxContent").each(
+            function (i) {
+                boxContentElements[i] = this;
+            }
+            );
+
+    for (var b = 0; b < boxContentElements.length; b++)
+    {
+        var boxContentElement = boxContentElements[b];
+        var boxContentElementName = $(boxContentElement).attr("name");
+        if (boxContentElementName && boxContentElementName.length > 0)
+        {
+            ghAdjustBoxListElementForScrollbar(boxContentElement.id, boxContentElementName);
+        }
+    }
+
+}
+
+
+function ghAdjustBoxListElementForScrollbar(pBoxContentDivId, pBoxContentDivName)
+{
+    var underscorePos = pBoxContentDivName.indexOf("_");
+
+    if (underscorePos < 0)
+    {
+        return;
+    }
+
+    var boxAreaDivId = pBoxContentDivName.substring(underscorePos + 1);
+
+    var boxContentElem = document.getElementById(pBoxContentDivId);
+
+    if (boxContentElem.scrollHeight > boxContentElem.offsetHeight)
+    {
+        // Different boxes have different elements to narrow due to the scrollbar, so we may need to call the
+        // following function on multipleelement selector strings (to cover all of the possibilities).  So far,
+        // though, this one seems to be covering it.
+
+        ghAdjustWidthOfElementsForScrollbar("div#" + boxAreaDivId + " div.edlBoxContent table.edlBoxListItemTable");
+    }
+}
+
+
+function ghOnloadPinnedDocsHandler()
+{
+/*
+Call function dbOnloadDoc in DocumentBox.js.  For smoothness, I tried this inline after the /body tag, but IE
+had a timing problem, so we need to live with the jaggedness for the time being, for IE.
+
+This function can be called at two different timing points, generaly:
+
+1. body onload for GroupHome.jsp -- IE only
+2. Google language translation, after page load -- any browser
+
+*/
+
+    var anyFlashInIframes = false;
+
+    for (var key in ghPinnedDocsToLoad)
+    {
+        dbOnloadDoc(key.substring(3));
+
+        if (isMSIE && !anyFlashInIframes)
+        {
+            var ghPinnedDocInfo = ghPinnedDocsToLoad[key];
+
+            if (ghPinnedDocInfo.isFlashInIframe)
+            {
+                anyFlashInIframes = true;
+            }
+        }
+    }
+
+    if (isMSIE && anyFlashInIframes)
+    {
+        // TODO sms 5/31/13 - in future need better way to determine when flash has fully loaded
+
+        // Ensure that all column heights consider the height of the loaded flash and are the same.  Apparently only
+        // needed for IE.  See EPB-6528.  This is done here vs. FlashWrapper.js so that it isn't run per ea flash.
+
+        // NOTE: THIS DIDN'T SEEM TO HELP AND I WAS SPENDING TOO MUCH TIME ON THIS.  PROBABLY NEED TO TRY IN A POST-
+        // DINGO RELEASE BY USING SWFINFO TO LOAD FLASH.
+
+        /*
+        setTimeout(function() { ghAdjustHeightOfCertainZones(false) }, 2500);
+        setTimeout(function() { ghAdjustHeightOfCertainZones(false) }, 5000);
+        setTimeout(function() { ghAdjustHeightOfCertainZones(false) }, 10000);
+        setTimeout(function() { ghAdjustHeightOfCertainZones(false) }, 15000);
+        setTimeout(function() { ghAdjustHeightOfCertainZones(false) }, 20000);
+        setTimeout(function() { ghAdjustHeightOfCertainZones(false) }, 30000);
+        */
+    }
+}
+
+// Constructor for GhNavBoxInfo objects placed into ghNavBoxes array
+
+function GhNavBoxInfo(pUsesGradient,
+        pDivIdForGradient,
+        pGradientStartColor,
+        pGradientEndColor,
+        pIsVerticalGradient)
+{
+    this.usesGradient = pUsesGradient;
+    this.divIdForGradient = pDivIdForGradient;
+    this.gradientStartColor = pGradientStartColor;
+    this.gradientEndColor = pGradientEndColor;
+    this.isVerticalGradient = pIsVerticalGradient;
+}
+
+
+// Constructor for GhPinnedDocInfo objects placed into ghPinnedDocsToLoad array; see DocumentBox.jsp
+
+function GhPinnedDocInfo(pShowEmptyAreaPlaceholder,
+                         pPinnedDocId,
+                         pEntidFromElementSpec,
+                         pEntidFromActualDoc,
+                         pIFrameId,
+                         pBoxContentsElementId,
+                         pHostZoneWidthStr,
+                         pHostZoneFrameId,
+                         pSumOfAllHorizontalPaddingMarginBorder,
+                         pHighlightBorderPadding,
+                         pRawImageDimWidth,
+                         pRawImageDimHeight,
+                         pDisplayingDashedPlaceholderImageBorder,
+                         pCanShowInlineEditableDoc,
+                         pAutofitImageProperty,
+                         pIsMultimediaEmbedContentAvailable,
+                         pIFrameHeight,
+                         pIFrameBackgroundColor,
+                         pIsAWebDoc,
+                         pIsShowingContentsAutoHt,
+                         pIsShowingContentsFixedHt,
+                         pIsALinkExternalToEdline,
+                         pBoxNetWidthIncludingSideSpacingStr,
+                         pDocViewBodyTableCellPadding,
+                         pHasNoContentsWhatsoever,
+                         pIsThirdPartyEmbeddedCodeComponentDoc,
+                         pIsFlashInIframe
+        )
+{
+    this.showEmptyAreaPlaceholder = pShowEmptyAreaPlaceholder;
+    this.pinnedDocId = pPinnedDocId;
+    this.entidFromElementSpec = pEntidFromElementSpec;
+    this.entidFromActualDoc = pEntidFromActualDoc;
+    this.iFrameId = pIFrameId;
+    this.boxContentsElementId = pBoxContentsElementId;
+    this.hostZoneWidthStr = pHostZoneWidthStr;
+    this.hostZoneFrameId = pHostZoneFrameId;
+    this.sumOfAllHorizontalPaddingMarginBorder = pSumOfAllHorizontalPaddingMarginBorder;
+    this.highlightBorderPadding = pHighlightBorderPadding;
+    this.rawImageDimWidth = pRawImageDimWidth;
+    this.rawImageDimHeight = pRawImageDimHeight;
+    this.displayingDashedPlaceholderImageBorder = pDisplayingDashedPlaceholderImageBorder;
+    this.canShowInlineEditableDoc = pCanShowInlineEditableDoc;
+    this.autofitImageProperty = pAutofitImageProperty;
+    this.isMultimediaEmbedContentAvailable = pIsMultimediaEmbedContentAvailable;
+    this.iFrameHeight = pIFrameHeight;
+    this.iFrameBackgroundColor = pIFrameBackgroundColor;
+    this.isAWebDoc = pIsAWebDoc;
+    this.isShowingContentsAutoHt = pIsShowingContentsAutoHt;
+    this.isShowingContentsFixedHt = pIsShowingContentsFixedHt;
+    this.isALinkExternalToEdline = pIsALinkExternalToEdline;
+    this.boxNetWidthIncludingSideSpacingStr = pBoxNetWidthIncludingSideSpacingStr;
+    this.docViewBodyTableCellPadding = pDocViewBodyTableCellPadding;
+    this.hasNoContentsWhatsoever = pHasNoContentsWhatsoever;
+    this.isThirdPartyEmbeddedCodeComponentDoc = pIsThirdPartyEmbeddedCodeComponentDoc;
+    this.isFlashInIframe = pIsFlashInIframe;
+}
+
+
+// Constructor for GhMenuInfo objects placed into ghMenusToLoad array; see FolderMenu.jsp
+
+function GhMenuInfo(pRootFolderEntid,
+                    pRootFolderDescr,
+                    pRootFolderDivId,
+                    pIsVerticalMenu,
+                    pRootFolderPlaceHolderDivId,
+                    pUseMenuItemSeparator,
+                    pUseGradientBackground,
+                    pIsVerticalGradient,
+                    pGradientStartColor,
+                    pGradientEndColor,
+                    pHostZoneFrameId,
+                    pHostZoneContentId,
+                    pDesignSidebarOpen,
+                    pFolderEntidForData
+                    )
+{
+    this.rootFolderEntid = pRootFolderEntid;
+    this.rootFolderDescr = pRootFolderDescr;
+    this.rootFolderDivId = pRootFolderDivId;
+    this.isVerticalMenu = pIsVerticalMenu;
+    this.rootFolderPlaceHolderDivId = pRootFolderPlaceHolderDivId;
+    this.useMenuItemSeparator = pUseMenuItemSeparator;
+    this.useGradientBackground = pUseGradientBackground;
+    this.isVerticalGradient = pIsVerticalGradient;
+    this.gradientStartColor = pGradientStartColor;
+    this.gradientEndColor = pGradientEndColor;
+    this.hostZoneFrameId = pHostZoneFrameId;
+    this.hostZoneContentId = pHostZoneContentId;
+    this.designSidebarOpen = pDesignSidebarOpen;
+    this.folderEntidForData = pFolderEntidForData;
+}
+
+
+function ghAdjustWidthOfElementsForScrollbar(pSelectorString)
+{
+    var selectorQuery = $(pSelectorString);
+
+    if (selectorQuery.length === 0)
+    {
+        return;
+    }
+
+    var elementWidth = selectorQuery.width();
+    var elementWidthMinusScrollbarWidth = elementWidth - 17;
+    ghSetWidthQuery(selectorQuery,elementWidthMinusScrollbarWidth + "px");
+}
+/* JS implementation of StringBuilder, aids in String concat performance for MSIE */
+function StringBuffer(){
+	this.buffer = [];
+}
+StringBuffer.prototype.append = function append(string){
+	this.buffer.push(string);
+	return this;
+};
+StringBuffer.prototype.toString = function toString(){
+	return this.buffer.join("");
+};
+function edlog(str){
+	//var obj = document.getElementById('jslog');
+	//if(obj){
+	//	obj.innerHTML += '<p>' + new Date().getTime() + '|' + str + '</p>';
+	//}
+	//console.log(str);
+}
+/* functions below are to isolate inline JS that is manipulating DOM, ideally these should be in classes that we toggle! */
+function ghSetHeightEl(el,val){
+	if(el!=null){
+		el.style.height = val;
+	}
+}
+function ghSetWidthEl(el,val){
+	if(el!=null){
+		el.style.width = val;
+	}
+}
+function ghSetHeightQuery(el,val){
+	el.css("height", val);
+}
+function ghSetWidthQuery(el,val){
+	el.css("width", val);
+}
+function ghSetHeightId(id,val){
+	var el = document.getElementById(id);
+	ghSetHeightEl(el,val,'id=' + id);
+}
+function ghSetWidthId(id,val){
+	var el = document.getElementById(id);
+	ghSetWidthEl(el,val,'id=' + id);
+}
+function ghDisplayMessage(message)
+{
+	// TODO convert to modal overlay, change all use of 'alert()' to direct here!
+	if (message != null && message != '')
+	{
+	    alert(message);
+	}
+}

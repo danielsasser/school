@@ -1,0 +1,59 @@
+function haltSlideShow()
+{
+   $(".ed-slider-pause").each(function(){
+       try
+       {
+            this.click();
+       }
+       catch(e)
+       {
+           //just swallow it
+       }
+
+   })
+}
+function fssbOnload(pElementIdSuffix, pDelay, pShowNavControls, pShowFullScreen, pTransitionEffectPhotos,
+        pCarousel, pThumbnailSize, pCarouselScroll, pCaptions, pFolderEntid, pBoxContentsElementId, pBoxAreaElementId, pCropToFit)
+{
+    var options = {
+        prevNext:true,
+        auto:true,
+        delay:pDelay,
+        playPause:true,
+        showNavControls:pShowNavControls,
+        hoverPauseSlideShow:false,
+        numberedSlides: true,
+        showFullScreen:pShowFullScreen,
+        elementIdSuffix:pElementIdSuffix,
+        cropToFit:pCropToFit,
+        transitionEffectPhotos:pTransitionEffectPhotos,
+        transitionEffectCaptions:'normal',
+        carousel: pCarousel,
+        thumbnailSize: pThumbnailSize,
+        carouselScroll: pCarouselScroll,
+        scrollAllMinus: 0,
+        captions:pCaptions,
+        folderEntid:pFolderEntid /* we always need this no matter what */
+    };
+
+    $('#ed-slider-gallery-' + pElementIdSuffix).edSlider(options);
+
+    try
+    {
+        var boxContainerWidth = parseInt($('#' + pBoxContentsElementId).width());
+        var sliderWrapWidth = parseInt($('#ed-slider-wrap-' + pElementIdSuffix).width());
+
+        if (!isNaN(boxContainerWidth) && !isNaN(sliderWrapWidth))
+        {
+            if (boxContainerWidth < sliderWrapWidth)
+            {
+                $('#' + pBoxContentsElementId).width(sliderWrapWidth);
+            }
+        }
+    }
+    catch(e)
+    {
+        //swallow the runtime error.
+    }
+
+}

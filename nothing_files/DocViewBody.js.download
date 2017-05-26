@@ -1,0 +1,118 @@
+function dvbGoToLink(pHref, pLinkIsInternalImportedFile, pViewLinkInNewWindow)
+{
+    if (pLinkIsInternalImportedFile)
+    {
+        dvbRequestDocViewExplicitReturnPage();
+    }
+
+    // parent is needed to find openPopupWindow function referenced via header.js in DocView.jsp
+    if (pViewLinkInNewWindow)
+    {
+        parent.openPopupWindow(pHref,'','');
+    }
+    else
+    {
+        parent.location = pHref;
+    }
+}
+
+
+function dvbRequestDocViewExplicitReturnPage()
+{
+
+    var parameters = "key=none";   // this is important so that IE doesn't choke TT 4284
+
+    // parent is needed to find $.ajax function referenced via jquery.js in DocView.jsp
+    parent.$.ajax({
+        type: "POST",
+        url: "/DocViewExplicitReturn.page",
+        async: false,
+        data: parameters,
+        complete: function(xmlRequestObject, successString){
+            dvbReceiveDocViewExplicitReturnPage(xmlRequestObject, successString);
+        }
+    });
+
+}
+
+
+function dvbReceiveDocViewExplicitReturnPage(pAjaxReq, successString)
+{
+    // successString was "error" when Firefox was showing "Stopped" in status bar; see TT 4732 for more information
+    if (successString.indexOf("error") != -1)
+    {
+        if (dvbShowAjaxErrorsToWorldUsers && dvbIsWorldUser)
+        {
+            alert('There was an unexpected ' + successString + ' in function dvbReceiveDocViewExplicitReturnPage in DocViewBody.js.');
+        }
+        return;
+    }
+
+    var xmlRespDoc = pAjaxReq.responseXML ? pAjaxReq.responseXML : $.parseXML(pAjaxReq.responseText);
+
+    if (  (xmlRespDoc == null) || (xmlRespDoc.firstChild == null)  )
+    {
+        parent.document.write(pAjaxReq.responseText);
+        return;
+    }
+
+    // Ignore response; nothing to do client-side
+
+}
+
+
+function dvbDisableMouseClickingWhenPreviewing(pEntid)
+{
+    var docViewBodyTableQuery = $("#docViewBodyTable" + pEntid);
+    var docViewBodyTableImagesQuery = docViewBodyTableQuery.find("img");
+    var docViewBodyTableAnchorsQuery = docViewBodyTableQuery.find("a");
+    
+    // parent is needed to find openPopupWindow function referenced via header.js in DocView.jsp
+    if (!parent.hdrIsSafari_1_3_2())
+    {
+        docViewBodyTableImagesQuery.unbind();
+        docViewBodyTableAnchorsQuery.unbind();
+    }
+
+    docViewBodyTableImagesQuery.attr( { onclick: "dvbDoNothing();", onmouseover: "dvbDoNothing();" } );
+    docViewBodyTableAnchorsQuery.attr( { target: "", href: "javascript: dvbDoNothing();", onclick: "dvbDoNothing();", onmouseover: "dvbDoNothing();" } );
+}
+
+
+function dvbDoNothing()
+{
+}
+
+
+function dvbSetTinyMceLinkTargets()
+{
+    // Force links created with tinyMCE to have the "target=_top" attribute so that they
+    // open in the top-most frame of the current window.
+    $("a").each(function () {
+
+        var thisQuery = $(this);
+
+        if (thisQuery.attr("mce_href"))
+        {
+            thisQuery.attr("target", "_top");
+        }
+    });
+}
+
+
+function dvbCenterSpecialDocsExternal(pStandardPageWidth, pHeaderImageWidth)
+{
+    var bodyFrameElement = parent.document.getElementById("docViewBodyFrame");
+    var contentWidth = $(bodyFrameElement).width();
+    var pageWidth = Math.max(pStandardPageWidth, pHeaderImageWidth);
+
+    if (contentWidth > pageWidth )
+    {
+        var leftMargin = (contentWidth - pageWidth) / 2;
+
+        if (leftMargin > 1)
+        {
+            $("body").css("margin-left", leftMargin + "px");
+        }
+    }
+}

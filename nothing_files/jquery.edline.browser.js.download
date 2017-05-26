@@ -1,0 +1,23 @@
+/*
+*   Copyright 2012, Edline.
+*   All Rights Reserved.
+*/
+
+if (!jQuery.browser)
+{
+    makeJQueryBrowserObject();
+}
+
+function makeJQueryBrowserObject()
+{
+    var agent = navigator.userAgent;
+    jQuery.browser =
+                        {
+                            version: (agent.match( /.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/ ) || [0,'0'])[1],
+                            chrome: /chrome/i.test( agent),
+                            opera: /opera/i.test( agent ),
+                            safari: /webkit/i.test( agent ),
+                            msie: /msie/i.test( agent ) && !(/opera/i.test( agent )),
+                            mozilla: /mozilla/i.test( agent ) && !(/(compatible|webkit)/i.test( agent ))
+                        };
+}

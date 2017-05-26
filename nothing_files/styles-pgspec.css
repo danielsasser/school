@@ -1,0 +1,191 @@
+
+
+	
+/*styles for ui_example.html*/
+
+   .ed-formHeader .ed-icon{display:block; position:absolute; top:6px; left:5px;  }
+   .ed-exampleSummary{background:url('/images/sleek/icon-summary.png');}
+   .ed-exampleAddContent{background:url('/images/sleek/icon-addContent.png');}
+   .ed-exampleMultiple{background:url('/images/sleek/icon-multiplePosting.png');}
+   .ed-exampleDocVisibility{background:url('/images/sleek/icon-docVisible.png');}
+   .friendlyURL{background:url('/images/sleek/icon-friendlyURL.png');}
+
+/*end styles for ui_example.html*/
+
+.multiple{background:url('/images/sleek/icon-multiplePosting.png');}
+
+/*styles for ModifyPage.html*/
+	.miniCal{position:relative; display:block; float:left; width:57px; min-height:32px; background:url('/images/sleek/btn-calendar.png') no-repeat; z-index:50;}
+	.miniCal:hover{background:url('/images/sleek/btn-calendar-hover.png') no-repeat;}
+		.datePicker{display:none !important; position:absolute;  top:22px; left:-185px; width:235px; height:220px; background:url('/images/sleek/bg-calendar.png') !important; z-index:45;}
+
+
+	.addToList{float:right;}
+	/*.addToList .ed-icon{float:right; margin:0 -10px 0 2px;}*/
+
+
+
+	.chgVis{display:block; height:37px; margin:1px 0 5px 35px;}
+	
+	/*styles for the specific form sections*/
+	#summaryInformation{}
+		.docTitle{width:368px;}
+		.docSummary{width:368px;}
+		.summaryHelp{padding:2px 0 0; display:none;}
+		.dateField{width:78px;}
+
+	#documentVisibility > p{margin:15px 35px 0;}
+	#documentVisibility .ed-button{margin:5px 0 0 35px;}
+
+	.linkToField{width:375px;}
+
+	#friendlyURL p{margin:18px 35px 0;}
+	#friendlyURL label{margin:0 0 0 35px;}
+	#friendlyURL input{width:225px;}
+	
+/*styles for ui_example.html*/
+
+
+ /* Page specific CSS - from Wes */
+
+.ed-hidden
+{
+    display: none;
+}
+
+.ed-resourceLabelFormHeaderItem
+{
+    float:right;
+    white-space:nowrap;
+}
+
+#ed-resourceListNextPreviousControls li
+{
+    background-image:none;
+    float:left;
+    padding:0 15px 0 15px;
+    margin:0;
+    list-style-type:none;
+}
+    
+
+#ed-userSearchTopLinkSectionHeader
+{
+    float:right;
+}
+#ed-userSearchCheckboxUserTypeFilter li
+{
+    background-image:none;
+    float:left;
+    padding:0 15px 0 15px;
+    margin:0;
+    list-style-type:none;
+}
+.ed-userListEmphasisColor
+{
+    color:#000088;
+}
+.ed-userListFormDisabled
+{
+    color:red;
+}
+.ed-userListFormEnabled
+{
+    color:green;
+}
+.ed-userListJumpTo
+{
+    text-align:center;
+}
+.ed-userListRightBorder
+{
+    border-right: 1px solid #000000;
+    padding-left:15px;
+}
+.ed-inlineBlock
+{
+    display:inline-block;
+}
+.ed-userListCbxOperatorsFloatLeft
+{
+    float:left;
+}
+.ed-userListCbxOperatorsFloatRight
+{
+    float:right;
+}
+.ed-userListPriInstr
+{
+    display:inline-block;
+    padding-right:20px;
+}
+#ed-userListRange
+{
+    float:left;
+    white-space: nowrap;
+}
+#ed-userListSearchOnly
+{
+    float:right;
+    white-space: nowrap;
+}
+#ed-userListManageUsers
+{
+    float:right;
+    white-space: nowrap;
+}
+#ed-userListSearchPlus
+{
+    float:right;
+    white-space: nowrap;
+}
+.ed-userListSpacerFloatRight
+{
+    float:right;
+    width:15px;
+}
+.ed-userListSpacerFloatLeft
+{
+    float:left;
+    width:15px;
+}
+
+.ed-userListFullName
+{
+    width:250px;
+    overflow:hidden;
+}
+
+.ed-userListsysId
+{
+    width:125px;
+    overflow:hidden;
+}
+
+.ed-userListScreenName
+{
+    width:125px;
+    overflow:hidden;
+}
+
+.ed-userListTypeAndStatus
+{
+    text-align:center;
+}
+
+.ed-userListTableRowControls
+{
+    vertical-align:baseline;
+    position:relative;
+    top:1px;
+}
+
+.ed-compactTableRow td
+{
+    padding:0px 3px 0px !important;
+}
+
+/*
+#buttonTest{height:150px; width:240px; border: 1px solid red; text-align: center;}
+#buttonTest .ed-button{margin:0 auto; border:1px solid blue;}
+*/

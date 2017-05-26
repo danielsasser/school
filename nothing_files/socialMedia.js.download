@@ -1,0 +1,201 @@
+var smIconsBuiltYet = false;
+
+
+function smInitSocialNetworkMenu(pEnableSocialMediaMenu, pIsPrivateResource)
+{
+    //Disable Social Networking for Non-Friendly URLs (aka. URLs ending in .page)
+    if (isNotAnEdlineFriendlyURL() || !pEnableSocialMediaMenu || pIsPrivateResource)
+    {
+        hideSocialNetworkMenu();
+    }
+    else
+    {
+        showSocialNetworkMenu();
+        buildSocialNetworkIconsOnTheFly();
+    }
+}
+
+
+function buildSocialNetworkIconsOnTheFly()
+{
+    var currentURL = window.location.href;
+
+    // The following event handlers get dropped when function ghOnDocumentReady in GroupHome.js does a call to
+    // menuBarContainerQuery.remove().  This could potentially be handled with jQuery "delegated events" via the "on"
+    // method, but delegated events don't work with SVG.  Unfortunately, we'll probably have to live with it until
+    // the append can work better or until we take a different approach to positioning/displaying the browser-wide
+    // silver menu bar at the top of the page.
+
+    /*
+    $('#social').one('mouseover', function(){
+        buildTwitterMenuItem(currentURL);
+        buildGooglePlusMenuItem(currentURL);
+        buildFacebookMenuItem(currentURL);
+    });
+    */
+
+    $('#social').attr("onmouseover", "reallyBuildSocialNetworkIconsOnTheFly('" + currentURL + "');");
+}
+
+
+function reallyBuildSocialNetworkIconsOnTheFly(pCurrentUrl)
+{
+    if (smIconsBuiltYet)
+    {
+        return;
+    }
+
+    smIconsBuiltYet = true;
+
+    buildTwitterMenuItem(pCurrentUrl);
+    buildGooglePlusMenuItem(pCurrentUrl);
+    buildFacebookMenuItem(pCurrentUrl);
+}
+
+
+//Google+ doesn't support IE7 & FF3.6 and below
+function isBrowserGooglePlusCompatible()
+{
+    var usrAgent = navigator.userAgent;
+
+    if (/MSIE (\d+\.\d+);/.test(usrAgent))
+    {
+        if (usrAgent.indexOf("Trident")>-1)
+        {    //In IE 8/9 User-Agent  have the word Trident in it. This test is to filter out cases when IE 8/9 is running in CompatMode
+              return true;
+        }
+        //test for MSIE x.x;
+        var ieversion=new Number(RegExp.$1); // capture x.x portion and store as a number
+        if (ieversion<=7){
+            return false;
+        }
+    }
+
+    if (/Firefox[\/\s](\d+\.\d+)/.test(usrAgent)){ //test for Firefox/x.x or Firefox x.x (ignoring remaining digits);
+        var ffversion=new Number(RegExp.$1); // capture x.x portion and store as a number
+        if (ffversion<=3){
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+function adjustBoxModelIfIEQuirksMode()
+{
+    //Box Model Fix for IE Quirks Mode   or IE7 Standards
+    if(isOlderIEVersionOrInBackwardCompatMode())
+    {
+        $('#social ul li').css("margin-bottom","-3px");
+        return;
+    }
+
+}
+
+function isNotAnEdlineFriendlyURL()
+{
+    return  (window.location.href.split(".page").length>1) || (window.location.href.match("/pages/")===null);
+}
+
+function hideSocialNetworkMenu()
+{
+    $('#social').hide();                 // Remove Social Menu Bar from the DOM
+}
+
+function showSocialNetworkMenu()
+{
+    $('#social').show(); //Show Social Network Menu
+}
+
+function getFacebookAppId()
+{
+    return 272098696188278;
+}
+
+function buildTwitterMenuItem(currentURL)
+{
+    if($('#twitterMenuItem')!= null)
+    {
+        $.getScript("//platform.twitter.com/widgets.js", function(data, textStatus, jqxhr) {
+        });
+
+        $('#twitterMenuItem').html( "<div style=\"height:30px;width:185px;\"><a href=\"https://twitter.com/share\" class=\"twitter-share-button\" data-count=\"horizontal\" data-url="+currentURL+"></a>" +
+            "</div>");
+    }
+}
+
+function buildGooglePlusMenuItem(currentURL)
+{
+    if(isBrowserGooglePlusCompatible())
+    {
+        $.getScript("https://apis.google.com/js/plusone.js", function(data, textStatus, jqxhr) {
+        });
+
+        if($.browser.msie  && (document.compatMode == "BackCompat"))
+        {
+            //Not displaying the vote count for IE Quirks; Causes Display issue on earlier versions of IE & in Quirks
+            if($('#googlePlusMenuItem')!= null)
+            {
+                $('#googlePlusMenuItem').html("<div style=\"height:30px;width:185px;\"><div class=\"g-plusone\" data-annotation=\"none\" data-width=\"450\" data-href="+currentURL+">" +
+                    "</div></div>");
+            }
+        }
+        else
+        {
+            if($('#googlePlusMenuItem')!= null)
+            {
+                $('#googlePlusMenuItem').html("<div style=\"height:30px;width:185px;\"><div class=\"g-plusone\" data-width=\"450\" data-href="+currentURL+">" +
+                    "</div></div>");
+
+            }
+        }
+    }
+    else
+    {
+        $('#googlePlusMenuItem').remove();
+    }
+}
+
+function buildFacebookMenuItem(currentURL)
+{
+    if($('#facebookMenuItem')!= null)
+    {
+        if(isOlderIEVersionOrInBackwardCompatMode())
+        {
+            buildFacebookIFrame(currentURL);
+        }
+        else
+        {
+            buildFacebookXFBML(currentURL);   //TODO: Replace with buildFacebookXFBML()
+        }
+    }
+
+}
+
+
+function buildFacebookIFrame(currentURL) {
+    var facebookURL = "//www.facebook.com/plugins/like.php?href=" + currentURL + "&amp;send=false&amp;layout=button_count&amp;width=450&amp;" +
+            "show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21";
+
+     $('#facebookMenuItem').html("<iframe  src= " + facebookURL + " style=\"border:none; overflow:hidden; width:185px; height:30px;\" frameborder=\"0\" allowtransparency=\"true\" scrolling=\"no\" ></iframe>");
+}
+
+function buildFacebookXFBML(currentURL) {
+
+     $('#facebookMenuItem').html(
+            "<div style=\"height:30px;width;185px;\"><fb:like href=" + currentURL + " send=\"false\" layout=\"button_count\" width=\"185\" show_faces=\"false\"></fb:like>" +
+                "<script>" +
+                "(function(d, s, id) {id = getFacebookAppId();"+
+                "var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)){return;}"+
+                "js = d.createElement(s);js.id = id;js.src = \"//connect.facebook.net/en_US/all.js#xfbml=1\";fjs.parentNode.insertBefore(js, fjs);"+
+                "}(document, 'script', 'facebook-jssdk'));" +
+                "</script><div id=\"fb-root\"></div>" +
+              "</div>");
+}
+
+
+function isOlderIEVersionOrInBackwardCompatMode() {
+    return ($.browser.msie) && ((document.compatMode == "BackCompat") || (document.documentMode <= 8));
+}
+

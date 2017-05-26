@@ -1,0 +1,733 @@
+function FlashPlayerManager()
+{
+    var result;
+    if (!(this instanceof FlashPlayerManager))
+    {
+        result =  new FlashPlayerManager();
+    }
+    else
+    {
+        this.count=0;
+        this.onLoadPlayers = {};
+
+        result = this;
+    }
+
+    return result;
+}
+
+
+FlashPlayerManager.prototype.createPlayer = function(playerId, url)
+{
+    var initFn;
+    var waitForReady;
+
+    var matchLocal = new RegExp("^/dynimg/_\\w+_/docid/(0x\\w+/[0-9]+)/").exec(url);
+    if (matchLocal === null ||
+        matchLocal.length != 2 ||
+        typeof embedInfo[matchLocal[1]] == 'undefined')
+    {
+        if (typeof isDesignMode == "undefined" || !isDesignMode)
+        {
+            initFn = this.createRemoteVideoPlayer;
+            waitForReady = true;
+        }
+        else
+        {
+            initFn = this.createPlaceholderForManageDesign;
+            waitForReady = false;
+        }
+    }
+    else if (url.match('\\.mp3$'))
+    {
+        initFn = this.createAudioPlayer;
+        waitForReady = true;
+    }
+    else
+    {
+        var renderer = embedInfo[matchLocal[1]].renderer;
+        if ("video" == renderer)
+        {
+            if (typeof isDesignMode == "undefined" || !isDesignMode)
+            {
+                if (!mmIsFlashAvailable() && mmIsHTML5FlowplayerEnabled() && mmIsHTML5VideoSupported() )
+                {
+                    initFn = this.createHTML5VideoPlayer;
+                }
+                else
+                {
+                    initFn = this.createLocalVideoPlayer;
+                }
+
+                waitForReady = true;
+            }
+            else
+            {
+                initFn = this.createPlaceholderForManageDesign;
+                waitForReady = false;
+            }
+        }
+        else if ("audio" == renderer)
+        {
+            initFn = this.createAudioPlayer;
+            waitForReady = true;
+        }
+        else
+        {
+            initFn = this.createDownloadLink;
+            waitForReady = false;
+        }
+    }
+
+    if (waitForReady)
+    {
+        var readyInfo =
+        {
+            url: url,
+            initFn: initFn,
+            processed: false
+        };
+
+        this.onLoadPlayers[playerId] = readyInfo;
+    }
+    else
+    {
+        initFn(playerId, url);
+    }
+};
+
+
+FlashPlayerManager.prototype.onLoadProcessing = function()
+{
+    $.each(flashManagerSingleton.onLoadPlayers, function(key, value)
+    {
+        if (!value.processed)
+        {
+            value.initFn(key, value.url);
+            value.processed = true;
+        }
+    });
+};
+
+
+FlashPlayerManager.prototype.createPlaceholderForManageDesign = function(playerId, url)
+{
+    document.getElementById(playerId).innerHtml =
+            '<img src="/jscripts/custom_tinymce_plugins/media/img/trans.gif" _mce_src="/jscripts/custom_tinymce_plugins/media/img/trans.gif" class="mceItemFlash" title="' + 'erp' + '" width="100%" height="100%" align="" alt="" />';
+};
+
+
+FlashPlayerManager.prototype.createLocalVideoPlayer = function(playerId, url)
+{
+    var splash = null;
+    var matchLocal = new RegExp("^/dynimg/_\\w+_/docid/(0x\\w+/[0-9]+)/").exec(url);
+    if (matchLocal !== null &&
+        matchLocal.length == 2 &&
+        typeof embedInfo[matchLocal[1]] != 'undefined')
+    {
+        var playerInfo = embedInfo[matchLocal[1]];
+        if ("undefined" !== typeof(playerInfo.splash))
+        {
+            splash = matchLocal[0] + 'splash/splash/' + playerInfo.splash;
+        }
+    }
+
+    var playlist =
+                [
+                    {
+                        url: url,
+                        provider: 'pseudo',
+                        scaling: 'fit',
+                        autoPlay: false
+                    }
+                ];
+
+    if (null !== splash)
+    {
+        playlist.unshift({ url: splash, scaling: 'fit'});
+    }
+
+    flowplayer3(playerId, '/jscripts/jquery/plugin/flowplayer-3.2.16/flowplayer-3.2.16.swf',
+        {
+            wmode: "transparent",
+            playlist: playlist,
+            plugins:
+            {
+                pseudo:
+                {
+                    url: '/jscripts/jquery/plugin/flowplayer-3.2.16/flowplayer.pseudostreaming/flowplayer.pseudostreaming-3.2.12.swf'
+                }
+            }
+        }
+    );
+};
+
+
+FlashPlayerManager.prototype.createRemoteVideoPlayer = function(playerId, url)
+{
+    var playerQuery = $('#' + playerId);
+
+    var w = playerQuery.width();
+    var h = playerQuery.height();
+
+    var embedAttr =
+        {
+            id:         'o_' + playerId,
+            width:      w,
+            height:     h,
+            name:       'eobj',
+            align:      '',
+            src:        url,
+            type:       'application/x-shockwave-flash',
+            wmode:      'transparent'
+        };
+
+    var oplayerAttr =
+        {
+            id:         'o_' + playerId,
+            width:      w,
+            height:     h,
+            align:      '',
+            name:       'o_' + playerId,
+            classid:    'clsid:D27CDB6E-AE6D-11cf-96B8-444553540000',
+            codebase:   'http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0'
+        };
+
+    var params =
+    {
+        src:        url,
+        url:        url,
+        width:      w,
+        height:     h,
+        id:         'o_' + playerId,
+        eobj:       'o_' + playerId,
+        align:      '',
+        wmode:      'transparent'
+    };
+
+    var playerEmbed = "<object";
+    for (var p in oplayerAttr)
+    {
+        playerEmbed += ' ' + p + '="' + oplayerAttr[p] + '"';
+    }
+    playerEmbed += '>';
+
+    for (var p in params)
+    {
+        playerEmbed += '<param name="' + p + '" value="' + params[p] + '" />';
+    }
+
+    playerEmbed += '<embed';
+    for (var p in embedAttr)
+    {
+        playerEmbed += ' ' + p + '="' + embedAttr[p] + '"';
+    }
+
+    playerEmbed += '>';
+    playerEmbed += '</embed>';
+
+    playerEmbed += '</object>';
+
+    playerQuery.html(playerEmbed);
+};
+
+
+FlashPlayerManager.prototype.createHTML5VideoPlayer = function(playerId, url)
+{
+    var splash = null;
+    var flvUrl = url.replace("/docid/", "/flv/flv/docid/");
+    var mp4Url = url.replace("/docid/", "/mp4/mp4/docid/");
+    var matchLocal = new RegExp("^/dynimg/_\\w+_/docid/(0x\\w+/[0-9]+)/").exec(url);
+
+    if (matchLocal !== null &&
+        matchLocal.length == 2 &&
+        typeof embedInfo[matchLocal[1]] != 'undefined')
+    {
+        var playerInfo = embedInfo[matchLocal[1]];
+        if ("undefined" !== typeof(playerInfo.splash))
+        {
+            splash = matchLocal[0] + 'splash/splash/' + playerInfo.splash;
+        }
+    }
+
+    flowplayer.conf = {
+        engine: "html5",
+        splash: true,
+        flashfit: true,
+        embed: {
+            library: "/jscripts/jquery/plugin/flowplayer-5.4.3/flowplayer.min.js",
+            script: "/jscripts/jquery/plugin/flowplayer-5.4.3/embed.min.js",
+            skin: "/jscripts/jquery/plugin/flowplayer-5.4.3/skin/minimalist.css",
+            swf: "/jscripts/jquery/plugin/flowplayer-5.4.3/flowplayer.swf"
+        }
+    }
+
+    $('#' + playerId)
+    .css('background', '#000 url(' + splash + ') no-repeat 50% 51%')
+    .flowplayer({
+        playlist: [
+            [
+                {
+                    mp4: mp4Url,
+                    flash: flvUrl
+                }
+            ]
+        ]
+    });
+};
+
+
+FlashPlayerManager.prototype.createAudioPlayer = function(playerId, url)
+{
+    AudioPlayer.embed(playerId, { soundFile: url, autostart: "no", animation: "no" });
+};
+
+
+FlashPlayerManager.prototype.createDownloadLink = function(playerId, url)
+{
+    var splitPoint = "_/";
+    var splitAfter = url.indexOf(splitPoint);
+    var downloadUrl;
+
+    if (splitAfter == -1)
+    {
+        downloadUrl = url;
+    }
+    else
+    {
+        downloadUrl =   url.substring(0, splitAfter + splitPoint.length)
+                      + "nostream/true/"
+                      + url.substring(splitAfter + splitPoint.length, url.length);
+    }
+
+
+    $('#'+playerId).append("Click <a href='" + encodeURI(downloadUrl) + "'>here</a> to download the file.");
+};
+
+
+FlashPlayerManager.prototype.getNewPlayerId = function()
+{
+    if (this.count === 0)
+    {
+        $(document).ready(this.onLoadProcessing);
+    }
+
+    var playerId = 'player' + this.count;
+    ++this.count;
+
+    return playerId;
+};
+
+
+FlashPlayerManager.prototype.renderDivForPlayer = function(playerId, w, h)
+{
+    var div = "<div style='width: "+w+"px; height: "+h+"px; display:inherit;' id='"+playerId+"'></div>";
+    document.write(div);
+};
+
+
+
+if (typeof flashManagerSingleton == "undefined")
+{
+    var flashManagerSingleton = new FlashPlayerManager();
+}
+
+function writeContent(type, p)
+{
+    if (!isEditingMode && !isDesignMode)
+    {
+        var playerId =  flashManagerSingleton.getNewPlayerId();
+        flashManagerSingleton.renderDivForPlayer(playerId, p.width, p.height);
+        flashManagerSingleton.createPlayer(playerId, p.src);
+    }
+}
+
+
+function writeFlash(p)
+{
+    writeContent("flash", p);
+}
+
+
+function writeShockWave(p)
+{
+    writeContent("shockWave", p);
+}
+
+
+function writeQuickTime(p)
+{
+    writeContent("quickTime", p);
+}
+
+
+function writeRealMedia(p)
+{
+    writeContent("real", p);
+}
+
+
+function writeWindowsMedia(p)
+{
+    writeContent("windowsMedia", p);
+}
+
+
+function mmAddEmbedInfo(docProps)
+{
+    if (typeof embedInfo == 'undefined')
+    {
+        embedInfo = docProps;
+    }
+    else
+    {
+        for (var property in docProps)
+        {
+            embedInfo[property] = docProps[property];
+        }
+    }
+}
+
+
+function mmToTinymceOpts(docOpts)
+{
+    var plugins       = [];
+    var buttons1      = [];
+    var buttons2      = [];
+    var initFunctions = [];
+    var extraOpts     = {};
+
+    plugins[plugins.length] = "-advlink";
+    plugins[plugins.length] = "-media";
+
+    if (docOpts.IMAGES == "true")
+    {
+        buttons2[buttons2.length] = "image";
+        plugins[plugins.length] = "-advimage";
+        buttons2[buttons2.length] = "imagecrop";
+
+        extraOpts.file_browser_callback = "mmPopupFileBrowser";
+    }
+    else
+    {
+        initFunctions[initFunctions.length] = function(ed)
+        {
+            ed.onInit.add(function(ed)
+            {
+                if ( typeof(ed.plugins.contextmenu) != "undefined" )
+                {
+                    ed.plugins.contextmenu.onContextMenu.add(function(th, m, e)
+                    {
+                        var priorImageControl = null;
+                        var imageControl = null;
+
+                        //advanced.image_desc
+                        for (var o in m.items)
+                        {
+                            if ("Insert/edit image" === m.items[o].settings.title)
+                            {
+                                imageControl = o;
+                                break;
+                            }
+                            priorImageControl = o;
+                        }
+                        if (imageControl !== null)
+                        {
+                            delete m.items[imageControl];
+                            if (priorImageControl !== null)
+                            {
+                                delete m.items[priorImageControl];
+                            }
+                        }
+                    });
+                }
+            });
+        };
+    }
+
+    if (docOpts.VIDEO == "true")
+    {
+//        if ( $.browser.msie && puIsPopupBlocked(true) )
+//        {
+//            alert("The multimedia uploading feature is not available due to browser settings.  \n\n" +
+//                  "Please adjust popup blocker settings to allow popups for this site.");
+//        }
+//        else
+//        {
+        buttons2[buttons2.length] = "media";
+        extraOpts.file_browser_callback = "mmPopupFileBrowser";
+        extraOpts.media_use_script = true;
+        extraOpts.media_types = "flash=swf,mov,qt,mpg,mp3,mp4,mpeg,avi,wmv,wm,asf,asx,wmx,wvx,rm,ra,ram";
+//        }
+    }
+
+    if (docOpts.TABLES == "true")
+    {
+        buttons2[buttons2.length] = "table";
+        plugins[plugins.length] = "table";
+    }
+
+    var dropboxButtonEnabled = false;
+    if (docOpts.DROPBOX == "true") {
+        dropboxButtonEnabled = true;
+        plugins[plugins.length] = "dropbox";
+    }
+
+    var googleDriveButtonEnabled = false;
+    if (docOpts.GOOGLE_DRIVE == "true") {
+        googleDriveButtonEnabled = true;
+        plugins[plugins.length] = "googledrive";
+    }
+
+    return {
+        initFunctions: initFunctions,
+        plugins: plugins,
+        buttons1: buttons1,
+        buttons2: buttons2,
+        extraOpts: extraOpts,
+        dropboxButtonEnabled: dropboxButtonEnabled,
+        googleDriveButtonEnabled: googleDriveButtonEnabled,
+
+        initTinyMce: function(initOpts)
+        {
+            var pluginsLine = "";
+            for (var i in this.plugins)
+            {
+                var p = this.plugins[i];
+                pluginsLine += "," + p;
+            }
+
+            var buttonsLine1 = "";
+            var buttonsLine2 = "";
+
+            for (var i in this.buttons1) {
+                var b = this.buttons1[i];
+                buttonsLine1 += "," + b;
+            }
+
+            for (var i in this.buttons2) {
+                var b = this.buttons2[i];
+                buttonsLine2 += "," + b;
+            }
+
+            if (typeof initOpts.theme_advanced_buttons1 === 'undefined') {
+                initOpts.theme_advanced_buttons1 = buttonsLine1.substring(1);
+            } else {
+                initOpts.theme_advanced_buttons1 += buttonsLine1;
+            }
+
+            if (typeof initOpts.theme_advanced_buttons2 === 'undefined') {
+                initOpts.theme_advanced_buttons2 = buttonsLine2.substring(1);
+            } else {
+                initOpts.theme_advanced_buttons2 += buttonsLine2;
+            }
+
+            if (typeof initOpts.plugins === 'undefined')
+            {
+                initOpts.plugins = pluginsLine.substring(1);
+            }
+            else
+            {
+                initOpts.plugins += pluginsLine;
+            }
+
+            for (var p in this.extraOpts)
+            {
+                initOpts[p] = this.extraOpts[p];
+            }
+
+            if (this.initFunctions.length > 0)
+            {
+                this.initFunctions.splice(0, 0, initOpts.setup);
+                initOpts.setup      = mmSetupTinymce;
+                initOpts.mmOurSetup = this.initFunctions;
+            }
+
+            initOpts.document_base_url     = location.protocol + '//' + location.host;
+            initOpts.remove_script_host    = false;
+            initOpts.relative_urls         = false;
+            initOpts.urlconverter_callback = mmUrlConverter;
+
+            tinyMCE.init(initOpts);
+        }
+    };
+}
+
+
+function mmPopupFileBrowser(fieldName, url, type, win)
+{
+    if ("image" !== type && "media" !== type && "file" !== type)
+    {
+        return;
+    }
+
+    var cmsUrl = "/FileUploadPopup.page?skipSettingPreviousGetUrl=true&type=" + type + "&fieldId=" + tinyMCE.activeEditor.id + "&fieldName=" + fieldName;
+    var cmsTitle;
+    if ("image" == type)
+    {
+        cmsTitle = "Upload an image";
+    }
+    else if ("media" == type)
+    {
+        cmsTitle = "Upload a video";
+    }
+    else if ("file" == type)
+    {
+        cmsTitle = "Upload a file";
+    }
+    else
+    {
+        cmsTitle = "Upload";
+    }
+
+
+    tinyMCE.activeEditor.windowManager.open(
+        {
+            file: cmsUrl,
+            title: cmsTitle,
+            width: 420,
+            height: 350,
+            resizable: "yes",
+            inline: "yes",
+            close_previous: "yes"
+        },
+        {
+            window: win,
+            input: fieldName
+        }
+    );
+}
+
+function mmSetupTinymce(ed)
+{
+    var init = ed.settings;
+
+    for (var i in init.mmOurSetup)
+    {
+        var f = init.mmOurSetup[i];
+
+        if ('undefined' !== (typeof f))
+        {
+            f(ed);
+        }
+    }
+}
+
+
+function mmUrlConverter(url, node, on_save)
+{
+    return mmCaclulateUrl(url);
+}
+
+
+function mmCaclulateUrl(url)
+{
+    var result;
+
+    var currentPrefix = location.protocol + '//' + location.hostname + '/';
+
+    if (url === '')
+    {
+        result = '';
+    }
+    else if (/^<\w+>/.test(url))
+    {
+        result = url;
+    }
+    else if (/^http[s]*:\/\//i.test(url))
+    {
+        result = url;
+    }
+    else if (/^\/\/www.youtube.com/.test(url) || /^\/\/player.vimeo.com/.test(url))
+    {
+        result = 'https:' + url;
+    }
+    else if (/^\/dynimg\//.test(url) || /^dynimg\//.test(url))
+    {
+        result = url;
+    }
+    else if (/^mailto:/i.test(url))
+    {
+        result = url;
+    }
+    else if (/^\/dynimg\//.test(url) || /^dynimg\//.test(url))
+    {
+        result = url;
+    }
+    else if (/^\//.test(url))
+    {
+        result = currentPrefix.substring(0, currentPrefix.length-1) + url;
+    }
+    else if (/^[^\\/]+\..+/.test(url))
+    {
+        result = 'http://' + url;
+    }
+    else
+    {
+        result = currentPrefix.substring(0, currentPrefix.length-1) +
+                 location.pathname.substring(0, location.pathname.lastIndexOf('/')) +
+                 '/' + url;
+    }
+
+    return result;
+}
+
+
+function mmAddSplashImage()
+{
+    var win = tinyMCEPopup.getWin();
+    var ae = win.tinyMCE.activeEditor;
+
+
+    var cmsUrl   = "/FileUploadPopup.page?skipSettingPreviousGetUrl=true&type=splash";
+    var cmsTitle = "Upload splash image";
+
+    var currentPrefix = location.protocol + '//' + location.hostname + '/';
+    ae.windowManager.open(
+        {
+            file: cmsUrl,
+            title: cmsTitle,
+            width: 280,
+            height: 150,
+            resizable: "yes",
+            inline: "yes",
+            close_previous: "no"
+        },
+        {
+            input: 'splashName'
+        }
+    );
+
+}
+
+
+function mmIsHTML5VideoSupported()
+{
+    return (document.createElement('video').canPlayType("video/mp4; codecs=\"avc1.4D401E, mp4a.40.2\"") != "");
+}
+
+
+function mmIsFlashAvailable()
+{
+    var hasFlash = false;
+    try {
+        var fo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+        if (fo) {
+            hasFlash = true;
+        }
+    } catch (e) {
+        if (navigator.mimeTypes
+            && navigator.mimeTypes['application/x-shockwave-flash'] != undefined
+            && navigator.mimeTypes['application/x-shockwave-flash'].enabledPlugin) {
+            hasFlash = true;
+        }
+    }
+
+    return hasFlash;
+}
+
+
+function mmIsHTML5FlowplayerEnabled()
+{
+    return (typeof isHTML5FlowplayerEnabled != "undefined" && isHTML5FlowplayerEnabled);
+}

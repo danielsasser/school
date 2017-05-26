@@ -1,0 +1,146 @@
+/*
+    Copyright 2013, Edline.
+    All Rights Reserved.
+
+    Shows a dialog with standard done and cancel buttons.
+
+    USAGE:
+
+    $('<div title="Title of the dialog">Content of the dialog</div>')
+        .edlineDialog({
+            width: 600px, //optional
+            height: 550px, //optional
+            doneBtnLabel: "Get Started!", //optional, label for the Done button on the dialog
+            cancelBtnLabel: "Cancel", //optional, label for the Cancel button
+            onDone: function() { doSomething(); }, //optional, extra function to be called when done is clicked.
+            onCancel: function() { doSomething(); }, //optional, extra function to be called when cancel is clicked.
+            extraBtns: { //optional, buttons for the dialog in addition to the standard done and cancel
+                "button1" : function() {
+                    doSomething();
+                },
+                "button2" : function() {
+                    doSomething();
+                }
+            }
+        });
+
+ */
+
+(function( $ ) {
+
+    $.fn.edlineDialog = function(method) {
+        if (methods[method]) {
+            return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
+        } else if (typeof method === 'object' || !method) {
+            return methods.init.apply(this, arguments);
+        } else {
+            $.error('Method ' + method + ' does not exist.');
+        }
+    };
+
+    var methods = {},
+
+    defaults = {
+        width: 500,
+        height: "auto",
+        doneBtnLabel: "Done",
+        cancelBtnLabel: "Cancel",
+        onDone: function() {},
+        onCancel: function() {},
+        extraBtns: {},
+        noCancelBtn: false,
+        noDoneBtn: false,
+        titleIconClass: null,
+        extraDlgClass: null
+    }
+
+
+    methods.init = function(options) {
+        options = $.extend({}, defaults, options);
+
+        return this.each(function() {
+            var obj = $(this),
+                data = obj.data('edlineDialog');
+
+            if (!data) {
+
+                var objButtons = {};
+
+                if (!options.noCancelBtn) {
+                    objButtons[options.cancelBtnLabel] = function() {
+                        options.onCancel();
+                        $(this).dialog("close");
+                        $(this).dialog("destroy");
+                        $(this).remove();
+                    }
+                }
+
+                if (!options.noDoneBtn) {
+                    objButtons[options.doneBtnLabel] = function() {
+                        options.onDone();
+                        obj.edlineDialog("close");
+                        obj.edlineDialog("destroy");
+                        obj.remove();
+                    }
+                }
+
+                $.extend({}, objButtons, options.extraBtns);
+
+                obj.dialog({
+                    resizable: false,
+                    draggable: false,
+                    modal: true,
+                    dialogClass: "edline-dialog" + (options.extraDlgClass != null ? " " + options.extraDlgClass : ""),
+                    buttons: objButtons,
+                    width: options.width,
+                    height: options.height,
+                    open: function() {
+                        $('.ui-dialog-buttonpane').find('button:contains("Done")').addClass('primary');
+                        $('.ui-dialog-buttonpane').find('button:contains("Save")').addClass('primary');
+                        $('.ui-dialog-buttonpane').find('button:contains("Saving")').addClass('primary');
+                        $('.ui-dialog-buttonpane').find('button:contains("OK")').addClass('primary');
+                        $('.ui-dialog-buttonpane').find('button:contains("Enable")').addClass('primary');
+                        $('.ui-dialog-buttonpane').find('button:contains("Enabling")').addClass('primary');
+                    }
+                });
+
+                if (options.titleIconClass != null) {
+                    $('<i class="fa ' + options.titleIconClass + '" style="margin-right: 6px;"></i>')
+                        .prependTo(obj.data('uiDialog').uiDialogTitlebar.find('.ui-dialog-title'));
+                }
+
+                obj.data('edlineDialog', options);
+            }
+        });
+    }
+
+
+    methods.show = function() {
+        return this.each(function() {
+            $(this).dialog("show");
+        });
+    }
+
+
+    methods.hide = function() {
+        return this.each(function() {
+            $(this).dialog("hide");
+        });
+    }
+
+
+    methods.close = function() {
+        return this.each(function() {
+            $(this).dialog("close");
+        })
+    }
+
+
+    methods.destroy = function() {
+        return this.each(function() {
+            $(this).dialog("destroy");
+            $(this).edlineDialog = null;
+        });
+    }
+
+})( jQuery );

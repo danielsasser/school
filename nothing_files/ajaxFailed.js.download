@@ -1,0 +1,80 @@
+//Add Constants for Yes, No, Cancel Return Values
+
+function closeAjaxFailureModal()
+{
+    $.modal.close();
+    document.location = "/Index.page";
+}
+
+function notifyAjaxFailed(message)
+{
+    var debugMsg = "";
+    try
+    {
+        var ajaxFailedHtml = '<div role="dialog" aria-labelledby="ajaxFailedTitleText" ' +
+                               'id="ajaxFailed" class="ed-modalDialog notranslate zoomable" style="display: block;">' +
+                               '<div id="ajaxFailedTitleText" class="ed-modalHeader"><span>Unexpected Error</span></div>' +
+                                '<div class="ed-modalContent" style="height:auto;">' +
+                                    '<div id="failedAjaxMessage" style="padding:15px 30px 20px 30px;color:white;"></div>'+
+                                    '<br style="clear:both" />'+
+                                    '<div style="height:22px;">' +
+                                        '<div role="button" aria-label="Done" id="ed-ajaxFailed-finishBtn" onclick="closeAjaxFailureModal();" class="ed-button btnM22" style="position:absolute;text-align:center;width:100%;" tabindex="0"><span aria-hidden="true" class=""><table cellspacing="0" cellpadding="0" class="unselectable" unselectable="on" style="display:inline-table;"><tbody><tr><td class="btnCapL"></td><td class="btnContent"><a role="button" onclick="return false;" href="#" style="color:gray;" tabindex="-1">Done</a></td><td class="btnCapR"></td></tr></tbody></table></span></div>' +
+                                    '</div>' +
+                                '</div>' +
+                              '</div>';
+
+        $.modal(ajaxFailedHtml,
+        {
+            onShow: function (dialog)
+            {
+                var modal = this;
+                var fullMessage = message + "<br /><br /> Please click the Done button, and log back in.";
+
+                $('#failedAjaxMessage', dialog.data[0]).append(fullMessage);
+
+                dialog.container.css('height', 'auto');
+                dialog.origHeight = 0;
+            }
+        });
+    }
+    catch(e)
+    {
+        alert(e.message);
+    }
+}
+
+function notifyAjaxReturnNonBlocking(header, message)
+{
+    var debugMsg = "";
+    try
+    {
+        var ajaxFailedHtml =  '<div id="ajaxFailed" class="ed-modalDialog notranslate zoomable" style="display: block;">' +
+                                '<div class="ed-modalHeader"><span>' + header + '</span></div>' +
+                                '<div class="ed-modalContent" style="height:auto;">' +
+                                    '<div id="failedAjaxMessage" style="padding:15px 30px 20px 30px;color:white"></div>'+
+                                    '<br style="clear:both" />'+
+                                    '<div style="height:22px">' +
+                                        '<div role="button" aria-label="OK" id="ed-ajaxFailed-finishBtn" onclick="$.modal.close();" tabindex="0" class="ed-button btnM22" style="position:absolute;text-align:center;width:100%;"><span aria-hidden="true" class=""><table cellspacing="0" cellpadding="0" class="unselectable" unselectable="on" style="display:inline-table;"><tbody><tr><td class="btnCapL"></td><td class="btnContent"><a role="button" onclick="return false;" href="#" style="color: gray;" tabindex="-1">OK</a></td><td class="btnCapR"></td></tr></tbody></table></span></div>' +
+                                    '</div>' +
+                                '</div>' +
+                              '</div>';
+
+        $.modal(ajaxFailedHtml,
+        {
+            onShow: function (dialog)
+            {
+                var modal = this;
+                var fullMessage = message + "<br /><br /> Please click the OK button to continue.";
+
+                $('#failedAjaxMessage', dialog.data[0]).append(fullMessage);
+
+                dialog.container.css('height', 'auto');
+                dialog.origHeight = 0;
+            }
+        });
+    }
+    catch(e)
+    {
+        alert(e.message);
+    }
+}

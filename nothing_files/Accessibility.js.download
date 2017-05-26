@@ -1,0 +1,769 @@
+/**
+ * binds keyup handler to breadcrumb links, opens menu when user releases down arrow key, selects first item in the menu
+ */
+function patchBcnBar() {
+    $('.breadcrumbLink').keyup(function(e){
+        if (e.keyCode == 40) { //down
+            nbnBreadcrumbOver($(this).attr('id'), this, false);
+            hdrSetMouseEnteredMenu();
+            selectFirstItemInHomeSubmenu();
+        }
+    });
+}
+
+/**
+ * patch function for breadcrumbs menu, it is called everytime DOM changes
+ * handlers passed as arguments are called when user press left or right arrow key (assuming there is no default action like opening or closing submenu)
+ */
+function patchBcnMenu(leftKeyHandler, rightKeyHandler) {
+    var mainDiv = $('#nbnBreadcrumbsDropDownMenu');
+
+    if (mainDiv.length != 0) {
+        patchBcnSubMenu(mainDiv.children('.ed-bcDropDown'), leftKeyHandler, rightKeyHandler);
+        var menuitems = mainDiv.find('li');
+        mainDiv.find('div, table, tbody, tr, td, span').attr('role', 'presentation'); // add necessary aria roles for screen reader
+        mainDiv.find('ul').attr('role', 'menu');
+        menuitems.attr('role', 'menuitem');
+        menuitems.attr('tabindex', '-1'); // tabindex -1 so we can focus menu items
+        mainDiv.attr('role', 'application');
+    }
+}
+
+/**
+ * Core function which is called for each submenu
+ */
+function patchBcnSubMenu(rootElement, leftKeyHandler, rightKeyHandler) {
+    var menuList = $(rootElement).children('ul');
+    var menuItems = menuList.children('li');
+    $.each( $(menuItems), function(index, item) { //goes trough all menu items
+        var subMenu = $(item).children('ul');
+        unbindOldHandlers(item);
+        bindActivationHandler(item); // binds enter and space key
+        bindFocusHandler(item);      // binds mouseover actions to focus
+        if (subMenu.length != 0) {
+            $(item).attr('aria-haspopup', 'true');
+            var leftHandler = getCloseSubmenuHandler(item);      // create handler, which will be called when user uses left key in submenu
+            bindOpenSubMenuHandler(item);                        // binds open sub menu handler to right arrow key
+            bindLeftMenuHandler(item, leftKeyHandler);           // left arrow key handler passed from calling function
+            patchBcnSubMenu(item, leftHandler, rightKeyHandler); // recursive call if item has submenu
+        } else {
+            bindLeftRightEventHandlers(item, leftKeyHandler, rightKeyHandler); //in case there is no submenu, there is no need for special handlers
+        }
+        // binds passed functions to up / down arrow keys, selecting correct menu item for this action is handled in bindUpDownEventHandlers function
+        bindUpDownEventHandlers(item, function(it, prevIt) {
+            $(it).parent().find("ul").css("display", "none");     // hides all other possible submenus
+            prevIt.focus();
+            prevIt.children("ul").css("display", "inline-block"); // shows possible submenu on item which was just focused
+        }, function(it, nextIt) {
+            $(it).parent().find("ul").css("display", "none");
+            nextIt.focus();
+            nextIt.children("ul").css("display", "inline-block");
+        });
+    });
+}
+
+/**
+ * sets focus back to link which has opened current breadcrumb menu
+ */
+function focusRootLink() {
+    var id = $('#nbnBreadcrumbsDropDownMenu .ed-bcDropDown').attr('id');
+    $('a[id*="root-' + id + '"].breadcrumbLink').focus();
+}
+
+/**
+ * following functions focus first item in submenu, they are called when submenu opens
+ */
+function selectFirstItemInViewSubmenu() {
+    $('#view').find('li').first().find('a').focus();
+}
+
+function selectFirstItemInHomeSubmenu() {
+    var firstItem = getFirstMenuItem('#nbnBreadcrumbsDropDownMenu');
+    firstItem.attr('tabindex', '-1');
+    firstItem.focus();
+    nbnFolderMenuItemOver(firstItem.attr('id'));         // generate new submenu (in case there is any submenu)
+    nbnHandleMouseEnteredListItem(firstItem.attr('id')); // highlight item
+}
+
+function selectFirstItemInMyEdline() {
+    $("#myEdline .ed-dropDown li").first().attr('tabindex', '-1');
+    $("#myEdline .ed-dropDown li").first().focus();
+}
+
+function selectFirstItemInTools() {
+    $("#toolsSingle .ed-dropDown li").first().attr('tabindex', '-1');
+    $("#toolsSingle .ed-dropDown li").first().focus();
+}
+
+function selectFirstItemInLanguageSubmenu() {
+    if ($("#google_translate_element").length == 0) {
+        $('#language').find('li').first().find('a').focus();
+    } else {
+        $('#language').find('#google_translate_element').find('a').focus();
+        $('#language').find('#google_translate_element').find('a').click(function(event){
+            var ifs = document.getElementsByTagName('iframe');
+            for (var i = 0; i < ifs.length; i++) {
+                if (ifs[i].className == 'goog-te-menu-frame skiptranslate') {
+                    $(this).unbind(event);
+                    var googleTranslateIframe = ifs[i];
+                    setTimeout(function () {
+                        googleTranslateIframe.focus();
+                        document.activeElement.contentDocument.getElementsByTagName("a")[0].focus();
+                    }, 100);
+                    return;
+                }
+            }
+        });
+    }
+}
+
+/**
+ * parameter is element which contains list (<ul>), returns first item (<li>)
+ */
+function getFirstMenuItem(container) {
+    return $(container).find('ul li').first();
+}
+
+/**
+ * parameter is element which contains list (<ul>), returns last item (<li>)
+ */
+function getLasttMenuItem(container) {
+    return $(container).find('ul').children('li').last();
+}
+
+/**
+ * parameter is item of the list (<li>)
+ */
+function isFirstItem(item) {
+    var listItems = $(item).parent().children('li');
+    return $(item).is(listItems.first());
+}
+
+/**
+ * parameter is item of the list (<li>)
+ */
+function isLastItem(item) {
+    var listItems = $(item).parent().children('li');
+    return $(item).is(listItems.last());
+}
+
+/**
+ * checks if item is single in the list, parameter is item of the list (<li>)
+ */
+function isSingleItem(item) {
+    var listItems = $(item).parent().children('li');
+    return listItems.length == 1;
+}
+
+/**
+ * binds handler for up and down arrow keys, parameter is item of list (<li>)
+ */
+function bindUpDownEventHandlers(item, keyUpHandler, keyDownHandler) {
+    var nextItem;
+    var previousItem;
+
+    if (isSingleItem(item)) {
+        nextItem = $(item);
+        previousItem = $(item);
+    } else if (isFirstItem(item)) {
+        nextItem = $(item).next();
+        previousItem = getLasttMenuItem($(item).parent().parent());
+    } else if (isLastItem(item)) {
+        nextItem = getFirstMenuItem($(item) .parent().parent());
+        previousItem = $(item).prev();
+    } else {
+        nextItem = $(item).next();
+        previousItem = $(item).prev();
+    }
+
+    $(item).keyup(function(e){
+        if (e.keyCode == 38) { //up
+            keyUpHandler(item, previousItem);
+            return false;
+        } else if (e.keyCode == 40) { //down
+            keyDownHandler(item, nextItem);
+            return false;
+        }
+    });
+}
+
+function bindEscEventHandler(item, handler) {
+    $(item).keydown(function(e){
+        if (e.keyCode == 27) { //Esc
+            handler();
+            return false;
+        }
+    });
+}
+
+/**
+ * Unbinds all focus, blur and keyup handlers from item
+ */
+function unbindOldHandlers(item) {
+    $(item).unbind('focus');
+    $(item).unbind('blur');
+    $(item).unbind('keyup');
+}
+
+function bindLeftRightEventHandlers(item, leftKeyHandler, rightKeyHandler) {
+    $(item).keyup(function(e){
+        if (e.keyCode == 37) { //left
+            leftKeyHandler();
+            return false;
+        } else if (e.keyCode == 39) { //right
+            rightKeyHandler();
+            return false;
+        }
+    });
+}
+
+function bindLeftMenuHandler(item, leftKeyHandler) {
+    $(item).keyup(function(e){
+        if (e.keyCode == 37) { //left
+            leftKeyHandler();
+            return false;
+        }
+    });
+}
+
+/**
+ * this returns function which sets focus back on item which opened current submenu
+ */
+function getCloseSubmenuHandler(item) {
+    return (function(){
+        $(item).focus();
+    });
+
+}
+
+function bindActivationHandler(item) {
+    $(item).keyup(function(e){
+        if (e.keyCode == 13 || e.keyCode == 32) { //enter and space
+            $(item).find("a").first()[0].click();
+            return false;
+        }
+    });
+}
+
+function bindFocusHandler(item) {
+    $(item).focus(function(){                             // loads submenu when item gets focus
+        nbnFolderMenuItemOver($(this).attr('id'));         // generate new submenu (in case there is any submenu)
+        nbnHandleMouseEnteredListItem($(this).attr('id')); // generates same action as if mouse hovered the item
+    });
+
+    $(item).blur(function(){                              // when focus leaves the item generate same action is if mouse left the item
+        nbnHandleMouseLeftListItem($(this).attr('id'));
+    });
+}
+
+function bindOpenSubMenuHandler(item) {
+    $(item).keyup(function(e){
+        if (e.keyCode == 39) { //right
+            getFirstMenuItem(item).focus();             // this should find and focus first item in the new submenu
+            return false;
+        }
+    });
+}
+
+function getPreviousMyEdlineItem(selectedItem) {
+    if (isFirstItem(selectedItem)) { // we are at first item in a list
+
+        // is the list first in the menu?
+        var currentList = selectedItem.parent();
+        var allLists = currentList.closest("div[role=menu]").find("ul[role=group]");
+        if (currentList.is(allLists.first())) {
+            return allLists.last().children("li[role=menuItem]").last();
+        } else {
+
+            var previousList = allLists.last(); // preset last to be used - for case when only one list
+            var previousItem;
+            var found = false;
+            $.each($(allLists), function(index, list) {
+                if ($(list).is(currentList)) {
+                    found = true;
+                }
+                if (!found) {
+                    previousList = $(list);
+                }
+            });
+            previousItem = previousList.children("li[role=menuItem]").last();
+            return previousItem;
+        }
+    } else {
+        return selectedItem.prevAll("li[role=menuItem]").first();
+    }
+}
+
+function getNextMyEdlineItem(selectedItem) {
+
+    if (isLastItem(selectedItem)) {
+        // if totally last, go to first
+        var currentList = selectedItem.parent();
+        var allLists = currentList.closest("div[role=menu]").find("ul[role=group]");
+        if (currentList.is(allLists.last())) {
+            return allLists.first().find("li[role=menuItem]").first();
+        } else {
+
+            // find next UL tag within the left/right DIV structure
+            var nextItem;
+            var afterCurrent = false;
+            $.each( $(allLists), function(index, list) {
+                if (afterCurrent) {
+                    afterCurrent = false;
+                    nextItem = $(list).find("li[role=menuItem]").first();//.find("a");
+                }
+                if ($(list).is(currentList)) {
+                    afterCurrent = true;
+                }
+            });
+            return nextItem;
+        }
+    } else {
+        return selectedItem.nextAll("li[role=menuItem]").first();
+    }
+}
+
+/**
+ * function switches css classes if item gets focus
+ */
+function bindItemHighlighting(items) {
+    items.focus(function(){$(this).addClass('hover');});
+    items.blur(function(){$(this).removeClass('hover');});
+}
+
+/**
+ * returns next item in collection, for last item returns first item
+ */
+function getNextItem(menuItems, currentIndex){
+    var index = currentIndex + 1;
+    return (index >= menuItems.length) ? menuItems.get(0) : menuItems.get(index);
+}
+
+/**
+ * returns previous item from collection, for first item returns last item
+ */
+function getPreviousItem(menuItems, currentIndex){
+    return menuItems.get(currentIndex - 1);
+}
+
+/**
+ * patches first level of submenu
+ */
+function patchMyEdlineSubMenu(rootElement, leftKeyHandler, rightKeyHandler) {
+    var menuItems = $(rootElement).find('li[role=menuItem]:not(li ul li)'); // this allows us to select all menu items on first level, but ignores menu items from second level
+    $.each(menuItems, function(index, item) {
+        var subMenu = $(item).children('ul');
+        if (subMenu.length > 0) {
+            patchMyEdline2ndLevel(item, function(){$(item).focus();}, rightKeyHandler);
+            $(item).unbind('blur'); //losing focus on item with submenu would hide the submenu
+        }
+
+        $(item).keyup(function(e) {
+            var code = e.keyCode || e.which;
+            switch (code) {
+                case 32: //spacebar
+                case 13: //enter
+                    $(item).find("a").first()[0].click();
+                    break;
+                case 27: //esc
+                    hdrHideAllDropDownMenus();
+                    $(item).closest('.ed-menuItem').find('.ed-menuButton').trigger('mouseout');
+                    $(item).closest('.ed-menuItem').find('.ed-menuButton').focus();
+                    break;
+                case 40: //down
+                    $(item).removeClass('hover');
+                    getNextItem(menuItems, index).focus();
+                    break;
+                case 38: //up
+                    $(item).removeClass('hover');
+                    getPreviousItem(menuItems, index).focus();
+                    break;
+                case 37: // left
+                    $(item).removeClass('hover');
+                    leftKeyHandler();
+                    break;
+                case 39: //right
+                    if (subMenu.length > 0) {
+                        $(item).find('li[role=menuItem]:first').focus(); //focus first menu item in 2nd level submenu
+                    } else {
+                        rightKeyHandler();
+                    }
+                    break;
+                default:
+                    return;
+            }
+            e.preventDefault();
+            return false; //prevents even propagation to parent elements
+        });
+    });
+}
+
+function patchMyEdline2ndLevel(rootElement, leftKeyHandler, rightKeyHandler){
+    var menuItems = $(rootElement).find('li[role=menuItem]');
+    $.each(menuItems, function(index, item) {
+        var originalId = $(item).attr("id");
+        if (originalId != undefined) {
+            $(item).attr("id", originalId + "-sub");
+        }
+
+        $(item).keyup(function(e) {
+            var code = e.keyCode || e.which;
+            switch (code) {
+                case 32: //spacebar
+                case 13: //enter
+                    $(item).find("a").first()[0].click();
+                    break;
+                case 27: //esc
+                    leftKeyHandler();
+                    break;
+                case 40: //down
+                    getNextItem(menuItems, index).focus();
+                    break;
+                case 38: //up
+                    getPreviousItem(menuItems, index).focus();
+                    break;
+                case 37: // left
+                    leftKeyHandler();
+                    break;
+                case 39: //right
+                    $(item).parent().parent().removeClass('hover'); //this will hide 2nd level submenu before leaving the whole menu
+                    rightKeyHandler();
+                    break;
+                default:
+                    return;
+            }
+            e.preventDefault();
+            return false; //prevents even propagation to parent elements
+        });
+    });
+}
+
+
+// this object is able to observe DOM changes done to element
+    var observeDOM = (function() {
+        var MutationObserver = window.MutationObserver || window.WebKitMutationObserver, eventListenerSupported = window.addEventListener;
+        var isIE = typeof document.documentMode == "number" || new Function("return/*@cc_on!@*/!1")( ); // http://www.pinlady.net/PluginDetect/IE/
+        var lastDOMChange = 0;
+        var handlerRunning = false;
+
+        return function(obj, callback) {
+            if (MutationObserver && !isIE) {
+                // define a new observer
+                var obs = new MutationObserver(function(mutations) {
+                    var callbackWrapper = function() {
+                        obs.disconnect();
+                        callback();
+                        obs.observe(obj, { childList:true, subtree:true });
+                    }
+                    if (mutations[0].addedNodes.length || mutations[0].removedNodes.length)
+                        callbackWrapper();
+                });
+                // have the observer observe foo for changes in children
+                obs.observe(obj, { childList:true, subtree:true });
+            }
+            else if (eventListenerSupported && obj.addEventListener) { 
+                // test if browser supports these methods, for example IE8 does not, IE9-11 supports it
+                // if it does not then keyboard navigability in home menu and breadcrumbs will not work 
+                var callbackWrapper = function() {
+                    lastDOMChange = (new Date()).getTime();
+                    if(!handlerRunning) {
+                        handlerRunning = true;
+
+                        var timeoutHandler = function(){
+                            if ((new Date()).getTime() - lastDOMChange > 100) {
+                                // disconnect listener
+                                obj.removeEventListener('DOMNodeInserted', callbackWrapper);
+                                obj.removeEventListener('DOMNodeRemoved', callbackWrapper);
+
+                                callback();
+
+                                // connect listener
+                                obj.addEventListener('DOMNodeInserted', callbackWrapper);
+                                obj.addEventListener('DOMNodeRemoved', callbackWrapper);
+
+                                handlerRunning = false;
+                            } else {
+                                window.setTimeout(timeoutHandler, 100);
+                            }
+                        };
+                        window.setTimeout(timeoutHandler, 100);
+                    }
+                }
+
+                obj.addEventListener('DOMNodeInserted', callbackWrapper);
+                obj.addEventListener('DOMNodeRemoved', callbackWrapper);
+            }
+        }
+    })();
+
+// Observe a specific DOM element:
+function bindObserver() {
+    observeDOM($('#nbnBreadcrumbsDropDownMenu').get(0), function() {
+        var menuitems = $('#nbnBreadcrumbsDropDownMenu').find('li');
+        if ($('#home .ed-menuButton').hasClass('hover')) {
+            patchBcnMenu(leftHomeHandler, rightHomeHandler);
+            patchBcnMenu(function(){}, function(){});
+            bindEscEventHandler(menuitems, function(){
+                $('#home .ed-menuButton').focus();
+                hdrHideAllDropDownMenus();
+            });
+        } else {
+            var handler = function(){focusRootLink(); hdrHideAllDropDownMenus();};
+            patchBcnMenu(handler, handler);
+            bindEscEventHandler(menuitems, handler);
+        }
+    });
+}
+
+function leftHomeHandler() {
+        handleLeftKeyMenuBar($('#home .ed-menuButton'));
+    }
+
+    function leftViewHandler() {
+        handleLeftKeyMenuBar($('#view .ed-menuButton'));
+    }
+
+    function leftLanguageHandler() {
+        handleLeftKeyMenuBar($('#language .ed-menuButton'));
+    }
+
+    function handleLeftKeyMenuBar(menuButton) {
+        var isOpenedMenu = ($('.ed-dropDown:visible').length > 0) || ($('.srcHome:visible').length > 0);
+        $(menuButton).trigger('mouseout');
+        hdrHideAllDropDownMenus();
+        var prevItem = getPrevItemMenuBarTopEdlMenu(menuButton);
+        prevItem.focus();
+        if (isOpenedMenu && (prevItem.parent().attr('id') != 'search')) {
+            prevItem.trigger('mouseover');
+            prevItem.parent().children('.ed-dropDown').show(1);
+        }
+    }
+
+    function rightHomeHandler() {
+        handleRightKeyMenuBar($('#home .ed-menuButton'));
+    }
+
+    function rightViewHandler() {
+        handleRightKeyMenuBar($('#view .ed-menuButton'));
+    }
+
+    function rightLanguageHandler() {
+        handleRightKeyMenuBar($('#language .ed-menuButton'));
+    }
+
+    function handleRightKeyMenuBar(menuButton) {
+        var isOpenedMenu = ($('.ed-dropDown:visible').length > 0) || ($('.srcHome:visible').length > 0);
+        $(menuButton).trigger('mouseout');
+        hdrHideAllDropDownMenus();
+        var nextItem = getNextItemMenuBarTopEdlMenu(menuButton);
+        nextItem.focus();
+        if (isOpenedMenu && (nextItem.parent().attr('id') != 'search')) {
+            nextItem.trigger('mouseover');
+            nextItem.parent().children('.ed-dropDown').show(1);
+        }
+    }
+
+    function getPrevItemMenuBarTopEdlMenu(rootScope) {
+        var leftPanel = $(rootScope).parent().parent().attr('id') == 'ed-leftPanel';
+        var rightPanel = $(rootScope).parent().parent().attr('id') == 'ed-rightPanel';
+        var hasPrevItem = $(rootScope).parent().prevAll(".ed-menuItem:visible").length != 0;
+        if (leftPanel && hasPrevItem) {
+            return $(rootScope).parent().prevAll(".ed-menuItem:visible").find(".ed-menuButton").last();
+        }
+        if (leftPanel && !hasPrevItem) {
+            return $('#ed-rightPanel').children(".ed-menuItem:visible").find(".ed-menuButton").last();
+        }
+        if (rightPanel) {
+            if (hasPrevItem) {
+                return $(rootScope).parent().prevAll(".ed-menuItem:visible").find(".ed-menuButton").last();
+            } else {
+                return $('#ed-leftPanel').children(".ed-menuItem:visible").find(".ed-menuButton").last();
+            }
+        }
+        throw "Unexpected state in Accessibility.js:getPrevItemMenuBarTopEdlMenu";
+    }
+
+    function getNextItemMenuBarTopEdlMenu(rootScope) {
+        var leftPanel = $(rootScope).parent().parent().attr('id') == 'ed-leftPanel';
+        var rightPanel = $(rootScope).parent().parent().attr('id') == 'ed-rightPanel';
+        var hasNextItem = $(rootScope).parent().nextAll(".ed-menuItem:visible").length != 0;
+        if (leftPanel && hasNextItem) {
+            return $(rootScope).parent().nextAll(".ed-menuItem:visible").find(".ed-menuButton").first();
+        }
+        if (leftPanel && !hasNextItem) {
+            return $('#ed-rightPanel').children(".ed-menuItem:visible").find(".ed-menuButton").first();
+        }
+        if (rightPanel) {
+            if (hasNextItem) {
+                return $(rootScope).parent().nextAll(".ed-menuItem:visible").find(".ed-menuButton").first();
+            } else {
+                return $('#ed-leftPanel').children(".ed-menuItem:visible").find(".ed-menuButton").first();
+            }
+        }
+        throw "Unexpected state in Accessibility.js:getNextItemMenuBarTopEdlMenu";
+
+    }
+
+$(document).ready(function() {
+
+    $('#ed-menuBar').focus(function(){ //possible fix for NVDA issue, which sets focus to menu bar instead of first button
+        $('#ed-leftPanel').children(".ed-menuItem:visible").find(".ed-menuButton").first().focus();
+    });
+
+    if (($("#myEdline") != undefined) && ($("#myEdline").length > 0)) {
+        bindItemHighlighting($("#myEdline .ed-dropDown li"));
+        patchMyEdlineSubMenu( $("#myEdline"),
+            function() {handleLeftKeyMenuBar($('#myEdline .ed-menuButton'))},
+            function() {handleRightKeyMenuBar($('#myEdline .ed-menuButton'))});
+    }
+
+    if (($("#toolsSingle") != undefined) && ($("#toolsSingle").length > 0)) {
+        patchMyEdlineSubMenu( $("#toolsSingle div[role=menu]"),
+            function() {handleLeftKeyMenuBar($('#toolsSingle .ed-menuButton'))},
+            function() {handleRightKeyMenuBar($('#toolsSingle .ed-menuButton'))});
+        bindItemHighlighting($("#toolsSingle .ed-dropDown li"));
+    }
+
+
+
+
+
+    patchBcnBar();
+    patchViewBar();
+    patchLanguageBar();
+    patchSearchBar();
+
+    function patchLanguageBar() {
+        if ($('#ed-rightPanel #language').length == 0) { // language icon is switched off
+            return;
+        }
+        if ($("#google_translate_element").length == 0) {
+            patchOldLanguageBar();
+        } else {
+            patchNewLanguageBar();
+        }
+    }
+
+    function patchOldLanguageBar() {
+        var menuList = $('#language').find('ul');
+        var menuItems = menuList.children('li');
+        $.each($(menuItems), function(index, item) { //goes trough all menu items
+            bindFocusHandler(item);
+            bindActivationHandler(item);
+            bindEscEventHandler(item, function() {
+                hdrHideAllDropDownMenus();
+                $(item).closest('.ed-menuItem').find('.ed-menuButton').trigger('mouseout');
+                $(item).closest('.ed-menuItem').find('.ed-menuButton').focus();
+            });
+            bindLeftRightEventHandlers(item, leftLanguageHandler, rightLanguageHandler);
+            bindUpDownEventHandlers(item, function(it, prevIt) {
+                prevIt.find('a').focus();
+            }, function(it, nextIt) {
+                nextIt.find('a').focus();
+            }); //binds the usual handlers up and down handlers which allow user to move in menu
+        });
+    }
+
+    function patchNewLanguageBar() {
+        var item = $('#language').find('#google_translate_element');
+        bindFocusHandler(item);
+        bindActivationHandler(item);
+        bindEscEventHandler(item, function() {
+                hdrHideAllDropDownMenus();
+                $(item).closest('.ed-menuItem').find('.ed-menuButton').trigger('mouseout');
+                $(item).closest('.ed-menuItem').find('.ed-menuButton').focus();
+            });
+        bindLeftRightEventHandlers(item, leftLanguageHandler, rightLanguageHandler);
+    }
+
+    function patchViewBar() {
+        var menuList = $('#view').find('ul');
+        var menuItems = menuList.children('li');
+        $.each($(menuItems), function(index, item) { //goes trough all menu items
+            bindFocusHandler(item);
+            bindActivationHandler(item);
+            bindEscEventHandler(item, function() {
+                hdrHideAllDropDownMenus();
+                $(item).closest('.ed-menuItem').find('.ed-menuButton').trigger('mouseout');
+                $(item).closest('.ed-menuItem').find('.ed-menuButton').focus();
+            });
+            bindLeftRightEventHandlers(item, leftViewHandler, rightViewHandler);
+            bindUpDownEventHandlers(item, function(it, prevIt) {
+                prevIt.find('a').focus();
+            }, function(it, nextIt) {
+                nextIt.find('a').focus();
+            }); //binds the usual handlers up and down handlers which allow user to move in menu
+        });
+    }
+
+    function patchSearchBar() {
+        if ($('#ed-rightPanel #search').length == 0) { // search icon is switched off
+            return;
+        }
+        $('#search-modal').attr('role', 'dialog');
+        bindEscEventHandler($('#search-modal').find('.ed-inputGroup'), function() {
+            $('#search').find('.ed-menuButton').trigger('mouseout');
+            $('#search').find('.ed-menuButton').focus();
+        });
+    }
+
+    $('#ed-menuBar .ed-menuButton').bind('keyup', function(e) {
+        var code = e.keyCode || e.which;
+        switch (code) {
+            case 32: //spacebar
+            case 13: //enter
+                if ($(this).parent().attr('id') == 'search') {
+                    $(this).trigger('mouseover');
+                } else {
+                    $(this).trigger('click');
+                }
+                break;
+            case 27: //esc
+                $(this).trigger('mouseout');
+                break;
+            case 40: //down
+                handleDownKeyMenuBar(this);
+                break;
+            case 37: // left
+                handleLeftKeyMenuBar(this);
+                break;
+            case 39: //right
+                handleRightKeyMenuBar(this);
+                break;
+            default:
+                return;
+        }
+        e.preventDefault();
+    });
+
+    function handleDownKeyMenuBar(menuButton) {
+        if ($(menuButton).parent().attr('id') == 'search') {
+            return;
+        }
+        hdrHideAllDropDownMenus();
+        $(menuButton).trigger('mouseover');
+        $(menuButton).parent().find('.ed-dropDown').show(1);
+        selectFirstItemInSubmenu(menuButton);
+    }
+
+    function selectFirstItemInSubmenu(menuButton) {
+        switch ($(menuButton).parent().attr('id')) {
+            case 'view':
+                selectFirstItemInViewSubmenu();
+                break;
+            case 'home':
+                selectFirstItemInHomeSubmenu();
+                break;
+            case 'myEdline':
+                selectFirstItemInMyEdline();
+                break;
+            case "toolsSingle":
+                selectFirstItemInTools();
+                break;
+            case 'language':
+                selectFirstItemInLanguageSubmenu();
+                break;
+        }
+    }
+});
+

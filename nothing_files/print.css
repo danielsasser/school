@@ -1,0 +1,129 @@
+/* This is a global print stylesheet for Edline */
+* html body, body{
+    background:white;
+    color:black !important;
+    overflow:visible!important;
+}
+html, body /*, table */ {
+    height:100%!important;
+    margin: 0!important;
+    padding: 0!important;
+    overflow:visible;
+}
+
+/* These are supported by some browsers and are often helpful */
+h1, h2, h3, h4, h5, h6 { page-break-after:avoid; page-break-inside:avoid;}
+img { page-break-inside:avoid; page-break-after:avoid; }
+.avoidprintbreak,
+blockquote,
+pre 
+/* ,table*/
+{ page-break-inside:avoid; }
+ul, ol, dl  { page-break-before:avoid; }
+/* forced printing (generally of toggled content) */
+.forceprint {
+	display:block;
+}
+/* Force open the content area of GroupHome, undo JS */
+/*
+html[style],
+html body[style],
+html body div#edlGroupHomeBody[style],
+html body div#ghCustomerContentWrapperDiv[style],
+html body div#ghOuterWrapperDiv[style],
+html body table#edlPageAlignmentTable[style],
+html body table#ghOuterMostTable[style],
+html body div#ghOuterMostDiv[style],
+html body div#edlThemeRootZoneFrame[style],
+html body div#ghOuterTable[style],
+html body div#edlThemeMainsectionZoneFrame[style],
+html body div#edlThemeMainsectionZonePane[style],
+html body div#edlThemeMainsectionZoneContent[style],
+html body div#edlThemeMainZoneFrame[style],
+html body div#edlThemeMainZonePane[style],
+html body div#edlThemeMainZoneContent[style],
+html body div#edlDocViewBoxArea[style],
+html body div#DocViewBoxContent[style],
+html body div#DocViewBoxContent table[style],
+html body div#DocViewBoxContent table p[style],
+html body div.edlDocViewBoxContents[style],
+html body div.ed-screenresize,
+html body .forceprint[style] {
+	overflow:visible!important;
+	overflow-y:visible!important;
+	overflow-x:visible!important;
+	height:auto!important;
+	min-height:0;
+	max-height:none!important;
+	width:auto!important;
+	margin:0!important;
+	float:none!important;
+	position:relative!important;
+	background-color:blue!important;
+	display:inline-block!important;
+	zoom:1;
+	vertical-align:top;
+}
+*/
+/* List of classes and IDs to not show on printed pages */
+.noprint,
+div.ed-SectionBtns,
+div.ghBoxMouseOverDiv,
+div.ed-modalDialog,
+#ed-navBarContainer,
+#ghToolbarAreaDivWrapper
+#ghToolbarAreaDiv,
+#ghSiteDesignerControls,
+#ghTinyEditorControls,
+#ghTextAreaEditorControls,
+#ed-menuBarContainer,
+#ed-menuBar,
+#edlGlobalTopNavBoxArea,
+#edlGlobalSideNavBoxArea,
+#edlLocalTopNavBoxArea,
+#edlLocalSideNavBoxArea,
+#edlThemeLeftcolumnZoneFrame,
+#edlThemeSupportZoneFrame,
+.ed-menuItem,
+.flowplayer,
+.dbWidener
+	{ display:none!important; visibility:hidden!important; height:0px; width:0px; left:-10000px;}
+body>div#menuBarContainer{
+	position:static;
+}
+
+/* this css makes the center (or only) column take up the full page width */
+.edlBoxContent,
+#ghCustomerContentWrapperDiv,
+.edlBoxTitleInnerWrapper,
+[id^="docViewBodyMainCell"],
+[id^="docViewBodyTable"],
+[id^="iFrame_edlElement"],
+[id^="edlElement_"],
+#edlThemeMainsectionZoneContent > table,
+#ghOuterTable,
+#ghOuterMostTable,
+#edlThemeRootZoneFrame,
+#edlThemeMainZoneFrame,
+#edlThemeMainZoneContent,
+#edlThemeMainsectionZoneContent,
+#edlThemeMainsectionZonePane,
+#edlThemeMainsectionZoneFrame,
+#edlPageAlignmentTable,
+#edlThemeHeaderZoneContent,
+#edlThemeHeaderZoneFrame,
+#edlThemeHeaderZonePane
+{
+    width:100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height:auto !important;
+  	overflow:visible !important;
+    overflow-x:visible !important;
+    overflow-y:visible !important;
+    border: none !important;
+}
+body
+{
+    width: 930px !important; /* needed for fit to page to work */
+}

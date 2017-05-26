@@ -1,0 +1,237 @@
+
+function suTrimLeadingTrailingSpace(pString)
+{
+    return pString.replace(/^\s*|\s*$/, '');
+}
+
+
+function suValidateStringReturningFirstInvalidCharOrNull(pString, pAgainstCharSetString)
+{
+    var invalidChar = null;
+
+    for (var i = 0; i < pString.length; i++)
+    {
+        var testChar = pString.substring(i, i + 1);
+        if (pAgainstCharSetString.indexOf(testChar) == -1)
+        {
+            invalidChar = testChar;
+            break;
+        }
+    }
+
+    return invalidChar;
+}
+
+
+function suReplaceAllSingleChars(pInputString, pSearchSingleChar, pReplaceSingleChar)
+{
+    var regExp = new RegExp("\\" + pSearchSingleChar, "g");
+    return pInputString.replace(regExp, pReplaceSingleChar);
+}
+
+
+function suAddBackslashEscapingForEmbeddedApostrophesAndQuotes(pInputString)
+{
+    var result =  pInputString.replace(/'/g, "\\\'");
+    return result.replace(/"/g, "\\\"");
+}
+
+
+function suRemoveAllTemporaryHTMLCommentMarkers(pInputString)
+{
+    // Careful: the exact temp comment strings below correspond to what's in Java file CharUtils method htmlEncode
+
+    var interimString = pInputString.replace(/\<\!--TeMp/g, "");
+    return interimString.replace(/TeMp--\>/g, "");
+    
+}
+
+
+function suContainsAnyHtmlTags(pInputString, pUseQuickCheckForGreaterOrLessThanSymbolsOnly, pCheckForOfficialTagNamesOnly)
+{
+    var openPos = pInputString.indexOf("<");
+    var closePos = pInputString.indexOf(">");
+
+    if (pUseQuickCheckForGreaterOrLessThanSymbolsOnly &&
+        (openPos >= 0 || closePos >= 0)
+            )
+    {
+        return true;
+    }
+
+    if (closePos < 0)
+    {
+        return false;
+    }
+
+    if (pInputString.indexOf("</") >= 0)
+    {
+        return true;
+    }
+
+    if (pCheckForOfficialTagNamesOnly)
+    {
+        var inputLC = pInputString.toLowerCase();
+
+        for (var t in suHtmlTagArray)
+        {
+            if (inputLC.indexOf(suHtmlTagArray[t]) >= 0)
+            {
+                return true;
+            }
+        }
+    }
+    else
+    {
+        // Catch any garbage between "<" and ">"
+        if (openPos >= 0 && closePos > openPos + 1)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+var suHtmlTagArray = [
+    "<a",
+    "<abbr",
+    "<acronym",
+    "<address",
+    "<applet",
+    "<area",
+    "<b",
+    "<base",
+    "<basefont",
+    "<bdo",
+    "<big",
+    "<blockquote",
+    "<body",
+    "<br",
+    "<button",
+    "<caption",
+    "<center",
+    "<cite",
+    "<code",
+    "<col",
+    "<colgroup",
+    "<dd",
+    "<del",
+    "<dfn",
+    "<dir",
+    "<div",
+    "<dl",
+    "<dt",
+    "<em",
+    "<fieldset",
+    "<font",
+    "<form",
+    "<frame",
+    "<frameset",
+    "<h1",
+    "<h2",
+    "<h3",
+    "<h4",
+    "<h5",
+    "<h6",
+    "<head",
+    "<hr",
+    "<html",
+    "<i",
+    "<iframe",
+    "<img",
+    "<input",
+    "<ins",
+    "<isindex",
+    "<kbd",
+    "<label",
+    "<legend",
+    "<li",
+    "<link",
+    "<map",
+    "<menu",
+    "<meta",
+    "<noframes",
+    "<noscript",
+    "<object",
+    "<ol",
+    "<optgroup",
+    "<option",
+    "<p",
+    "<param",
+    "<pre",
+    "<q",
+    "<s",
+    "<samp",
+    "<script",
+    "<select",
+    "<small",
+    "<span",
+    "<strike",
+    "<strong",
+    "<style",
+    "<sub",
+    "<sup",
+    "<table",
+    "<tbody",
+    "<td",
+    "<textarea",
+    "<tfoot",
+    "<th",
+    "<thead",
+    "<title",
+    "<tr",
+    "<tt",
+    "<u",
+    "<ul",
+    "<var",
+    "<xmp",
+    "<!--",
+        /* Following are known obsolete tags that could still be attempted for use */
+    "<listing",
+    "<plaintext",
+    "<nextid",
+    "<blink",
+    "<marquee",
+    "<nobr",
+    "<wbr",
+    "<noembed"
+];
+
+
+
+function suHtmlEncode(str)
+{
+    return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+}
+
+
+function suStripHtmlTags(html)
+{
+   var tmp = document.createElement("DIV");
+   tmp.innerHTML = html;
+
+   return tmp.textContent||tmp.innerText;
+}
+
+
+function formatPhone(phone)
+{
+    phone = phone.replace(/[^0-9]+/g, "");
+    if (phone.length == 11)
+    {
+        phone = phone.substr(1);
+    }
+    if (phone.length == 10)
+    {
+        phone = phone.substr(0, 3) + "-" + phone.substr(3, 3) + "-" + phone.substr(6);
+    }
+
+    return phone;
+}

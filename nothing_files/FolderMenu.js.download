@@ -1,0 +1,1659 @@
+var fmIsRequestSuccessful = false;
+
+// The following array is very important.  It contains one array element per root folder menu.  All global variables for
+// each folder menu are stored here so they don't collide.  They are stored per entid of each folder menu.  Each
+// array element contains an FmGlobalInfo object.
+var fmGlobalInfoArray = new Array();
+
+var fmFolderGroupTypeString;
+var fmAppNamePrefix = "edlFolderMenuApp";
+
+var fmGlobalMenuItem;
+
+var fmMenuWidth = 200;
+var fmEntidClassPrefixSuffix = "__";
+
+var fmPreviousEntid = "";
+var fmPreviousTime = new Date();
+var fmTimeOfPageLoad = new Date();
+var fmOverrideMenuHiding = false;
+
+var isFirefox = navigator.userAgent.indexOf ('Firefox') != -1;
+var isMacFirefox = (navigator.userAgent.indexOf ('Macintosh') != -1) && (isFirefox);
+var fmOverflowAdjustedDivsArray = new Array();
+var fmGaveTimeoutWarning = false;
+var fmFolderXmlCache = new Array();
+var isMSIE9Higher = navigator.userAgent.indexOf ('MSIE 9') != -1 || navigator.userAgent.indexOf ('MSIE 1') != -1;
+
+
+// Constructor for fmGlobalInfo objects added to the fmGlobalInfoArray
+function FmGlobalInfo(pRootFolderEntid,
+                      pRootFolderDescr,
+                      pRootFolderDivId,
+                      pIsVerticalMenu,
+                      pRootFolderPlaceHolderDivId,
+                      pAppName,
+                      pRootMenuId,
+                      pMenuBarClass,
+                      pMenuBarItemClass,
+                      pMenuBarItemOverClass,
+                      pMenuBarItemClickClass,
+                      pMenuClass,
+                      pMenuItemClass,
+                      pMenuItemOverClass,
+                      pMenuArrowClass,
+                      pMenuArrowOverClass,
+                      pMenuBarWidth,
+                      pOverrideMenuItemMouseEventsFormName,
+                      pOverrideMenuBarItemMouseEventsFormName,
+                      pStatusDivId,
+                      pUseMenuItemSeparator,
+                      pUseGradientBackground,
+                      pIsVerticalGradient,
+                      pGradientStartColor,
+                      pGradientEndColor,
+                      pDesignSidebarOpen,
+                      pFolderEntidForData
+                      )
+{
+    this.rootFolderEntid = pRootFolderEntid;
+    this.rootFolderDescr = pRootFolderDescr;
+    this.rootFolderDivId = pRootFolderDivId;
+    this.isVerticalMenu = pIsVerticalMenu;
+    this.rootFolderPlaceHolderDivId = pRootFolderPlaceHolderDivId;
+    this.appName = pAppName;
+    this.rootMenuId = pRootMenuId;
+    this.menuBarClass = pMenuBarClass;
+    this.menuBarItemClass = pMenuBarItemClass;
+    this.menuBarItemOverClass = pMenuBarItemOverClass;
+    this.menuBarItemClickClass = pMenuBarItemClickClass;
+    this.menuClass = pMenuClass;
+    this.menuItemClass = pMenuItemClass;
+    this.menuItemOverClass = pMenuItemOverClass;
+    this.menuArrowClass = pMenuArrowClass;
+    this.menuArrowOverClass = pMenuArrowOverClass;
+    this.menuBarWidth = pMenuBarWidth;
+    this.overrideMenuItemMouseEventsFormName = pOverrideMenuItemMouseEventsFormName;
+    this.overrideMenuBarItemMouseEventsFormName = pOverrideMenuBarItemMouseEventsFormName;
+    this.statusDivId = pStatusDivId;
+    this.useMenuItemSeparator = pUseMenuItemSeparator;
+    this.useGradientBackground = pUseGradientBackground;
+    this.isVerticalGradient = pIsVerticalGradient;
+    this.gradientStartColor = pGradientStartColor;
+    this.gradientEndColor = pGradientEndColor;
+    this.designSidebarOpen = pDesignSidebarOpen;
+    this.folderEntidForData = pFolderEntidForData;
+
+    this.rootMenu = null;
+    this.menuBar = null;
+
+    this.itemDescrArray = new Array();
+    this.itemNameArray = new Array();
+    this.itemTypeArray = new Array();
+    this.itemUrlArray = new Array();
+    this.itemTargetArray = new Array();
+    this.itemIconClassArray = new Array();
+    this.urlsPerEntidArray = new Array();
+    this.descrsPerEntidArray = new Array();
+    this.menuNamesArray = new Array();
+
+}
+
+
+// This function is called from Javascript in GroupHome.jsp
+function fmFolderMenuOnload(pRootFolderEntid,
+                            pRootFolderDescr,
+                            pRootFolderDivId,
+                            pGroupTypeString,
+                            pIsVerticalMenu,
+                            pRootFolderPlaceHolderDivId,
+                            pUseMenuItemSeparator,
+                            pUseGradientBackground,
+                            pIsVerticalGradient,
+                            pGradientStartColor,
+                            pGradientEndColor,
+                            pHostZoneFrameId,
+                            pHostZoneContentId,
+                            pDesignSidebarOpen,
+                            pFolderEntidForData,
+                            pBordersEnabled
+                            )
+{
+    fmFolderGroupTypeString = pGroupTypeString;
+
+    var rootFolderDiv = document.getElementById(pRootFolderDivId);
+
+    if (isAjaxSupported() != "yes")
+    {
+        rootFolderDiv.style.display = "none";
+        return;
+    }
+
+    var tempMenuBarWidth = rootFolderDiv.offsetWidth;
+
+    // Setup all the class names:
+    var tempMenuBarClass = "jsdomenubardiv_" + pRootFolderEntid;
+    var tempMenuBarItemClass = "jsdomenubaritem_" + pRootFolderEntid;
+    var tempMenuBarItemOverClass = "jsdomenubaritemover_" + pRootFolderEntid;
+    var tempMenuBarItemClickClass = "jsdomenubaritemclick_" + pRootFolderEntid;
+
+    var tempMenuClass = "jsdomenudiv_" + pRootFolderEntid;
+    var tempMenuItemClass = "jsdomenuitem_" + pRootFolderEntid;
+    var tempMenuItemOverClass = "jsdomenuitemover_" + pRootFolderEntid;
+
+    var tempMenuArrowClass = "jsdomenuarrow_" + pRootFolderEntid;
+    var tempMenuArrowOverClass = "jsdomenuarrowover_" + pRootFolderEntid;
+
+    var tempOverrideMenuItemMouseEventsFormName = "fmOverrideMenuItemMouseEventsForm_" + pRootFolderEntid;   // form name (see jsp)
+    var tempOverrideMenuBarItemMouseEventsFormName = "fmOverrideMenuBarItemMouseEventsForm_" + pRootFolderEntid;   // form name (see jsp)
+    var tempStatusDiv = "fmStatusDiv_" + pRootFolderEntid;   // status div id (see jsp)
+
+    var fmGlobalInfo = new FmGlobalInfo(pRootFolderEntid,
+                                        pRootFolderDescr,
+                                        pRootFolderDivId,
+                                        pIsVerticalMenu,
+                                        pRootFolderPlaceHolderDivId,
+                                        fmAppNamePrefix + pRootFolderEntid,   // application name
+                                        "edlRootMenuId" + pRootFolderEntid,   // root folder menu id
+                                        tempMenuBarClass,
+                                        tempMenuBarItemClass,
+                                        tempMenuBarItemOverClass,
+                                        tempMenuBarItemClickClass,
+                                        tempMenuClass,
+                                        tempMenuItemClass,
+                                        tempMenuItemOverClass,
+                                        tempMenuArrowClass,
+                                        tempMenuArrowOverClass,
+                                        tempMenuBarWidth,
+                                        tempOverrideMenuItemMouseEventsFormName,
+                                        tempOverrideMenuBarItemMouseEventsFormName,
+                                        tempStatusDiv,
+                                        pUseMenuItemSeparator,
+                                        pUseGradientBackground,
+                                        pIsVerticalGradient,
+                                        pGradientStartColor,
+                                        pGradientEndColor,
+                                        pDesignSidebarOpen,
+                                        pFolderEntidForData
+                                        );
+
+    fmGlobalInfoArray[pRootFolderEntid] = fmGlobalInfo;
+
+    fmCreateRootMenu(pRootFolderEntid);
+
+    fmPopulateRootMenu(pRootFolderEntid, pFolderEntidForData);
+
+    fmCorrectMenuWidth(pHostZoneFrameId, pHostZoneContentId, pBordersEnabled);
+
+    // Set color gradient using a dynamic image:
+
+    if (fmGlobalInfoArray[pRootFolderEntid].useGradientBackground == "true")
+    {
+        // IE has shown cases where the Folder Menu div is not rendered by now, so use setTimeout to set gradient
+
+        if (isMSIE)
+        {
+            setTimeout(function() { fmSetGradient(pRootFolderEntid); }, 0);
+        }
+        else
+        {
+            fmSetGradient(pRootFolderEntid);
+        }
+    }
+    var func = "fmKeyPressHandler(event);";
+    // TODO update to use JQuery method!
+    //if(window.addEventListener){
+    //	var f = new Function(func);
+    //	pageBody.addEventListener("keypress", f, false);
+    //} else { 
+	   // Add fmKeyPressHandler to the event processing
+	   if (pageBody.attachEvent != undefined)   // attachEvent is an IE8 and earlier method
+	   {
+	       pageBody.onkeypress = appendToFunction(pageBody.onkeypress, func);
+	   }
+	   else
+	   {
+	       addHtmlAttribute(pageBody, "onkeypress", func);
+	   }
+    //}
+
+    // Assign body onclick event to close all menus on mouse click:
+    if (hdrIsSafari_1_3_2())
+    {
+    	var func = "fmPotentiallyHideAllMenus();";
+        addHtmlAttribute(pageBody, "onclick", func);
+    }
+    else
+    {
+        $("body").bind("click", function(e){
+            fmPotentiallyHideAllMenus();
+        });
+    }
+
+    fmTimeOfPageLoad = new Date();
+
+}
+
+
+function fmSetGradient(pRootFolderEntid)
+{
+    var placeHolderDiv = document.getElementById(fmGlobalInfoArray[pRootFolderEntid].rootFolderPlaceHolderDivId);
+    placeHolderDiv.style.backgroundColor = "transparent";
+    var tempDiv = document.getElementById(fmGlobalInfoArray[pRootFolderEntid].rootFolderDivId);
+    var startColor = fmGlobalInfoArray[pRootFolderEntid].gradientStartColor;
+    var endColor = fmGlobalInfoArray[pRootFolderEntid].gradientEndColor;
+    var isVerticalGradient = fmGlobalInfoArray[pRootFolderEntid].isVerticalGradient == "true";
+
+    iuSetDynamicGradientImageBackground(tempDiv, isVerticalGradient, startColor, endColor);
+}
+
+
+// TODO: sms 2/19/13 - since the following method no longer does anything, remove all traces of it (in a few months)
+
+function fmCorrectMenuWidth(pHostZoneFrameId, pHostZoneContentId, pBordersEnabled)
+{
+    // This seems like quite an odd thing to do -- changing the width of an entire zone based on whether a pinned
+    // folder menu is in the zone.  In the past, the Java-side zone width calculations weren't as good;
+    // so this may have been necessary.  DON'T DO IT ANYMORE.
+
+    // ***** NOTICE THE RETURN STMT HERE *****
+
+    return;
+
+
+    // Correct menu width except for IE, which was working OK TT 4510
+    if (!isMSIE)
+    {
+        var zoneFrameDiv = document.getElementById(pHostZoneFrameId);
+        var zoneContentDiv = document.getElementById(pHostZoneContentId);
+        if (zoneFrameDiv != null && zoneFrameDiv != undefined &&
+                zoneContentDiv != null && zoneContentDiv != undefined)
+        {
+            var frameDivWidth = zoneFrameDiv.offsetWidth;
+            var frameDivMarginPaddingBorder = 0;
+
+            var frameDivLeftMargin;
+            var frameDivRightMargin;
+            var frameDivLeftPadding;
+            var frameDivRightPadding;
+            var frameDivLeftBorder;
+            var frameDivRightBorder;
+
+            //   Safari 1.3.2 doesn't like getComputedStyle
+            if (window.getComputedStyle)
+            {
+                frameDivLeftMargin = parseInt(window.getComputedStyle(zoneFrameDiv, null).marginLeft,10);
+                frameDivRightMargin = parseInt(window.getComputedStyle(zoneFrameDiv, null).marginRight,10);
+                frameDivLeftPadding = parseInt(window.getComputedStyle(zoneFrameDiv, null).paddingLeft,10);
+                frameDivRightPadding = parseInt(window.getComputedStyle(zoneFrameDiv, null).paddingRight,10);
+                frameDivLeftBorder = parseInt(window.getComputedStyle(zoneFrameDiv, null).borderLeftWidth,10) || 0;
+                frameDivRightBorder = parseInt(window.getComputedStyle(zoneFrameDiv, null).borderRightWidth,10) || 0;
+            }
+            else if (document.defaultView.getComputedStyle)
+            {
+                frameDivLeftMargin = parseInt(document.defaultView.getComputedStyle(zoneFrameDiv, null).marginLeft,10);
+                frameDivRightMargin = parseInt(document.defaultView.getComputedStyle(zoneFrameDiv, null).marginRight,10);
+                frameDivLeftPadding = parseInt(document.defaultView.getComputedStyle(zoneFrameDiv, null).paddingLeft,10);
+                frameDivRightPadding = parseInt(document.defaultView.getComputedStyle(zoneFrameDiv, null).paddingRight,10);
+                frameDivLeftBorder = parseInt(document.defaultView.getComputedStyle(zoneFrameDiv, null).borderLeftWidth,10) || 0;
+                frameDivRightBorder = parseInt(document.defaultView.getComputedStyle(zoneFrameDiv, null).borderRightWidth,10) || 0;
+            }
+            else
+            {
+                var zoneFrameDivQuery = $(zoneFrameDiv);
+                frameDivLeftMargin = parseInt(zoneFrameDivQuery.css("margin-left"),10);
+                frameDivRightMargin = parseInt(zoneFrameDivQuery.css("margin-right"),10);
+                frameDivLeftPadding = parseInt(zoneFrameDivQuery.css("padding-left"),10);
+                frameDivRightPadding = parseInt(zoneFrameDivQuery.css("padding-right"),10);
+                frameDivLeftBorder = parseInt(zoneFrameDivQuery.css("border-left-width"),10) || 0;
+                frameDivRightBorder = parseInt(zoneFrameDivQuery.css("border-right-width"),10) || 0;
+            }
+
+            if (!isNaN(frameDivLeftMargin))
+            {
+                frameDivMarginPaddingBorder += frameDivLeftMargin;
+            }
+
+            if (!isNaN(frameDivRightMargin))
+            {
+                frameDivMarginPaddingBorder += frameDivRightMargin;
+            }
+
+            if (!isNaN(frameDivLeftPadding))
+            {
+                frameDivMarginPaddingBorder += frameDivLeftPadding;
+            }
+
+            if (!isNaN(frameDivRightPadding))
+            {
+                frameDivMarginPaddingBorder += frameDivRightPadding;
+            }
+
+            if (!isNaN(frameDivLeftBorder))
+            {
+                frameDivMarginPaddingBorder += frameDivLeftBorder;
+            }
+
+            if (!isNaN(frameDivRightBorder))
+            {
+                frameDivMarginPaddingBorder += frameDivRightBorder;
+            }
+
+            var newContentDivWidth = frameDivWidth - frameDivMarginPaddingBorder;
+            zoneContentDiv.style.width = newContentDivWidth + "px";
+        }
+    }
+}
+
+
+function fmPopulateMenu(pMenuItem)
+{
+    var pRootFolderEntid = fmGetEntidFromMenuItem(pMenuItem);
+
+    for (var x = 0; x < fmGlobalInfoArray[pRootFolderEntid].itemDescrArray.length; x++)
+    {
+        var itemDescription = fmGlobalInfoArray[pRootFolderEntid].itemDescrArray[x];
+        var itemName = fmGlobalInfoArray[pRootFolderEntid].itemNameArray[x];
+        var itemType = fmGlobalInfoArray[pRootFolderEntid].itemTypeArray[x];
+        var action = "";
+
+        if (itemType != fmFolderGroupTypeString && itemType != ghWebPageGroupTypeString)
+        {
+            if (fmGlobalInfoArray[pRootFolderEntid].itemTargetArray[x] == "_blank")
+            {
+                action = "javascript:openPopupWindow('" + fmGlobalInfoArray[pRootFolderEntid].itemUrlArray[x] + "','','');fmPotentiallyHideAllMenus();";
+            }
+            else
+            {
+                action = "link:" + fmGlobalInfoArray[pRootFolderEntid].itemUrlArray[x];
+            }
+        }
+        else
+        {
+            action = "link:" + fmGlobalInfoArray[pRootFolderEntid].itemUrlArray[x];
+        }
+
+        pMenuItem.subMenu.addMenuItem(new menuItem(itemDescription, itemName, action, "",
+                fmGlobalInfoArray[pRootFolderEntid].menuItemClass + " " + fmEntidClassPrefixSuffix + itemName + fmEntidClassPrefixSuffix,
+                fmGlobalInfoArray[pRootFolderEntid].menuItemOverClass));
+
+        if (itemType == fmFolderGroupTypeString || itemType == ghWebPageGroupTypeString)
+        {
+            // Override onmouseover and onmouseout event handling for menu item just added:
+            // alert('1');
+            /* alert('Item description: ' + itemDescription + '\n' +
+                  'Item name: ' + itemName + '\n' +
+                  'Item type: ' + fmGlobalInfoArray[pRootFolderEntid].itemTypeArray[x] + '\n' +
+                  'fmFolderGroupTypeString: ' + fmFolderGroupTypeString); */
+            fmOverrideMenuItemMouseEvents(itemDescription, pMenuItem.subMenu.items[itemName].id, pRootFolderEntid);
+
+          // alert('2');
+            var tempSubMenu = new jsDOMenu(fmMenuWidth, "", "", "",
+                    fmGlobalInfoArray[pRootFolderEntid].menuClass);
+            pMenuItem.subMenu.items[itemName].setSubMenu(tempSubMenu);
+            hdrAddMouseEnterLeaveTracking(tempSubMenu.menuObj.id);
+          // alert('3');
+            fmGlobalInfoArray[pRootFolderEntid].menuNamesArray[pMenuItem.subMenu.items[itemName].subMenu.menuObj.id] =
+                pMenuItem.subMenu.items[itemName].subMenu.menuObj.id;
+          // alert('4');
+            fmFlagMenuAsOurs(pRootFolderEntid, pMenuItem.subMenu.items[itemName].subMenu.menuObj.id);
+        }
+
+      // Add icon, if applicable:
+        var iconClass = fmGlobalInfoArray[pRootFolderEntid].itemIconClassArray[x];
+        if (iconClass != '')
+        {
+            /* alert('Icon class: ' + iconClass + '\n' +
+                  'Item description: ' + itemDescription + '\n' +
+                  'Item name: ' + itemName + '\n' +
+                  'Item type: ' + fmGlobalInfoArray[pRootFolderEntid].itemTypeArray[x] + '\n' +
+                  'fmFolderGroupTypeString: ' + fmFolderGroupTypeString);  */
+            pMenuItem.subMenu.items[itemName].showIcon(iconClass, iconClass + "Over", iconClass + "Over");
+        }
+
+    }   // for
+
+    var submenuDiv = document.getElementById(pMenuItem.subMenu.menuObj.id);
+
+    // Add "empty" note to subfolder
+    if (fmGlobalInfoArray[pRootFolderEntid].itemDescrArray.length == 0)
+    {
+//        //TODO: Comment Uncomment Empty Folder
+//        pMenuItem.subMenu.addMenuItem(new menuItem("(empty folder)", "empty", pMenuItem.actionOnClick, "",
+//                fmGlobalInfoArray[pRootFolderEntid].menuItemClass, fmGlobalInfoArray[pRootFolderEntid].menuItemOverClass));
+      }
+
+        // Conditionally change the height of the menubar on the fly and add a scrollbar:
+    else if (submenuDiv.offsetHeight > 400)
+    {
+        submenuDiv.style.height = "400px";
+        submenuDiv.style.overflow = "auto";
+        if (isMacFirefox)
+        {
+            // Save list of auto adjusted divs so they can be reset to counter Mac Firefox's bug TT #4084
+            fmOverflowAdjustedDivsArray[pMenuItem.subMenu.menuObj.id] = true;
+        }
+    }
+
+}
+
+
+function fmPopulateMenuBarMenu(pMenuBarItem)
+{
+    var pRootFolderEntid = fmGetEntidFromMenuBarItem(pMenuBarItem);
+
+    with (pMenuBarItem.menu)
+    {
+        for (var x = 0; x < fmGlobalInfoArray[pRootFolderEntid].itemDescrArray.length; x++)
+        {
+            var itemDescription = fmGlobalInfoArray[pRootFolderEntid].itemDescrArray[x];
+            var itemName = fmGlobalInfoArray[pRootFolderEntid].itemNameArray[x];
+            var itemType = fmGlobalInfoArray[pRootFolderEntid].itemTypeArray[x];
+            var action = "";
+
+            if (itemType != fmFolderGroupTypeString && itemType != ghWebPageGroupTypeString)
+            {
+                if (fmGlobalInfoArray[pRootFolderEntid].itemTargetArray[x] == "_blank")
+                {
+                    action = "javascript:openPopupWindow('" + fmGlobalInfoArray[pRootFolderEntid].itemUrlArray[x] + "','','');fmPotentiallyHideAllMenus();";
+                }
+                else
+                {
+                    action = "link:" + fmGlobalInfoArray[pRootFolderEntid].itemUrlArray[x];
+                }
+            }
+            else
+            {
+                action = "link:" + fmGlobalInfoArray[pRootFolderEntid].itemUrlArray[x];
+            }
+
+            addMenuItem(new menuItem(itemDescription, itemName, action, "",
+                    fmGlobalInfoArray[pRootFolderEntid].menuItemClass + " " + fmEntidClassPrefixSuffix + itemName + fmEntidClassPrefixSuffix,
+                    fmGlobalInfoArray[pRootFolderEntid].menuItemOverClass));
+
+            if (itemType == fmFolderGroupTypeString || itemType == ghWebPageGroupTypeString)
+            {
+
+                // Override onmouseover and onmouseout event handling for menu item just added:
+                fmOverrideMenuItemMouseEvents(itemDescription, items[itemName].id, pRootFolderEntid);
+
+                var tempSubMenu = new jsDOMenu(fmMenuWidth, "", "", "", fmGlobalInfoArray[pRootFolderEntid].menuClass);
+                items[itemName].setSubMenu(tempSubMenu);
+                hdrAddMouseEnterLeaveTracking(tempSubMenu.menuObj.id);
+
+                fmGlobalInfoArray[pRootFolderEntid].menuNamesArray[items[itemName].subMenu.menuObj.id] =
+                    items[itemName].subMenu.menuObj.id;
+
+                items[itemName].setArrowClassName(fmGlobalInfoArray[pRootFolderEntid].menuArrowClass);
+                items[itemName].setArrowClassNameOver(fmGlobalInfoArray[pRootFolderEntid].menuArrowOverClass);
+
+                fmFlagMenuAsOurs(pRootFolderEntid, items[itemName].subMenu.menuObj.id);
+            }
+
+      // Add icon, if applicable:
+            var iconClass = fmGlobalInfoArray[pRootFolderEntid].itemIconClassArray[x];
+            if (iconClass != '')
+            {
+                items[itemName].showIcon(iconClass, iconClass + "Over", iconClass + "Over");
+            }
+
+        }
+    //  for
+    }
+
+    var menuDiv = document.getElementById(pMenuBarItem.menu.menuObj.id);
+
+// Add "empty" note to subfolder
+    //TODO: Comment/Uncomment Empty Folder
+    if (fmGlobalInfoArray[pRootFolderEntid].itemDescrArray.length == 0)
+    {
+        var actionForEmpty = "";
+
+        pMenuBarItem.menu.addMenuItem(new menuItem("(empty folder)", "empty", pMenuBarItem.actionOnClick, "",
+                fmGlobalInfoArray[pRootFolderEntid].menuItemClass, fmGlobalInfoArray[pRootFolderEntid].menuItemOverClass));
+    }
+
+        // Conditionally change the height of the menubar on the fly and add a scrollbar:
+    else if (menuDiv.offsetHeight > 400)
+    {
+        menuDiv.style.height = "400px";
+        menuDiv.style.overflow = "auto";
+    }
+
+}
+
+
+function fmKeyPressHandler(e)
+{
+    // keyCode 27 is the Esc key
+    if (e.keyCode == '27')
+    {
+        fmPotentiallyHideAllMenus();
+    }
+
+}
+
+
+function fmPotentiallyHideAllMenus()
+{
+    if (fmOverrideMenuHiding != true)
+    {
+        hdrHideAllDropDownMenus();
+        fmHideMacFirefoxScrollbars();
+    }
+    fmOverrideMenuHiding = false;
+}
+
+
+function fmHideMacFirefoxScrollbars()
+{
+    // Perhaps this Mac Firefox bug workaround is no longer necessary or only necessary for older versions.  I have
+    // disabled this to solve TT #5020, but may need to revive it for older versions.  We'll see.
+    return;
+
+    // Counter Firefox Mac's bug relative to being unable to hide the divs (leaves scroll bar visible) TT #4084
+    if (isMacFirefox)
+    {
+        for (var divId in fmOverflowAdjustedDivsArray)
+        {
+          if ( fmOverflowAdjustedDivsArray[divId] == true )
+          {
+            var subMenuDiv = document.getElementById(divId);
+            subMenuDiv.style.overflow = "hidden";
+            fmOverflowAdjustedDivsArray[divId] = false;
+          }
+        }
+    }
+}
+
+
+// ***** IMPORTANT NOTE: *****
+// "pRootFolderEntid" - will be the actual folder entid (if a placeholder not used) or placeholder folder entid
+// "pFolderEntidForData" - may be the entid of a "local relative" folder that replaces a placeholder folder
+
+function fmPopulateRootMenu(pRootFolderEntid, pFolderEntidForData)
+{
+        var itemName = "x" + pFolderEntidForData;
+        var descr = fmGlobalInfoArray[pRootFolderEntid].rootFolderDescr;
+        var menuAlwaysVisible = true;
+
+        fmDeleteAllItemsAndSubMenus(pRootFolderEntid);
+        fmDeleteMenuItems(fmGlobalInfoArray[pRootFolderEntid].rootMenu);
+
+        /* The fmGlobalInfoArray[pRootFolderEntid].rootMenu is used as a base menu.  It will have only one thing on it: an
+           item for the root folder used as a basis for the menu.  fmGlobalInfoArray[pRootFolderEntid].rootMenu's submenu will
+           be the menu containing that folder's contents.  The submenu is what we will display. */
+
+        with (fmGlobalInfoArray[pRootFolderEntid].rootMenu)
+        {
+
+            /* Add the root folder to the fmGlobalInfoArray[pRootFolderEntid].rootMenu: */
+            addMenuItem(new menuItem(descr, itemName, "", "",
+                    fmGlobalInfoArray[pRootFolderEntid].menuItemClass + " " + fmEntidClassPrefixSuffix + itemName + fmEntidClassPrefixSuffix,
+                    fmGlobalInfoArray[pRootFolderEntid].menuItemOverClass ));
+
+            var tempSubMenu = new jsDOMenu(fmMenuWidth, "", "", menuAlwaysVisible, fmGlobalInfoArray[pRootFolderEntid].menuClass);
+            items[itemName].setSubMenu(tempSubMenu);
+            hdrAddMouseEnterLeaveTracking(tempSubMenu.menuObj.id);
+
+            fmGlobalInfoArray[pRootFolderEntid].menuNamesArray[items[itemName].subMenu.menuObj.id] =
+                items[itemName].subMenu.menuObj.id;
+
+            items[itemName].showIcon("folderIcon", "folderIcon", "folderIcon");
+            fmFlagMenuAsOurs(pRootFolderEntid, items[itemName].subMenu.menuObj.id);
+
+        }   // with fmGlobalInfoArray[pRootFolderEntid].rootMenu
+
+        /* Populate the fmGlobalInfoArray[pRootFolderEntid].rootMenu's submenu: */
+        fmStartOfMenuItemOverExitPoint(null, fmGlobalInfoArray[pRootFolderEntid].rootMenu.items[itemName]);   // null is where pEvent is normally passed
+
+        /* Create the menu bar from the fmGlobalInfoArray[pRootFolderEntid].rootMenu: */
+        fmCreateMenuBar(pRootFolderEntid, pFolderEntidForData);
+}
+
+
+function fmRequestContentsData(pEntid, pRootFolderEntid)
+{
+    var hiddenIframeId = "fmHiddenResourcesIFrame_" + pEntid;
+
+    //alert($("#" + hiddenIframeId).length);
+
+    if (typeof fmFolderXmlCache[hiddenIframeId] != "undefined")
+    {
+        fmLoadArraysFromResourcesXML(fmFolderXmlCache[hiddenIframeId], pRootFolderEntid, true);
+        fmIsRequestSuccessful = true;
+    }
+    else if ( $("#" + hiddenIframeId).length )
+    {
+        var iframe = isMSIE ? window.frames[hiddenIframeId] : document.getElementById(hiddenIframeId);
+
+        var xmlDoc = null;
+        if (isMSIE)
+        {
+            var ieXmlDataIsland = iframe.document.getElementById('ieXmlDataIsland');
+
+            //IE 9 No Longer supports the XMLDocument Property - EA 10/30/12
+            if(ieXmlDataIsland != null)
+            {
+                if (isMSIE9Higher)
+                {
+                    var islandXml = $(ieXmlDataIsland).html();
+                    var beginPos = islandXml.indexOf("<resources");
+                    var endPos = islandXml.indexOf("</resources>") + 12;
+                    var cleanXml = islandXml.substring(beginPos, endPos);
+                    var parser = new DOMParser();
+                    xmlDoc = parser.parseFromString(cleanXml, "text/xml");
+                }
+                else
+                {
+                    xmlDoc = ieXmlDataIsland.XMLDocument;
+                }
+            }
+        }
+        else if (iframe.contentDocument)
+        {
+            xmlDoc = iframe.contentDocument;
+        }
+
+        var resources = null;
+        if(xmlDoc != null)
+        {
+           resources = xmlDoc.getElementsByTagName("resource");
+           fmLoadArraysFromResourcesXML(resources, pRootFolderEntid, false);
+           fmIsRequestSuccessful = true;
+        }
+
+    }
+    else
+    {
+        var key = "" + pEntid;
+        var rootFolderEntid = "" + pRootFolderEntid;
+
+        var parameters = "key=" + key +
+                         "&menuRootFolderEntid=" + rootFolderEntid +
+                         "&jspFileParm=FolderMenu" +
+                         "&translatableUsingGoogleV2PaidAPI=" + hcTranslatableUsingGoogleV2PaidAPI +
+                         "&calledFromGroupHome=true";
+
+        $.ajax({
+            type: "POST",
+            url: "/ContentsData.page",
+            async: false,
+            data: parameters,
+            complete: function(xmlRequestObject, successString){
+                fmReceiveContentsData(xmlRequestObject, successString);
+            }
+        });
+    }
+}
+
+
+function fmReceiveContentsData(pAjaxReq, successString)
+{
+    // successString was "error" when Firefox was showing "Stopped" in status bar; see TT 4732 for more information
+    if (successString.indexOf("error") != -1)
+    {
+        if (ghShowAjaxErrorsToWorldUsers && ghIsWorldUser)
+        {
+            alert('There was an unexpected ' + successString + ' in function fmReceiveContentsData in FolderMenu.js.');
+        }
+        return;
+    }
+
+    var xmlRespDoc = pAjaxReq.responseXML ? pAjaxReq.responseXML : $.parseXML(pAjaxReq.responseText);
+
+    if (  (xmlRespDoc == null) || (xmlRespDoc.firstChild == null)  )
+    {
+        fmGiveTimeoutWarning();
+        return;
+    }
+
+    var resourcesElem = xmlRespDoc.getElementsByTagName("resources")[0];
+    var errorMsg = resourcesElem.getAttribute("error");
+
+    if (errorMsg)
+    {
+        notifyAjaxFailed(errorMsg);
+        return;
+    }
+
+    var menuRootFolderEntid = resourcesElem.getAttribute("menuRootFolderEntid");
+    var resources = xmlRespDoc.getElementsByTagName("resource");
+
+    fmLoadArraysFromResourcesXML(resources, menuRootFolderEntid, false);
+
+    // Effectively cache the data received from Ajax, to prevent additional Ajax calls:
+    var hiddenIframeId = "fmHiddenResourcesIFrame_" + resourcesElem.getAttribute("entid");
+
+    if ( !$("#" + hiddenIframeId).length && typeof fmFolderXmlCache[hiddenIframeId] == "undefined" )
+    {
+        if (ghIsFirefox || isMSIE9Higher)
+        {
+            fmFolderXmlCache[hiddenIframeId] = jQuery.extend(true, {}, resources);   // jQuery deep clone trick
+        }
+        else
+        {
+            fmFolderXmlCache[hiddenIframeId] = resources;   // Not sure direct reference will work; yes it will (for other browsers)
+        }
+    }
+
+    fmIsRequestSuccessful = true;
+
+}   // function fmReceiveContentsData
+
+
+function fmLoadArraysFromResourcesXML(resources, pRootFolderEntid, pResourcesComeFromCache)
+{
+    fmGlobalInfoArray[pRootFolderEntid].itemDescrArray.length = 0;
+    fmGlobalInfoArray[pRootFolderEntid].itemNameArray.length = 0;
+    fmGlobalInfoArray[pRootFolderEntid].itemTypeArray.length = 0;
+    fmGlobalInfoArray[pRootFolderEntid].itemUrlArray.length = 0;
+    fmGlobalInfoArray[pRootFolderEntid].itemTargetArray.length = 0;
+    fmGlobalInfoArray[pRootFolderEntid].itemIconClassArray.length = 0;
+
+    if (pResourcesComeFromCache && (ghIsFirefox || isMSIE9Higher) )
+    {
+        x = -1;
+        for (var key in resources)
+        {
+            if (isNaN(key))
+            {
+                continue;
+            }
+
+            x++;
+            fmInsertOneResourceIntoArrays(pRootFolderEntid, resources[key], x);
+        }
+    }
+    else
+    {
+        for (var x = 0; x < resources.length; x++)
+        {
+            fmInsertOneResourceIntoArrays(pRootFolderEntid, resources[x], x);
+        }
+    }
+
+}
+
+
+function fmInsertOneResourceIntoArrays(pRootFolderEntid, resource, x)
+{
+    fmGlobalInfoArray[pRootFolderEntid].itemDescrArray[x] = hdrGetContentsDataResourceAttributeValue(resource, "title");
+    fmGlobalInfoArray[pRootFolderEntid].itemNameArray[x]  = "x" + hdrGetContentsDataResourceAttributeValue(resource, "entid");
+    fmGlobalInfoArray[pRootFolderEntid].itemTypeArray[x]  = hdrGetContentsDataResourceAttributeValue(resource, "type");
+    fmGlobalInfoArray[pRootFolderEntid].itemUrlArray[x]   = decodeURIComponent(hdrGetContentsDataResourceAttributeValue(resource, "url"));
+
+    if (resource.getElementsByTagName("targetWindow")[0] == null || resource.getElementsByTagName("targetWindow")[0].firstChild == null)
+    {
+        fmGlobalInfoArray[pRootFolderEntid].itemTargetArray[x] = "";
+    }
+    else
+    {
+        fmGlobalInfoArray[pRootFolderEntid].itemTargetArray[x]   = hdrGetContentsDataResourceAttributeValue(resource, "targetWindow");
+    }
+
+    if (resource.getElementsByTagName("iconClass")[0] == null || resource.getElementsByTagName("iconClass")[0].firstChild == null)
+    {
+        fmGlobalInfoArray[pRootFolderEntid].itemIconClassArray[x] = "";
+    }
+    else
+    {
+        fmGlobalInfoArray[pRootFolderEntid].itemIconClassArray[x]   = hdrGetContentsDataResourceAttributeValue(resource, "iconClass");
+    }
+
+    // Handle opening in same window
+    if (fmGlobalInfoArray[pRootFolderEntid].itemTargetArray[x] == "")
+    {
+        fmGlobalInfoArray[pRootFolderEntid].urlsPerEntidArray[fmGlobalInfoArray[pRootFolderEntid].itemNameArray[x]] =
+            fmGlobalInfoArray[pRootFolderEntid].itemUrlArray[x];
+    }
+
+    // Handle opening in new window
+    else
+    {
+        fmGlobalInfoArray[pRootFolderEntid].urlsPerEntidArray[fmGlobalInfoArray[pRootFolderEntid].itemNameArray[x]] =
+            "javascript:openPopupWindow('" + fmGlobalInfoArray[pRootFolderEntid].itemUrlArray[x] + "','','');fmPotentiallyHideAllMenus();";
+    }
+
+    fmGlobalInfoArray[pRootFolderEntid].descrsPerEntidArray[fmGlobalInfoArray[pRootFolderEntid].itemNameArray[x]] = fmGlobalInfoArray[pRootFolderEntid].itemDescrArray[x];
+}
+
+
+function fmGiveTimeoutWarning()
+{
+    if (!fmGaveTimeoutWarning)
+    {
+        fmGaveTimeoutWarning = true;
+        notifyAjaxFailed("The web server was unable to respond, probably due to a session time out.  Please start over.");
+    }
+}
+
+
+function fmTraceOut(someText)
+{
+    return;
+  // var taElem = document.getElementById('outputArea');
+    // taElem.value = someText + "\n" + taElem.value;   // add to top
+}
+
+
+function fmStartOfMenuItemClickExitPoint(pEvent, pMenuItem)
+{
+    var pRootFolderEntid = fmGetEntidFromMenuItem(pMenuItem);
+
+    // A click action shouldn't do anything on an empty folder:
+    var itemDesc = "default description";
+    if (pMenuItem.innerText != undefined)
+    {
+        itemDesc = pMenuItem.innerText;   // IE
+    }
+    else
+    {
+        itemDesc = pMenuItem.textContent;   // Firefox
+    }
+
+    /*
+    if (itemDesc == '(empty folder)')
+    {
+        return;
+    }
+    */
+
+
+  // Exit points could be called for ANY menu (including those not generated by this page).  Therefore only run
+    // this code if for one of OUR menus.
+    if (fmIsOurMenu(pMenuItem) != true)
+    {
+        return;
+    }
+
+  // 3/7/08 Added actionOnClick test below.  I had a bit of a time trying to remember the purpose of testing for
+    // the iconObj stuff.  I believe it was intended to mean "don't run the remainder of this function if the menu
+    // item is a "More..." or "Edit..." or similar action.  However, once I added the option to not show icons in
+    // the navbar, then one could no longer navigate to folders due to the following block executing a return.
+    // I think adding the actionOnClick test will fix that problem.
+
+    if (
+            pMenuItem.actionOnClick.length != 0 &&
+            (  (pMenuItem.iconObj == null) || (pMenuItem.iconObj == undefined)  )
+            )
+    {
+        return;
+    }
+
+    var itemName = "x" + fmExtractEntid(pMenuItem);
+
+    // window.location = fmGlobalInfoArray[pRootFolderEntid].urlsPerEntidArray[itemName];
+
+}
+
+
+function fmDeleteAllDomNodesForElement(pElement)
+{
+    var children = pElement.childNodes;
+
+    if (children != undefined)
+    {
+        while (children.length > 0)
+        {
+            pElement.removeChild(children[0]);
+        }
+    }
+
+    // For above, try this shortcut method, which may work: pElement.Node.length = 0;
+
+}
+
+
+function fmDeleteMenuItems(pMenu)
+{
+
+    // First delete all properties from the menu's "items" object:
+    for (itemName in pMenu.items)
+    {
+        delete pMenu.items[itemName];
+    }
+
+    // Then delete all html/DOM elements from the menu's div:
+    fmDeleteAllDomNodesForElement(document.getElementById(pMenu.menuObj.id));
+}
+
+
+function fmDeleteAllItemsAndSubMenus(pRootFolderEntid)
+{
+    fmDeleteAllItemAndSubMenuDomInfo(pRootFolderEntid);
+    fmRecursivelyDeleteItemAndSubMenuObjects(fmGlobalInfoArray[pRootFolderEntid].rootMenu);
+    delete fmGlobalInfoArray[pRootFolderEntid].rootMenu.previousItem;
+}
+
+
+// This function will only delete DOM info for menus that are OURS because it only processes menus in the
+// fmGlobalInfoArray[pRootFolderEntid].menuNamesArray, which we keep track of.
+function fmDeleteAllItemAndSubMenuDomInfo(pRootFolderEntid)
+{
+    var numberOfMenus = menuCount;
+    var menuNames = "";
+    for (var menuName in fmGlobalInfoArray[pRootFolderEntid].menuNamesArray)
+    {
+        menuNames += menuName + ":";
+    }
+
+    for (var x = 1; x <= numberOfMenus; x++)
+    {
+        var nameOfMenu = "DOMenu" + x;
+        if (  (menuNames.indexOf(nameOfMenu + ":") >= 0) && (nameOfMenu != fmGlobalInfoArray[pRootFolderEntid].rootMenu.menuObj.id)  )
+        {
+            fmDeleteAllDomNodesForElement(document.getElementById(nameOfMenu));
+            var parentElem = document.getElementById(nameOfMenu).parentNode;
+            parentElem.removeChild(document.getElementById(nameOfMenu));
+
+      // Subtract 1 from third party tool's menu count:
+            menuCount--;
+
+            fmGlobalInfoArray[pRootFolderEntid].menuNamesArray[nameOfMenu] = "";
+        }
+    }
+}
+
+
+function fmRecursivelyDeleteItemAndSubMenuObjects(pMenu)
+{
+
+    // Loop #1 through and process this menu's items which aren't submenus:
+    for (itemName in pMenu.items)
+    {
+        if ( pMenu.items[itemName].subMenu == null )
+        {
+            // traceOut('Loop 1: Deleting menu item object with name '  + itemName);
+            delete pMenu.items[itemName];
+        }
+    }   // Loop #1
+
+    // Loop #2 through and process this menu's remaining items (which should be submenus):
+    for (itemName in pMenu.items)
+    {
+        var saveItemName = itemName;
+        fmRecursivelyDeleteItemAndSubMenuObjects(pMenu.items[itemName].subMenu);
+    // traceOut('Loop 2: Deleting menu item object with name '  + saveItemName);
+        delete pMenu.items[saveItemName];
+    }   // Loop #2
+
+}
+
+
+function fmExtractEntid(pMenuItem)
+{
+    // Try more direct approach before using old approach:
+    var menuItemClasses = pMenuItem.itemClassName.split(fmEntidClassPrefixSuffix);
+
+    if (menuItemClasses.length > 1)
+    {
+        return menuItemClasses[1].substring(1);
+    }
+
+    // pMenuItem.parent.items is an associative array that contains a list of x + folder entid
+    // match up pMenuItem.id with the correct pMenuItem.parent.items entry to get the x + folder entid
+    // pMenuItem.parent.items.folder2.id is what to match up with pMenuItem.id
+
+    var entid = "";
+    for (itemName in pMenuItem.parent.items)
+    {
+        if (pMenuItem.parent.items[itemName].id == pMenuItem.id)
+        {
+            entid = itemName.substring(1);
+            break;
+        }
+    }
+    return entid;
+}
+
+
+function fmBuildDynamicMenuItems(pEvent, pMenuItem, pRootFolderEntid)
+{
+
+
+    var itemDesc = "default description";
+    var menuItemDiv = document.getElementById(pMenuItem.id);
+    if (menuItemDiv.innerText != undefined)
+    {
+        itemDesc = menuItemDiv.innerText;   // IE
+    }
+    else
+    {
+        itemDesc = menuItemDiv.textContent;   // Firefox
+    }
+  
+  // traceOut('Regenerating menu ' + itemDesc);
+
+    // Delete existing menu items, if submenu:
+    fmDeleteMenuItems(pMenuItem.subMenu);
+      
+
+      // Extract the entid:
+    var entid = fmExtractEntid(pMenuItem);
+
+    fmIsRequestSuccessful = false;
+    fmRequestContentsData(entid, pRootFolderEntid);
+
+      // Use the response data, which should be ready since doing synchronous Ajax request:
+    if (fmIsRequestSuccessful)
+    {
+        fmGlobalMenuItem = pMenuItem;
+        // alert('inside fmBuildDynamicMenuItems about to call fmPopulateMenu.  itemDesc: ' + itemDesc);
+        fmPopulateMenu(fmGlobalMenuItem);
+    }
+
+}
+
+
+function fmBuildDynamicMenuBarItems(pEvent, pMenuBarItem, pRootFolderEntid)
+{
+    var itemDesc = "default description";
+    var menuItemDiv = document.getElementById(pMenuBarItem.id);
+    if (menuItemDiv.innerText != undefined)
+    {
+        itemDesc = menuItemDiv.innerText;   // IE
+    }
+    else
+    {
+        itemDesc = menuItemDiv.textContent;   // Firefox
+    }
+
+  // traceOut('Regenerating menu ' + itemDesc);
+
+    // Delete existing menu items:
+    fmDeleteMenuItems(pMenuBarItem.menu);
+
+
+      // Extract the entid:
+    var entid = fmExtractEntid(pMenuBarItem);
+
+    fmIsRequestSuccessful = false;
+    fmRequestContentsData(entid, pRootFolderEntid);
+
+      // Use the response data, which should be ready since doing synchronous Ajax request:
+    if (fmIsRequestSuccessful)
+    {
+        fmGlobalMenuItem = pMenuBarItem;
+        fmPopulateMenuBarMenu(fmGlobalMenuItem);
+    }
+
+}
+
+
+function fmOverrideMenuItemMouseEvents(pItemDescription, pMenuItemDivId, pRootFolderEntid)
+{
+    // traceOut('overriding mouse events for item=' + pItemDescription + ' div=' + pMenuItemDivId);
+    var menuItemDiv = document.getElementById(pMenuItemDivId);
+
+    menuItemDiv.onmouseover = null;
+    menuItemDiv.onmouseout = null;
+
+    var tempOverrideMenuItemMouseEventsFormName = fmGlobalInfoArray[pRootFolderEntid].overrideMenuItemMouseEventsFormName;
+
+    // The only way I know of to dynamically add "hoverIntent" to an element that is created on-the-fly (after
+    // the document onload process is finished) is the following.  It temporarily adds an event handler to an empty form's "onreset"
+    // event.  When the empty form is reset, it adds the "hoverIntent" function to the menu item div.
+
+    // Discovered that IE (7?) doesn't unbind properly, so whenever you use multiple jQuery bind/unbind instructions
+    // in the same page, use separate forms for each of them.
+
+    if (hdrIsSafari_1_3_2())
+    {
+        var menuItemDivElem = document.getElementById(pMenuItemDivId);
+        addHtmlAttribute(menuItemDivElem, "onmouseover", "menuItemOver(event);");
+        addHtmlAttribute(menuItemDivElem, "onmouseout", "menuItemOut(event);");
+    }
+    else
+    {
+        var overrideMouseEventsFormQuery = $("#" + tempOverrideMenuItemMouseEventsFormName);
+
+        overrideMouseEventsFormQuery.bind("reset", function() { $("#" + pMenuItemDivId).hoverIntent({
+            sensitivity: 1,
+            interval: ghPinnedFolderSubmenuFetchDelayMs,
+            over: menuItemOver,   // a jsdomenubar function name
+            timeout: (ghPinnedFolderSubmenuFetchDelayMs + 10),
+            out: menuItemOut } ); } );   // a jsdomenubar function name
+
+        document.forms[tempOverrideMenuItemMouseEventsFormName].reset();
+
+        overrideMouseEventsFormQuery.unbind();
+    }
+
+}
+
+
+function fmOverrideMenuBarItemMouseEvents(pItemDescription, pMenuBarItemElemId, pRootFolderEntid)
+{
+    // traceOut('overriding mouse events for item=' + pItemDescription + ' div=' + pMenuItemDivId);
+    var menuBarItemElem = document.getElementById(pMenuBarItemElemId);
+
+    menuBarItemElem.onmouseover = null;
+    menuBarItemElem.onmouseout = null;
+
+    var tempOverrideMenuBarItemMouseEventsFormName = fmGlobalInfoArray[pRootFolderEntid].overrideMenuBarItemMouseEventsFormName;
+
+    // The only way I know of to dynamically add "hoverIntent" to an element that is created on-the-fly (after
+    // the document onload process is finished) is the following.  It temporarily adds an event handler to an empty form's "onreset"
+    // event.  When the empty form is reset, it adds the "hoverIntent" function to the menu item div.
+
+    // Discovered that IE (7?) doesn't unbind properly, so whenever you use multiple jQuery bind/unbind instructions
+    // in the same page, use separate forms for each of them.
+    if (hdrIsSafari_1_3_2())
+    {
+        addHtmlAttribute(menuBarItemElem, "onmouseover", "menuBarItemOver(event);");
+        addHtmlAttribute(menuBarItemElem, "onmouseout", "menuBarItemOut(event);");
+    }
+    else
+    {
+        var overrideMouseEventsFormQuery = $("#" + tempOverrideMenuBarItemMouseEventsFormName);
+
+        overrideMouseEventsFormQuery.bind("reset", function() { $("#" + pMenuBarItemElemId).hoverIntent({
+            sensitivity: 1,
+            interval: ghPinnedFolderSubmenuFetchDelayMs,
+            over: menuBarItemOver,   // a jsdomenubar function name
+            timeout: (ghPinnedFolderSubmenuFetchDelayMs + 10),
+            out: menuBarItemOut } ); } );   // a jsdomenubar function name
+
+        document.forms[tempOverrideMenuBarItemMouseEventsFormName].reset();
+
+        overrideMouseEventsFormQuery.unbind();
+    }
+}
+
+
+function fmFlagMenuAsOurs(pRootFolderEntid, menuDivId)
+{
+    var menuDiv = document.getElementById(menuDivId);
+    menuDiv.setAttribute("app", fmGlobalInfoArray[pRootFolderEntid].appName);
+}
+
+
+function fmFlagMenuBarAsOurs(pRootFolderEntid, menuBarDivId)
+{
+    var menuBarDiv = document.getElementById(menuBarDivId);
+    menuBarDiv.setAttribute("app", fmGlobalInfoArray[pRootFolderEntid].appName);
+}
+
+
+function fmFlagMenuBarItemAsOurs(pRootFolderEntid, menuBarItemSpanId)
+{
+    var menuBarItemSpan = document.getElementById(menuBarItemSpanId);
+    menuBarItemSpan.setAttribute("app", fmGlobalInfoArray[pRootFolderEntid].appName);
+}
+
+
+function fmGetEntidFromMenuBarItem(pMenuBarItem)
+{
+    var parentMenuElem = document.getElementById(pMenuBarItem.parent.menuBarObj.id);
+    var appAttribute = parentMenuElem.getAttribute("app");
+    return fmGetEntidFromAttributeString(appAttribute);
+}
+
+
+function fmGetEntidFromMenuItem(pMenuItem)
+{
+    var parentMenuElem = document.getElementById(pMenuItem.parent.menuObj.id);
+    var appAttribute = parentMenuElem.getAttribute("app");
+    return fmGetEntidFromAttributeString(appAttribute);
+}
+
+
+function fmGetEntidFromAttributeString(pAttributeString)
+{
+    if (  (pAttributeString == null) || (pAttributeString == undefined)  )
+    {
+        return "";
+    }
+    else
+    {
+        var startPos = pAttributeString.indexOf(fmAppNamePrefix);
+        if (startPos >= 0)
+        {
+            startPos += fmAppNamePrefix.length;
+            var entid = pAttributeString.substring(startPos);
+            return entid;
+        }
+        else
+        {
+            return "";
+        }
+    }
+}
+
+
+function fmIsOurMenuBarItem(pMenuBarItem)
+{
+    var pRootFolderEntid = fmGetEntidFromMenuBarItem(pMenuBarItem);
+
+    if (pRootFolderEntid == "")
+    {
+        return false;
+    }
+
+    var parentMenuDiv = document.getElementById(pMenuBarItem.parent.menuBarObj.id);
+    var appAttribute = parentMenuDiv.getAttribute("app");
+    if (  (appAttribute == null) || (appAttribute == undefined) || (appAttribute != fmGlobalInfoArray[pRootFolderEntid].appName)  )
+    {
+        return false;
+    }
+
+    if (  (fmGlobalInfoArray[pRootFolderEntid].menuBar != undefined) &&
+          (pMenuBarItem.parent.menuBarObj == fmGlobalInfoArray[pRootFolderEntid].menuBar.menuBarObj)    )
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+
+function fmIsOurMenu(pMenuItem)
+{
+    var pRootFolderEntid = fmGetEntidFromMenuItem(pMenuItem);
+
+    if (pRootFolderEntid == "")
+    {
+        return false;
+    }
+
+    var parentMenuDiv = document.getElementById(pMenuItem.parent.menuObj.id);
+    var appAttribute = parentMenuDiv.getAttribute("app");
+    if (  (appAttribute == null) || (appAttribute == undefined) || (appAttribute != fmGlobalInfoArray[pRootFolderEntid].appName)  )
+    {
+        return false;
+    }
+
+    var menuNames = "";
+    for (var menuName in fmGlobalInfoArray[pRootFolderEntid].menuNamesArray)
+    {
+        menuNames += menuName + ":";
+    }
+
+    var ourMenu = false;
+
+    if (menuNames.indexOf(pMenuItem.parent.menuObj.id + ":") >= 0)
+    {
+        ourMenu = true;
+    }
+
+    if (pMenuItem.parent.menuObj.id == fmGlobalInfoArray[pRootFolderEntid].rootMenu.menuObj.id)
+    {
+        ourMenu = true;
+    }
+
+    return ourMenu;
+
+}
+
+
+function fmStartOfMenuItemOverExitPoint(pEvent, pMenuItem)
+{
+
+    // Exit points could be called for ANY menu (including those not generated by this page).  Therefore only run
+    // this code if for one of OUR menus.
+    if (fmIsOurMenu(pMenuItem) != true)
+    {
+        return;
+    }
+
+    var pRootFolderEntid = fmGetEntidFromMenuItem(pMenuItem);
+
+
+    if (pMenuItem.subMenu != null)
+    {
+        // If two "hover overs" happen back to back in a short period of time for the same entid/menu, don't do anything with it
+        var currentEntid = fmExtractEntid(pMenuItem);
+        var currentTime = null;
+        if (currentEntid == fmPreviousEntid)
+        {
+            currentTime = new Date();
+            var timeDifference = currentTime - fmPreviousTime;
+            if (timeDifference < 1000)   // mdss 2/4/08 changed from 4000 to 1000
+            {
+                return;
+            }
+        }
+
+        fmPreviousEntid = currentEntid;
+        fmPreviousTime = currentTime;
+
+      // Ajax should be ready, since doing sync request
+        // alert('inside fmStartOfMenuItemOverExitPoint - prior to call to fmBuildDynamicMenuItems');
+        fmBuildDynamicMenuItems(pEvent, pMenuItem, pRootFolderEntid);
+
+    }
+
+}
+
+
+function fmStartOfMenuBarItemClickExitPoint(pEvent, pMenuBarItem)
+{
+    // Exit points could be called for ANY menu (including those not generated by this page).  Therefore only run
+      // this code if for one of OUR menus.
+      if (fmIsOurMenuBarItem(pMenuBarItem) != true)
+      {
+          return;
+      }
+
+      var pRootFolderEntid = fmGetEntidFromMenuBarItem(pMenuBarItem);
+
+      var itemName = "x" + fmExtractEntid(pMenuBarItem);
+
+      pMenuBarItem.enabled = false;   // should prevent click from re-showing the menubar's menu
+      fmPotentiallyHideAllMenus();
+      window.location = fmGlobalInfoArray[pRootFolderEntid].urlsPerEntidArray[itemName];
+}
+
+
+function fmStartOfMenuBarItemOverExitPoint(pEvent, pMenuBarItem)
+{
+
+    // Exit points could be called for ANY menu (including those not generated by this page).  Therefore only run
+    // this code if for one of OUR menus.
+    if (fmIsOurMenuBarItem(pMenuBarItem) != true)
+    {
+        return;
+    }
+
+    // fmTouchMenuBarClassNames();
+    ghTouchMenuBarForIE();
+
+    // If the menu bar item is NOT A MENU, then bail:
+    if (pMenuBarItem.menu == null)
+    {
+        fmPotentiallyHideAllMenus();
+        // fmTouchMenuBarClassNames();
+        ghTouchMenuBarForIE();
+        return;
+    }
+
+    var pRootFolderEntid = fmGetEntidFromMenuBarItem(pMenuBarItem);
+
+
+    fmBuildDynamicMenuBarItems(pEvent, pMenuBarItem, pRootFolderEntid);
+
+    // Calculate placement of menu before showing it:
+    var menuBarItemDiv = document.getElementById(pMenuBarItem.id);
+    var menuBarItemOffset = $(menuBarItemDiv).offset();
+    var menuBarItemLeftEdge = menuBarItemOffset.left;
+    var menuBarItemTopEdge = menuBarItemOffset.top;
+    var menuBarItemWidth = menuBarItemDiv.offsetWidth;
+    var menuBarItemHeight = menuBarItemDiv.offsetHeight;
+
+    var fmdOffset = $("#" + fmGlobalInfoArray[pRootFolderEntid].rootFolderDivId).offset();
+    var folderMenuLeftEdge = fmdOffset.left;
+    var folderMenuTopEdge = fmdOffset.top;
+
+    var menuBarContainerTopPadding = parseInt( $("#edlElement_" + pRootFolderEntid + "_folder").css("paddingTop"),10);
+
+    var hoveredItemTopEdge = ( fmGlobalInfoArray[pRootFolderEntid].isVerticalMenu == "true" ?
+            menuBarItemTopEdge : folderMenuTopEdge + menuBarContainerTopPadding ) -
+            hdrGetHeightOfGoogleTranslateBanner();
+
+    var popupMenuElem = document.getElementById(pMenuBarItem.menu.menuObj.id);
+    popupMenuElem.style.height = "";
+
+    var windowWidth = hdrGetWindowWidth(window);
+    var windowHeight = hdrGetWindowHeight(window);
+
+    var targetX = 0;
+    var targetY = 0;
+
+    if (fmGlobalInfoArray[pRootFolderEntid].isVerticalMenu == "true")
+    {
+        var menuBarItemDivQuery = $(menuBarItemDiv);
+        targetX = menuBarItemDivQuery.offset().left + menuBarItemDivQuery.outerWidth(false);
+
+        // Handle case where targetX is to the right of the browser window:
+        if (targetX + popupMenuElem.offsetWidth > windowWidth )
+        {
+            targetX = menuBarItemDivQuery.offset().left - popupMenuElem.offsetWidth;
+        }
+
+        targetY = hoveredItemTopEdge;
+
+        // Handle case where targetY is below the browser window:
+        if (targetY + popupMenuElem.offsetHeight > windowHeight )
+        {
+            targetY = hoveredItemTopEdge + menuBarItemHeight - popupMenuElem.offsetHeight - 1;
+            
+            if (targetY < 0)
+            {
+                targetY = 0;
+
+                if (popupMenuElem.offsetHeight > windowHeight)
+                {
+                    popupMenuElem.style.height = (windowHeight - 5) + "px";
+                    popupMenuElem.style.overflow = "auto";
+                }
+            }
+        }
+
+    }
+    else
+    {
+        targetX = menuBarItemLeftEdge;
+
+        // Handle case where targetX is to the right of the browser window:
+        if (targetX + popupMenuElem.offsetWidth > windowWidth )
+        {
+            targetX = menuBarItemLeftEdge + menuBarItemWidth - popupMenuElem.offsetWidth;
+        }
+
+        targetY = hoveredItemTopEdge + menuBarItemHeight;   // popping downwards
+
+        // Handle case where targetY is below the browser window:
+        if (targetY + popupMenuElem.offsetHeight > windowHeight )
+        {
+            var amtBelowWindowBottomEdge = targetY + popupMenuElem.offsetHeight - windowHeight;
+            var alternateTargetY = hoveredItemTopEdge - popupMenuElem.offsetHeight - 1;   // popping upwards
+            var amtAboveWindowTopEdge = alternateTargetY * -1;
+
+            if (amtAboveWindowTopEdge < 0)
+            {
+                targetY = alternateTargetY;   // fits cleanly when popping upwards
+            }
+            else
+            {
+                if (amtAboveWindowTopEdge > amtBelowWindowBottomEdge)
+                {
+                    // Pop downwards using original targetY, but reduce height of popup menu
+                    var newHeight = popupMenuElem.offsetHeight - amtBelowWindowBottomEdge - 5;
+                }
+                else
+                {
+                    // Pop upwards using alternateTargetY, but reduce height
+                    newHeight = popupMenuElem.offsetHeight - amtAboveWindowTopEdge - 5;
+                    targetY = hoveredItemTopEdge - newHeight - 1;
+                }
+
+                popupMenuElem.style.height = newHeight + "px";
+                popupMenuElem.style.overflow = "auto";
+            }
+
+        }
+
+    }
+
+    fmPotentiallyHideAllMenus();
+    pMenuBarItem.menu.moveTo(targetX, targetY);
+
+    pMenuBarItem.menu.show();
+
+    // fmTouchMenuBarClassNames();
+    ghTouchMenuBarForIE();
+
+}
+
+
+function fmStartOfMenuBarItemOutExitPoint(pMenuBarItem)
+{
+
+    // Exit points could be called for ANY menu (including those not generated by this page).  Therefore only run
+    // this code if for one of OUR menus.
+    if (fmIsOurMenuBarItem(pMenuBarItem) != true)
+    {
+        return;
+    }
+
+    // fmTouchMenuBarClassNames();
+    ghTouchMenuBarForIE();
+}
+
+function fmMenuItemClickReturnActionStringOverrideExitPoint(pEvent, pMenuItem)
+{
+    var action = pMenuItem.actionOnClick;
+  // alert('action=' + action);
+    // Return the original action and let it proceed as it normally would
+    return action;
+}
+
+
+function fmCreateRootMenu(pRootFolderEntid)
+{
+    var menuAlwaysVisible = true;
+
+    var tempMenu = new jsDOMenu(fmMenuWidth,
+                        "",
+                        fmGlobalInfoArray[pRootFolderEntid].rootMenuId,
+                        menuAlwaysVisible,
+                        fmGlobalInfoArray[pRootFolderEntid].menuClass);
+
+    fmGlobalInfoArray[pRootFolderEntid].rootMenu = tempMenu;
+
+    // May not need the following:
+    hdrAddMouseEnterLeaveTracking(tempMenu.menuObj.id);
+
+    fmFlagMenuAsOurs(pRootFolderEntid, fmGlobalInfoArray[pRootFolderEntid].rootMenu.menuObj.id);
+}
+
+
+// ***** IMPORTANT NOTE: *****
+// "pRootFolderEntid" - will be the actual folder entid (if a placeholder not used) or placeholder folder entid
+// "pFolderEntidForData" - may be the entid of a "local relative" folder that replaces a placeholder folder
+
+function fmCreateMenuBar(pRootFolderEntid, pFolderEntidForData)
+{
+    //*** Create overall menu and its items:
+
+    fmGlobalInfoArray[pRootFolderEntid].menuBar = new jsDOMenuBar("static", fmGlobalInfoArray[pRootFolderEntid].rootFolderPlaceHolderDivId, "",
+            fmGlobalInfoArray[pRootFolderEntid].menuBarClass + " " + GH_MENU_BAR_BOX_HIGHLIGHT_CLASS);   // 5th parm is width, 6th parm is height
+    
+    hdrAddMouseEnterLeaveTracking(fmGlobalInfoArray[pRootFolderEntid].menuBar.menuBarObj.id);
+
+    fmFlagMenuBarAsOurs(pRootFolderEntid, fmGlobalInfoArray[pRootFolderEntid].rootFolderPlaceHolderDivId);
+
+    // var entid = pRootFolderEntid;
+    var entid = pFolderEntidForData;
+    var cmbBrowseMenuSubmenu = fmGlobalInfoArray[pRootFolderEntid].rootMenu.items["x" + entid].subMenu;
+
+    with (fmGlobalInfoArray[pRootFolderEntid].menuBar) {
+
+        // Pre-process array to get index of last item.  For some reason, cmbBrowseMenuSubmenu.items.length always
+        // reports 0.  Maybe that object isn't really an array.
+
+        var lastIndex = -1;
+        for (itemName in cmbBrowseMenuSubmenu.items)
+        {
+            lastIndex++;
+        }
+
+        var x = -1;
+
+        for (itemName in cmbBrowseMenuSubmenu.items)
+        {
+            // If an internal link points to a resource that is not visible, this condition could be met.  In that
+            // case, don't try to add the menubar item.
+            if (typeof fmGlobalInfoArray[pRootFolderEntid].descrsPerEntidArray[itemName] == "undefined")
+            {
+                continue;
+            }
+
+            x++;
+
+            var action = "";
+            if (fmGlobalInfoArray[pRootFolderEntid].itemTargetArray[x] == "_blank")
+            {
+                action = "javascript:openPopupWindow('" + fmGlobalInfoArray[pRootFolderEntid].itemUrlArray[x] + "','','');fmPotentiallyHideAllMenus();";
+            }
+            else
+            {
+                action = "link:" + fmGlobalInfoArray[pRootFolderEntid].itemUrlArray[x];
+            }
+
+            var cmbDescr = fmGlobalInfoArray[pRootFolderEntid].descrsPerEntidArray[itemName];
+            var cmbMenuObj = cmbBrowseMenuSubmenu.items[itemName].subMenu;
+
+            var entidClass =  fmEntidClassPrefixSuffix + itemName + fmEntidClassPrefixSuffix;
+
+            var tempMenuBarItem = new menuBarItem(
+                    cmbDescr,
+                    cmbMenuObj,
+                    itemName,
+                    "",
+                    action,
+                    (fmGlobalInfoArray[pRootFolderEntid].designSidebarOpen == "true" &&
+                        ghGlobalSelectedElementId.indexOf(pRootFolderEntid) >=0 && x == lastIndex) ?
+                        fmGlobalInfoArray[pRootFolderEntid].menuBarItemOverClass + " " + entidClass :
+                        fmGlobalInfoArray[pRootFolderEntid].menuBarItemClass + " " + GH_MENU_BAR_ITEM_BOX_HIGHLIGHT_CLASS + " " + entidClass,
+                    fmGlobalInfoArray[pRootFolderEntid].menuBarItemOverClass,
+                    fmGlobalInfoArray[pRootFolderEntid].menuBarItemClickClass
+                    );
+
+            addMenuBarItem(tempMenuBarItem);
+            fmFlagMenuBarItemAsOurs(pRootFolderEntid, tempMenuBarItem.id);
+
+            var itemType = fmGlobalInfoArray[pRootFolderEntid].itemTypeArray[x];
+
+            if (itemType == fmFolderGroupTypeString || itemType == ghWebPageGroupTypeString)
+            {
+                // Override onmouseover and onmouseout event handling for menubar item just added:
+                fmOverrideMenuBarItemMouseEvents(cmbDescr, tempMenuBarItem.id, pRootFolderEntid);
+            }
+
+
+            // Don't show the separate for the last menu item (was using CSS, but IE doesn't abide)
+            if (  ( x == lastIndex) && (fmGlobalInfoArray[pRootFolderEntid].useMenuItemSeparator == "true")  )
+            {
+                var tempElem = document.getElementById(tempMenuBarItem.id);
+                if (fmGlobalInfoArray[pRootFolderEntid].isVerticalMenu == "true")
+                {
+                    tempElem.style.borderBottom = "none";
+                }
+                else
+                {
+                    tempElem.style.paddingRight = "2px";
+                    tempElem.style.borderRight = "none";
+                }
+            }
+
+        }
+
+        // Hide folder menu if it doesn't contain at least one thing
+        if (x == -1)
+        {
+            var placeholderDivElem = document.getElementById(fmGlobalInfoArray[pRootFolderEntid].rootFolderPlaceHolderDivId);
+            placeholderDivElem.style.display = "none";
+        }
+
+    }
+
+}
+
+
+function fmTouchMenuBarClassNames()
+{
+    // Refresh the menu bar class name (with same thing it had).  For some reason, this solves an IE bug.
+    for (entidKey in fmGlobalInfoArray)
+    {
+        var placeHolderDiv = document.getElementById(fmGlobalInfoArray[entidKey].rootFolderPlaceHolderDivId);
+        if (  (placeHolderDiv != null) && (placeHolderDiv != undefined)  )
+        {
+            placeHolderDiv.className = fmGlobalInfoArray[entidKey].menuBarClass + " " + GH_MENU_BAR_BOX_HIGHLIGHT_CLASS;
+        }
+    }
+
+}

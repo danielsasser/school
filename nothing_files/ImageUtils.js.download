@@ -1,0 +1,122 @@
+function iuPreloadImages(imageDirectory, imageNames) 
+{
+    var imageArray = imageNames.split(',');
+
+    for (var i = 0; i < imageArray.length; i++)
+    {
+        new Image().src = imageDirectory + imageArray[i];
+    }
+}
+
+function iuSetDynamicGradientImageBackground(pElementForGradient, pIsVerticalGradient, pStartColor, pEndColor)
+{
+    var width;
+    var height;
+    var orientation;
+    var repeatAxis;
+
+    if (pIsVerticalGradient)
+    {
+        width = 1;
+        height = Math.round(pElementForGradient.offsetHeight);
+        orientation = "vertical";
+        repeatAxis = "x";
+    }
+    else
+    {
+        width = Math.round(pElementForGradient.offsetWidth);
+        height = 1;
+        orientation = "horizontal";
+        repeatAxis = "y";
+    }
+
+    if (width > 0 && height > 0)
+    {
+        pElementForGradient.style.backgroundColor = "";
+
+        pElementForGradient.style.backgroundImage = "url('/GradientImage.page" +
+                                        "?skipSettingPreviousGetUrl=true" +
+                                        "&width=" + width +
+                                        "&height=" + height +
+                                        "&orientation=" + orientation +
+                                        "&startColor=" + pStartColor +
+                                        "&endColor=" + pEndColor +
+                                        "')";
+
+        pElementForGradient.style.backgroundRepeat = "repeat-" + repeatAxis;
+    }
+}
+
+
+function iuSwapRolloverImage(pImgElem, pMouseAction, pClassOfImageGroup)
+{
+    var imgElemQuery = $(pImgElem);
+    var src = imgElemQuery.attr("src");
+    var imgBaseName = src.substring(0, src.lastIndexOf("_"));
+    var imgState = src.substring(imgBaseName.length + 1, src.length - 4);   // -4 is for ".png"
+
+    if (imgState == "On" && pMouseAction == "leave")
+    {
+        return;
+    }
+
+    var newImgState = "";
+
+    if (pMouseAction == "enter")
+    {
+        newImgState = "Hover";
+    }
+    else if (pMouseAction == "leave")
+    {
+        newImgState = "Off";
+    }
+    else if (pMouseAction == "click")
+    {
+        newImgState = "On";
+    }
+
+    var newImgSrc = imgBaseName + "_" + newImgState + ".png";
+
+    // When one is clicked, turn off all the others:
+    if (pMouseAction == "click")
+    {
+        iuSetRolloverStateForButtonGroupExceptFor(pImgElem, pClassOfImageGroup, "Off");
+    }
+
+    imgElemQuery.attr("src", newImgSrc);
+}
+
+
+function iuSetRolloverStateForButtonGroup(pRolloverGroupClass, pNewState_Off_Hover_On)
+{
+    $("img." + pRolloverGroupClass).each(
+        function()
+        {
+            iuSetButtonState(this.id, pNewState_Off_Hover_On);
+        }
+    );
+}
+
+
+function iuSetRolloverStateForButtonGroupExceptFor(pExceptImgElem, pRolloverGroupClass, pNewState_Off_Hover_On)
+{
+    $("img." + pRolloverGroupClass).each(
+        function()
+        {
+            if (pExceptImgElem != this)
+            {
+                iuSetButtonState(this.id, pNewState_Off_Hover_On);
+            }
+        }
+    );
+}
+
+
+function iuSetButtonState(pButtonId, pNewState_Off_Hover_On)
+{
+    var buttonQuery = $("#" + pButtonId);
+    var src = buttonQuery.attr("src");
+    var baseName = src.substring(0, src.lastIndexOf("_"));
+    var newSrc = baseName + "_" + pNewState_Off_Hover_On + ".png";
+    buttonQuery.attr('src', newSrc);
+}

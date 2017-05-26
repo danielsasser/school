@@ -1,0 +1,88 @@
+.contextDialog {
+    display:none;
+    width: 300px;
+    background-color: #fff;
+    z-index: 9999;
+    position: absolute;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+
+    -moz-box-shadow: 0 4px 6px #777;
+    -webkit-box-shadow: 0 4px 6px #777;
+    box-shadow: 0 4px 6px #777;
+
+    /* For IE 8 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=180, Color='#777777')";
+    /* For IE 5.5 - 7 */
+    filter: progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=180, Color='#777777');
+    color: #333;
+
+}
+.contextDialog-titlebar, .contextDialog-contents {
+    margin: 12px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.contextDialog-title {
+    font-size: 14px;
+    float:left;
+    color: #555;
+    font-weight: bold;
+}
+.contextDialog-close, .contextDialog-close:hover, .contextDialog-close:active {
+    float:right;
+    width: 16px;
+    height: 16px;
+    background-color: #bbb;
+    color: #fff !important;
+    font-family: sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 16px;
+    text-align: center;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    text-decoration: none !important;
+}
+.contextDialog-close:hover, .contextDialog-close.hover {
+    background-color: #ff0033;
+}
+
+.contextDialog-contents {
+    font-size: 12px;
+}
+
+.contextDialog-arrow, .contextDialog-arrow:after {
+    border-color: transparent;
+    border-style: solid;
+    display: inline-block;
+    position: absolute;
+}
+
+.contextDialog.bottom .contextDialog-arrow {
+    border-bottom-color: #bbb;
+    border-width: 0 10px 10px;
+    margin-left: -10px;
+    top: -10px;
+}
+
+.contextDialog.top .contextDialog-arrow {
+    border-top-color: #fff;
+    border-width: 10px 10px 0;
+    bottom: -10px;
+    margin-left: -10px;
+}
+
+.contextDialog.right .contextDialog-arrow {
+    left: 90%;
+}
+
+.contextDialog.left .contextDialog-arrow {
+    left: 10%;
+}
+
+.contextDialog.center .contextDialog-arrow {
+    left: 50%;
+}

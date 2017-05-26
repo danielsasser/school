@@ -1,0 +1,314 @@
+// My Edline XML is fetched once but used multiple times; search project for hcMyEdlineXmlDataJQueryObj
+var hcMyEdlineBackCompatXmlDataJQueryObj = null;
+var hcMyEdlineXmlDataJQueryObj = null;
+
+var hcTranslatableUsingGoogleV2PaidAPI = false;
+var hcCurrentLanguage = "";
+var hcTimeWhenDelayableDropDownClosed = null;
+var hcDelayableCheckAgainIntervalMs = 20;
+var hcDelayableMenuItemsQuery;
+
+
+function hcOnDocumentReady()
+{
+
+    var menuItemsQuery = $('div.ed-menuItem');
+    hcDelayableMenuItemsQuery = $('div.ed-menuItem.ed_menubar_delayable');
+    var nonDelayableMenuItemsQuery = menuItemsQuery.not(".ed_menubar_delayable");
+
+    // For the delayable menu items
+    hcActivateOrAdjustMenuItemHoverDelay(hcjMenubarDropDownDelayMs, true);
+
+    // For the non-delayable menu items
+    nonDelayableMenuItemsQuery.mouseenter(function(){
+        if (($(".goog-te-menu-frame:visible").length > 0) && ($("#language .ed-dropDown:hover").length == 0)) {
+            $(".goog-te-menu-frame:visible").hide();
+            $('#language .ed-dropDown').mouseleave();
+        }
+        hcHandleMouseEnterMenuItem(this, false);
+    });
+
+    menuItemsQuery.mouseleave(function(){
+        $(this).children('div.ed-dropDown').hide(1);
+        hcTimeWhenDelayableDropDownClosed = new Date();
+        setTimeout(function() { hcReactivateHoverDelayIfTime(); }, hcDelayableCheckAgainIntervalMs);
+        //EDL-10948
+        if ($(".goog-te-menu-frame:visible").length > 0) {
+            setTimeout(function() {
+                if ($(".goog-te-menu-frame:visible").length == 0) {
+                    $(".goog-te-menu-frame").first().show();
+                    var container = $(".goog-te-menu-frame").first();
+                    $("body").bind("click", function (e) {
+                        if (!container.is(e.target) && container.has(e.target).length === 0) {
+                            $(container).hide();
+                            $(this).unbind(e);
+                        }
+                    });
+                }
+            }, 40);
+        }
+    });
+
+	//for the "on" state of the main buttons
+	$('.ed-dropDown').mouseenter(function(){
+		 $(this).siblings('.ed-menuButton').addClass('onState');
+	});
+
+	$('.ed-dropDown').mouseleave(function(event){
+         if ($(".goog-te-menu-frame:visible").length > 0) {
+            event.stopPropagation();
+            return;
+         }
+		 $(this).siblings('.ed-menuButton').removeClass('onState');
+		 $("input",this).blur();
+	});
+
+    //reset the scroll position on the language drop down so it does not cause flicker.
+     $('#language').mouseleave(function(){
+         $("#language ul").scrollTop(0);
+    });
+
+    //fix for WebKit browsers
+    $('#search').mouseleave(function(){
+        $('input', this).blur();
+    });
+
+    //assign the hover behavior for buttons and sub subs
+    hcFauxHover('div.ed-menuButton');
+    hcFauxHover('div.ed-dropDown ul li');
+
+}
+
+
+
+function hcHandleMouseEnterMenuItem(pMenuItemElem, pRemoveHoverDelay)
+{
+
+	var myid = pMenuItemElem.id;
+
+    if (myid == "home")
+    {
+        if (typeof nbnHandleMouseEnterHomeMenuItem !== "undefined" && nbnHandleMouseEnterHomeMenuItem != null)
+        {
+            nbnHandleMouseEnterHomeMenuItem(pMenuItemElem);
+        }
+    }
+    else
+    {
+        hdrHideAllDropDownMenus();
+        $(pMenuItemElem).children('div.ed-dropDown').show(1);
+    }
+
+    hcTimeWhenDelayableDropDownClosed = null;
+
+    // Now that a menu item's drop-down menu is shown, effectively remove the hover delay when mousing over
+    // other delayable menu items:
+    if (pRemoveHoverDelay)
+    {
+        hcActivateOrAdjustMenuItemHoverDelay(1, false);
+    }
+
+
+    if (myid == "search")
+    {
+        setTimeout(function() { $("div#search-modal input#token").focus(); }, 250);
+    }
+}
+
+
+function hcActivateOrAdjustMenuItemHoverDelay(pDelayInterval, pRemoveDelayOnMouseEnterMenuItem)
+{
+	var b = jQuery.fn.hoverIntent;
+
+	if(b){
+		hcDelayableMenuItemsQuery.hoverIntent({
+                sensitivity: 1,
+                interval: pDelayInterval,
+                over: function() { hcHandleMouseEnterMenuItem(this, pRemoveDelayOnMouseEnterMenuItem, hcDelayableMenuItemsQuery); },
+                timeout: (pDelayInterval + 10),
+                out: function() {  } 
+		});
+	} else {
+
+		hcDelayableMenuItemsQuery.hover({
+            sensitivity: 1,
+            interval: pDelayInterval,
+            over: function() { hcHandleMouseEnterMenuItem(this, pRemoveDelayOnMouseEnterMenuItem, hcDelayableMenuItemsQuery); },
+            timeout: (pDelayInterval + 10),
+            out: function() {  } 
+		});
+	}
+}
+
+
+function hcReactivateHoverDelayIfTime()
+{
+    var checkAgainLater = true;
+
+    if (hcTimeWhenDelayableDropDownClosed != null)
+    {
+        var timeSinceClosed = new Date() - hcTimeWhenDelayableDropDownClosed;
+
+        if (timeSinceClosed >= hcjMenubarDropDownDelayReactivateMs)
+        {
+            checkAgainLater = false;
+            hcActivateOrAdjustMenuItemHoverDelay(hcjMenubarDropDownDelayMs, true);
+        }
+    }
+
+    if (checkAgainLater)
+    {
+        setTimeout(function() { hcReactivateHoverDelayIfTime(); }, hcDelayableCheckAgainIntervalMs);
+    }
+}
+
+
+// This was enhanced for quirks mode, but also works for non-quirks mode.  Assign the faux hover class to elements that
+// need it for ie7.
+
+function hcFauxHover(pQuerySelector){
+    $(pQuerySelector).mouseenter(function(){
+        $(this).addClass('hover');
+    }).mouseleave(function(){
+        try
+        {
+            $(this).removeClass('hover');
+        }
+        catch (exception)
+        {
+        }
+    });
+}
+
+
+function hcTranslateUsingGoogleV2PaidAPI(pCurrentLanguage, pIsGroupHome, apikey)
+{
+    hcTranslatableUsingGoogleV2PaidAPI = true;
+    hcCurrentLanguage = pCurrentLanguage;
+
+    if (null !== apikey)
+    {
+        $.translate.load(apikey);
+    }
+
+    $('body').translate('english',
+                        pCurrentLanguage,
+                        {
+                            not: 'select,.notranslate',
+                            fromOriginal: false
+                        }
+                       );
+
+    if (pIsGroupHome == "true")
+    {
+        ghTranslateRequested = true;
+    }
+
+}
+
+
+function hcFitMenuBarItemsToPageContainer(pPageIsCentered)
+{
+    var pageContainerSelector = "#ed-pageContainer";
+    var pageAlignmentTableSelector = "#edlPageAlignmentTable";
+    var dynamicPageDivSelector = "div.edlDynamicPageContent";
+    
+    var containerSelector = null;
+    if ($(pageContainerSelector).length)
+    {
+        containerSelector = pageContainerSelector;
+    }
+    else if (pPageIsCentered && $(pageAlignmentTableSelector).length)
+    {
+        containerSelector = pageAlignmentTableSelector;
+    }
+    else if (!pPageIsCentered && $(dynamicPageDivSelector).length)
+    {
+        containerSelector = dynamicPageDivSelector;
+    }
+    else
+    {
+        return;
+    }
+
+
+    var newMenuBarWidth = $(containerSelector).outerWidth();
+
+    var menuBarQuery = $("#ed-menuBar");
+    menuBarQuery.css("width", (newMenuBarWidth < 700 ? 700 : newMenuBarWidth) + "px"  );
+
+    var edNavBarQuery = $("#ed-navBar");
+    edNavBarQuery.css("width",(newMenuBarWidth < 700 ? 700 : newMenuBarWidth) + "px"  );
+
+
+    if (!pPageIsCentered)
+    {
+        menuBarQuery.css("margin", "0");
+        $("#ed-menuBarContainer").css("text-align", "left");
+        $("#ed-navBarContainer").css("text-align", "left");
+    }
+}
+
+
+var onScreenAlertTitle = null;
+var onScreenAlertText = null;
+
+function hcShowOnScreenAlertDlg(resEntid)
+{
+    if (onScreenAlertTitle != null && onScreenAlertText != null)
+    {
+        hcShowOnScreenAlertDlgStatic(onScreenAlertTitle, onScreenAlertText, resEntid);
+    }
+    else
+    {
+        $.getJSON('/services/on-screen-alerts/all-current/page/' + resEntid, function(data) {
+            onScreenAlertTitle = data.messageTitle != undefined ? data.messageTitle : "";
+            onScreenAlertText = data.messageText != undefined ? data.messageText : "";
+            hcShowOnScreenAlertDlgStatic(onScreenAlertTitle, onScreenAlertText, resEntid);
+        });
+    }
+}
+
+function hcShowOnScreenAlertDlgStatic(msgTitle, msgText, resEntid)
+{
+    var alertDlg = $("<div title='" + msgTitle + "' style='overflow-y:auto;'>" + msgText + "</div>");
+
+    var alertDlgOptions = {
+        doneBtnLabel: "Close",
+        noCancelBtn: true,
+        titleIconClass: "fa-exclamation-triangle",
+        extraDlgClass: "on-screen-alert-dlg",
+        height: 300,
+        onDone: function() {
+            if (resEntid != undefined)
+            {
+                hcShowOnScreenAlertRecallButton(resEntid);
+            }
+        }
+    };
+
+    alertDlg.edlineDialog(alertDlgOptions);
+}
+
+function hcShowOnScreenAlertRecallButton(resEntid)
+{
+    $('<a class="toolbar-notice"></a>')
+        .appendTo("body")
+        .position({
+            my: 'right top',
+            at: 'right bottom',
+            of: $('#ed-menuBar')
+        })
+        .hide()
+        .toggle({effect: 'slide', direction: 'down', complete: function() {
+                $(this).html('<i class="fa fa-exclamation-triangle"></i><span> Alert</span>');
+            }
+        })
+        .click(function(e) {
+            hcShowOnScreenAlertDlg(resEntid);
+            $(this).empty().toggle({effect: 'slide', direction: 'up', complete: function(e) {
+                    $(this).remove();
+                }
+            });
+        });
+}

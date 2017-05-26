@@ -1,0 +1,69 @@
+
+function checkJcropCoords()
+{
+    if (parseInt($('#w').val())) return true;
+    alert('Please select a crop region then press save.');
+    return false;
+}
+
+function cidCloseAllModals()
+{
+    $.modal.close();
+}
+
+/* IE Hack - Internet Explorer is ignoring explicity image width and height attributes in favor of the actual image size.
+  Ex. <img width="100" height="150" src="..."> . In this case, IE ignores the "width =100 & height = 150" setting.
+ This method will take the overriding width/height attributes and apply to the jcrop container & images */
+function resizeImageInIEIfRequired()
+{
+    if($.browser.msie)
+    {
+        var overrideWidth = (typeof $('#jcrop_target').attr("width") === 'undefined') ? $('#jcrop_target').width(): $('#jcrop_target').attr("width");
+        var overrideHeight = (typeof $('#jcrop_target').attr("height") === 'undefined') ? $('#jcrop_target').height(): $('#jcrop_target').attr("height");
+
+        //Apply Hack only if image actualWidth and overrideW/H are different
+        if(overrideWidth != $('#jcrop_target').width() ||
+            overrideHeight != $('#jcrop_target').height())
+        {
+
+            $(".jcrop-holder").css( {width:overrideWidth, height:overrideHeight} );
+            $(".jcrop-tracker").css( {width:overrideWidth, height:overrideHeight} );
+            $(".jcrop-holder img").css( {width:overrideWidth, height:overrideHeight} );
+        }
+
+    }
+}
+
+function cidOpenImageCropModal(dialogToOpen, focusItemID, el)
+{
+    var obj = $(dialogToOpen);
+    try{
+        obj.modal({
+            onOpen: function (dialog) {
+                dialog.overlay.show(1, function () {
+                    dialog.data.hide();
+                    dialog.container.show(1, function () {
+                        dialog.data.show(1, function() {
+                            if (focusItemID != null) {
+                                $(focusItemID).focus();
+                            }
+                        });
+                    });
+                });
+            },
+            //onClose: function (dialog) { dialog.data.hide(); dialog.container.hide(1, function () {dialog.overlay.hide(1, function () {$.modal.close();});}); },
+            opacity:40 /* ,
+             overlayClose:"true" */
+        });
+        obj.attr('data-ed-opener',el);
+
+        attachJcropToModal();
+
+       //Run after a 50ms delay to make sure the Jcrop API has finished.
+       setTimeout(function() { resizeImageInIEIfRequired();}, 50);
+    }
+    catch(e)
+    {
+        alert('cidOpenImageCropModal:e=' + e.message + '|' + el + '|' + dialogToOpen);
+    }
+}

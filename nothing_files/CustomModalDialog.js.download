@@ -1,0 +1,76 @@
+/*
+    Common/Reusable routines for using simplemodal.js
+*/
+function cmdOpenCustomDialogWithExternalFile(dialogIdToOpen, externalUrl, requestParms, focusItemId, onOpenFunction) {
+
+    var obj = $("#dsDialogHiddenContainer");
+    if (obj == undefined)
+    {
+        alert("Error encountered: There was a problem loading the custom dialog - could not find element #dsDialogHiddenContainer.");
+        return;
+    }
+
+    // First parm is page to request
+    // Second parm is an object of parameter keys/values (which forces a POST request, which is desired for Edline)
+    // Invoke as
+    //              var requestParms = {someParm:'value',anotherParm:'value'};
+    // Third parm is a callback function that gets run when a response is received
+    obj.load(externalUrl, requestParms,
+            function(responseText, status, xmlHttpReq)
+            {
+                handleOpenCustomDialogWithExternalFile(responseText, status, xmlHttpReq, dialogIdToOpen, focusItemId,
+                        onOpenFunction);
+            });
+}
+
+function handleOpenCustomDialogWithExternalFile(responseText, status, xmlHttpReq, dialogIdToOpen, focusItemId,
+                        onOpenFunction)
+{
+    if (status == "error")
+    {
+        var msg = "Error encountered: " + xmlHttpReq.status + " " + xmlHttpReq.statusText;
+        alert(msg);
+        return;
+    }
+
+    openCustomDialog(dialogIdToOpen, focusItemId, onOpenFunction);
+}
+
+
+function openCustomDialog(dialogIdToOpen, focusItemId, onOpenFunction)
+{
+
+    var obj = $(dialogIdToOpen);
+
+    if (obj == undefined)
+    {
+        alert("Error encountered: There was a problem loading the custom dialog - could not find element " + dialogIdToOpen);
+        return;
+    }
+
+    try{
+        obj.modal({
+            onOpen: function (dialog) {
+                dialog.overlay.show(1, function () {
+                    dialog.data.hide();
+                    dialog.container.show(1, function () {
+                        dialog.data.show(1, function() {
+                            if (focusItemId != null) {
+                                $(focusItemId).focus();
+                            }
+                        });
+                    });
+                });
+                if (onOpenFunction != undefined && onOpenFunction !=  null && typeof onOpenFunction == 'function')
+                {
+                    onOpenFunction.call();
+
+                }
+            },
+            opacity:40 /* ,
+             overlayClose:"true" */
+        });
+    }catch(e){
+        alert('openCustomDialog:e=' + e.message + '|' + dialogIdToOpen);
+    }
+}

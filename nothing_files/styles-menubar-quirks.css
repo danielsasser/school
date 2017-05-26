@@ -1,0 +1,296 @@
+.ed-clearfix{clear:both;}
+.ed-column{vertical-align:top; float:left;}
+.ed-columnLeft{z-index:300;}
+.ed-columnRight{}
+.ed-studentName{color:#2ac0ff !important; text-transform:uppercase !important;}
+.ed-form{}
+.edHidden {display:none;}
+
+/*main menu bar*/
+#ed-menuBarContainer{position:relative; width:100%; height:36px; z-index:3000; background:#eee url('/images/menubar/bg-repeat-menuBar.gif') repeat-x; border-bottom:1px solid #777; text-align:center;}
+
+	/*
+	To Control the position of the menu bar to center you must have the above class set to "text-align:center;" and the following to "margin:0 auto;"
+	To align left remove the above "text-align:center" and set the marging to just "margin:0;" 
+	To Control the width of the menu bar you must the width in both of the following lines from either auto or to the dynamic number (CURRENTLY 800px)
+	*/
+
+    #ed-menuBar{
+        min-width:700px;
+        position: relative;
+        width:800px;
+        height:auto !important;
+        height:36px;
+        margin:0 auto;
+        z-index:3001;
+        text-align:left;
+        display: inline-block;
+    }
+
+
+		#ed-leftPanel{float:left; width:292px; height:36px;}
+		#ed-rightPanel{width:auto; height:auto; position:relative; float:right; }
+		#ed-rightDropButtons{position:relative; width:160px; height:36px; float:right;}
+        #ed-rightDropButtons-short{position:relative; width:96px; height:36px; float:right;}
+
+        /*menu item styles*/
+		.ed-menuItem{width:auto; height:auto; padding:0; float:left; text-transform:uppercase;}
+
+            #home{width:39px; position:absolute; left:0; top:0;}
+			#myEdline{width:83px; position:absolute; left:38px; top:0; }
+			#tools{width:56px; position:absolute; left:124px; top:0;}
+			#myEdlineSingle{width:83px; position:absolute; left:38px; top:0;}
+			#toolsSingle{width:56px; position:absolute; left:124px; top:0;}
+			#editPage{width:113px; position:absolute; left:190px; top:0;}
+            #modifyCalendarEvent{width:170px; position:absolute; left:190px; top:0;}
+		
+			/*#view{width:32px; position:absolute; top:0; left:0; }
+
+			#logout{width:80px; position:relative; float:right; margin:0; } */
+
+            /*9-11-12 EA: Fixes the orig code above - which causes the menubar icons to overlap when DOCTYPE is added */
+            #view{width:32px; position:relative; float:left;}
+            #language{width:32px; position:relative; float:left;}
+            #social{width:32px; position:relative; float:left;}
+            #siteNavHelper{width:32px; position:relative; float:left;}
+            #search{width:32px; position:relative; float:left;}
+			
+			#help{width:56px; position:relative; float:left;}
+			#userName{min-width: 75px; width:auto !important; width:75px; max-width:114px; position:relative; float:left;}
+			#logout{width:78px; position:relative; float:left; margin:0; }
+
+			/*button styles*/
+			.ed-menuButton {width:auto; height:36px; padding:0 11px; white-space:nowrap; cursor:default; color:#444; font:bold 12px/36px "Trebuchet MS", Arial, Helvetica, sans-serif; text-align:center; background-position:center center; background-repeat:no-repeat;}
+				
+				#home .ed-menuButton{background-image:url('/images/menubar/icon-Home-off.png'); padding:0;}			
+				#home .ed-menuButton:hover, #home .ed-menuButton.hover{background-image:url('/images/menubar/icon-Home-hover.png');}
+				#home .ed-menuButton.onState{background-image:url('/images/menubar/icon-Home-On.png');}	
+
+				#myEdline .ed-menuButton:hover, #myEdline .ed-menuButton.hover{background:url('/images/menubar/icon-hoverL.png') center center no-repeat; color:#fff;}
+				#myEdline .ed-menuButton.onState{background-image:url('/images/menubar/icon-onL.png');}
+
+				#tools .ed-menuButton:hover, #tools .ed-menuButton.hover{background:url('/images/menubar/icon-hoverTools.png') center center no-repeat; color:#fff;}
+				#tools .ed-menuButton.onState{background-image:url('/images/menubar/icon-onTools.png');}
+
+				#editPage .ed-menuButton{background:url('/images/menubar/bg-EditThisPage.png') center center no-repeat; cursor:pointer;}
+				#editPage .ed-menuButton:hover, #editPage .ed-menuButton.hover{background:url('/images/menubar/bg-EditThisPageHover.png') center center no-repeat; color:#fff;}
+
+                #modifyCalendarEvent .ed-menuButton{background:url('/images/menubar/bg-EditThisPageWide.png') center center no-repeat; cursor:pointer;}
+				#modifyCalendarEvent .ed-menuButton:hover, #modifyCalendarEvent .ed-menuButton.hover{background:url('/images/menubar/bg-EditThisPageWideHover.png') center center no-repeat; color:#fff;}
+
+				#view .ed-menuButton{background-image:url('/images/menubar/icon-View-Standard-off.png'); padding:0;}				
+				#view .ed-menuButton:hover, #view .ed-menuButton.hover{background-image:url('/images/menubar/icon-View-Standard-hover.png');}
+				#view .ed-menuButton.onState{background-image:url('/images/menubar/icon-View-Standard-On.png');}
+	
+				#language .ed-menuButton{background-image:url('/images/menubar/icon-language-off.png'); padding:0; }
+				#language .ed-menuButton:hover, #language .ed-menuButton.hover{background-image:url('/images/menubar/icon-language-Hover.png');}
+				#language .ed-menuButton.onState{background-image:url('/images/menubar/icon-language-On.png');}
+
+				#social .ed-menuButton{background-image:url('/images/menubar/icon-Social-off.png'); padding:0;}
+				#social .ed-menuButton:hover, #social .ed-menuButton.hover{background-image:url('/images/menubar/icon-Social-hover.png');}
+				#social .ed-menuButton.onState{background-image:url('/images/menubar/icon-Social-on.png');}
+
+                #siteNavHelper .ed-menuButton{background-image:url('/images/menubar/icon-siteNavHelper-Off.png'); padding:0; }
+                #siteNavHelper .ed-menuButton:hover, #siteNavHelper .ed-menuButton.hover{background-image:url('/images/menubar/icon-siteNavHelper-hover.png');}
+                #siteNavHelper .ed-menuButton.onState{background-image:url('/images/menubar/icon-siteNavHelper-On.png');}
+
+				#help .ed-menuButton{border-right:1px solid #888; cursor:pointer;}
+				#help .ed-menuButton:hover, #help .ed-menuButton.hover{background:url('/images/menubar/icon-hoverM.png') center center no-repeat; color:#fff;}
+
+				#userName .ed-menuButton{text-transform:capitalize; padding-right:0; white-space:nowrap; width: 102px;}
+
+                #userName .ed-menuLabel{text-transform:capitalize; padding-right:0; white-space:nowrap; width: 102px; height:36px; padding:0 11px; cursor:default; color:#444; font:bold 12px/36px "Trebuchet MS", Arial, Helvetica, sans-serif; text-align:center; background-position:center center; background-repeat:no-repeat;}
+
+				#logout .ed-menuButton{cursor:pointer;}
+				#logout .ed-menuButton:hover, #logout .ed-menuButton.hover{background:url('/images/menubar/icon-hoverLogOut.png') center center no-repeat; color:#fff;}
+
+
+			/*main drop down styles*/
+			.ed-dropDown{display:none; color:#fff; margin:0 0 0 -4px; padding:0 0 15px 0; z-index:300;position:relative;}
+
+				.ed-dropBGWrap{background-position:bottom center; background-repeat:no-repeat; min-height:1%;}
+
+				.dd100{background-image:url('/images/menubar/bg-dropdown-100.png');}
+				.dd200{background-image:url('/images/menubar/bg-dropdown-200.png');}
+				.dd300{background-image:url('/images/menubar/bg-dropdown-300.png');}
+				.dd400{background-image:url('/images/menubar/bg-dropdown-400.png');}
+				.dd500{background-image:url('/images/menubar/bg-dropdown-500.png');}
+				.dd600{background-image:url('/images/menubar/bg-dropdown-600.png');}
+				.dd700{background-image:url('/images/menubar/bg-dropdown-700.png');}
+				.dd800{background-image:url('/images/menubar/bg-dropdown-800.png');}		
+				
+				.dd2-100{background-image:url('/images/menubar/bg-dropdown2Col-100.png');}
+				.dd2-200{background-image:url('/images/menubar/bg-dropdown2Col-200.png');}
+				.dd2-300{background-image:url('/images/menubar/bg-dropdown2Col-300.png');}
+				.dd2-400{background-image:url('/images/menubar/bg-dropdown2Col-400.png');}
+				.dd2-500{background-image:url('/images/menubar/bg-dropdown2Col-500.png');}
+				.dd2-600{background-image:url('/images/menubar/bg-dropdown2Col-600.png');}
+				.dd2-700{background-image:url('/images/menubar/bg-dropdown2Col-700.png');}
+				.dd2-800{background-image:url('/images/menubar/bg-dropdown2Col-800.png');}
+				
+				.ed-dropHeader{color:#fff; margin:0; padding:15px 20px; font:bold 15px/17px "Trebuchet MS", Arial, Helvetica, sans-serif;}
+				.ed-listHeader{width:150px; height:auto; padding:0 0 7px 0; color:#fff; font:bold 15px/16px "Trebuchet MS", Arial, Helvetica, sans-serif; margin:15px 0 0 53px; border-bottom: 1px solid #999; position:relative;}
+				.ed-listHeader .ed-icon{width:30px; height:30px; position:absolute; top:-5px; left:-34px; }
+				.ed-dropDown ul{z-index:40; list-style-type:none; margin:0; padding:10px 7px; min-height:1%; }
+				.ed-dropDown ul li{position:relative; margin:0 0 0 5px; width:196px; height:auto; padding:0; }
+				.ed-dropDown ul li a{display:block; width:165px !important; width:196px; color:#ffffff; text-decoration:none; font:13px/13px "Trebuchet MS", Arial, Helvetica, sans-serif; text-transform:none;  padding:0 10px 0 20px; margin:0;}
+				.ed-dropDown ul li a:hover{color:#fff;}
+				.ed-dropDown ul li a.ed-hasSub{background-image:url('/images/menubar/bg-dropDownArrow.png'); background-position:175px center; background-repeat:no-repeat; }
+			
+				/*main drop down hover 'button' css*/
+				.ed-dropDown ul li.hover{background-image:none !important;}
+				.ed-dropDown ul li .dbtop{width:196px; height:5px; margin:0; padding:0; font-size:0; }
+				.ed-dropDown ul li .dbbtm{width:196px; height:5px; margin:0; padding:0; font-size:0 }
+				.ed-dropDown ul li.hover a{background-image:url('/images/menubar/bg-dropDownBtn1BG.png'); background-position:center center; background-repeat:no-repeat;}
+				.ed-dropDown ul li.hover a.ed-hasSub{background-image:url('/images/menubar/bg-dropDownBtn1ArrowBG.png'); background-position:center center; background-repeat:no-repeat;}
+				.ed-dropDown ul li.hover .dbtop{background-image:url('/images/menubar/bg-dropDownBtn1Top.png'); background-position:center center; background-repeat:no-repeat; }
+				.ed-dropDown ul li.hover .dbbtm{background-image:url('/images/menubar/bg-dropDownBtn1Btm.png'); background-position:center center; background-repeat:no-repeat;}
+	
+				/*styles for the sub subs*/
+				.ed-dropDown ul li{position:relative; z-index:1 !important; }
+				.ed-dropDown ul li ul{display:none; z-index:100 !important; width:233px; height:auto; min-height:25px; /*max-height:480px;*/ position:absolute; top:-7px; right:-230px; background:url('/images/menubar/bg-subSubMenuBG.png') bottom left no-repeat !important; padding:5px 0 25px 0 !important; }
+				.ed-dropDown ul li ul span{display:block; width:235px; height:21px; background:url('/images/menubar/bg-subSubMenuTop.png') 0 0 no-repeat; position:absolute; top:-21px; left:0;}
+				.ed-dropDown ul li.hover ul{display:block; padding:1px 0;}
+				.ed-dropDown ul li.ed-hasSub.hover ul{display:block;}
+				.ed-dropDown ul li ul li{position:relative; padding:0; width:196px; height:auto; padding:0; margin:0 0 0 18px; }
+				.ed-dropDown ul li ul li a{display:block; width:161px !important; width:196px; padding:1px 10px 0 25px; background-image:none !important;} 
+				
+				/*sub sub hover 'button' css*/
+				.ed-dropDown ul li ul li.hover{background-image:none;}
+				.ed-dropDown ul li ul li .dbtop{width:196px; height:5px; margin:0; padding:0; font-size:0; background-image:none !important;}
+				.ed-dropDown ul li ul li .dbbtm{width:196px; height:5px; margin:0; padding:0; font-size:0; background-image:none !important;}
+				.ed-dropDown ul li ul li.hover a{background-image:url('/images/menubar/bg-dropDownBtn1BG.png') !important; background-position:center center; background-repeat:no-repeat;}
+				.ed-dropDown ul li ul li.hover .dbtop{background-image:url('/images/menubar/bg-dropDownBtn1Top.png') !important; background-position:center center; background-repeat:no-repeat; }
+				.ed-dropDown ul li ul li.hover .dbbtm{background-image:url('/images/menubar/bg-dropDownBtn1Btm.png') !important; background-position:center center; background-repeat:no-repeat;}
+
+				.ed-dropDown ul .ed-liBreakLine{position:relative; display:block; clear:both; background-image:url('/images/menubar/ed-liBreak.png')!important; background-position:center center; background-repeat:no-repeat; margin:6px 0 4px 0; height:1px; font-size:0; width:190px;}
+
+
+			.ed-indentSpacer16 {width:16px; height:12px; float: left;}
+			.ed-indentSpacer32 {width:32px; height:12px; float: left;}
+
+			/*declare unique styles to the different drop downs*/
+			#home .ed-dropDown{width:235px; height:auto; background:url('/images/menubar/bg-dropdown-homeTop.png') top left no-repeat;}
+			#home .ed-dropDown .ed-dropHeader{padding:15px 30px 22px;}
+			#home .ed-dropDown ul{padding:10px 16px 30px 14px;}
+
+            #nbnBreadcrumbsDropDownMenu .ed-dropDown{width:233px; height:auto;}
+            #nbnBreadcrumbsDropDownMenu .ed-dropDown ul{background:url('/images/menubar/bg-subSubMenuBG.png') left bottom no-repeat; padding:5px 0 25px !important;}
+            #nbnBreadcrumbsDropDownMenu .ed-dropDown ul li{margin:0 15px;}
+            #nbnBreadcrumbsDropDownMenu .ed-dropDown ul li a{text-indent:0; padding:8px 5px;}
+
+			#myEdline .ed-dropDown{width:500px; height:400px; margin-left:-15px; background:url('/images/transparent.gif');}
+			#myEdline .ed-dropBGWrap{padding:10px 0 25px 10px; border: solid red 0;}
+			#myEdline .ed-columnLeft, #myEdline .ed-columnRight{width:233px; position:relative; float:left; margin:0;}		
+			#myEdline ul{margin-left:18px;}
+				.myContent{background:url('/images/menubar/icon-myContent.png');}
+				.myAccount{background:url('/images/menubar/icon-myAccount.png');}
+				.myClasses{background:url('/images/menubar/icon-myClasses.png');}
+
+
+            #tools .ed-dropDown{width:484px; height:auto; margin-left:-10px; background:url('/images/transparent.gif');}
+			#tools .ed-dropBGWrap{padding:10px 0 25px 0;}
+			#tools .ed-columnLeft, #tools .ed-columnRight{width:233px; position:relative; float:left; margin:0;}
+			#tools ul{margin-left:20px;}
+			#tools .ed-dropDown ul li.hover{background:url('/images/menubar/bg-dropDownButton3.png') top center no-repeat;}
+				.gradebook{background:url('/images/menubar/icon-gradebook.png');}
+				.communication{background:url('/images/menubar/icon-comm.png');}
+                .shop{background:url('/images/menubar/icon-shop.png');}
+				.manageSchool{background:url('/images/menubar/icon-manageSchool.png');}
+                .manageSettings{background:url('/images/menubar/icon-manageSettings.png');}
+				.addlTools{background:url('/images/menubar/icon-addTools.png');}
+                .generalTools{background:url('/images/menubar/icon-generalTools.png');}
+
+			
+
+			#myEdlineSingle .ed-menuButton.hover{background:url('/images/menubar/icon-hoverL.png') center center no-repeat; color:#fff;}
+			#myEdlineSingle .ed-menuButton.onState{background-image:url('/images/menubar/icon-onL.png');}
+			#myEdlineSingle .ed-dropDown{width:235px; height:auto; background:url('/images/transparent.gif');}
+			#myEdlineSingle .ed-dropBGWrap{padding:10px 0 25px 0;}
+			#myEdlineSingle ul{margin-left:20px;}
+			#myEdlineSingle ul li{width:184px !important; height:auto; padding:0;}
+			#myEdlineSingle ul li a{display:block; width:160px !important; width:184px; padding:0 10px 0 20px;}
+			#myEdlineSingle ul li a.ed-hasSub{background-image:url('/images/menubar/bg-dropDownArrow.png'); background-position:155px center; background-repeat:no-repeat;}
+			#myEdlineSingle ul li ul li{position:relative; padding:0; width:196px !important; height:auto; padding:0; margin:0 0 0 18px;}
+			#myEdlineSingle ul li ul li a{display:block; width:161px !important; width:196px; padding:1px 10px 0 25px; background-image:none !important;}
+			#myEdlineSingle ul li.hover{background-image:none !important;}
+			#myEdlineSingle ul li .dbtop{width:186px; height:5px; margin:0; padding:0; font-size:0;}
+			#myEdlineSingle ul li .dbbtm{width:186px; height:5px; margin:0; padding:0; font-size:0;}
+			#myEdlineSingle ul li.hover a{background-image:url('/images/menubar/bg-dropDownBtn2BG.png'); background-position:left center; background-repeat:no-repeat;}
+			#myEdlineSingle ul li.hover a.ed-hasSub{background-image:url('/images/menubar/bg-dropDownBtn2ArrowBG.png'); background-position:left center; background-repeat:no-repeat;}
+			#myEdlineSingle ul li.hover .dbtop{background-image:url('/images/menubar/bg-dropDownBtn2Top.png'); background-position:left center; background-repeat:no-repeat;}
+			#myEdlineSingle ul li.hover .dbbtm{background-image:url('/images/menubar/bg-dropDownBtn2Btm.png'); background-position:left center; background-repeat:no-repeat;}
+			#myEdlineSingle ul li ul li.hover{background-image:none;}
+			#myEdlineSingle ul li ul li .dbtop{width:196px; height:5px; margin:0; padding:0; font-size:0; background-image:none !important;}
+			#myEdlineSingle ul li ul li .dbbtm{width:196px; height:5px; margin:0; padding:0; font-size:0; background-image:none !important;}
+			#myEdlineSingle ul li ul li.hover a{background-image:url('/images/menubar/bg-dropDownBtn1BG.png') !important; background-position:center center; background-repeat:no-repeat;}
+			#myEdlineSingle ul li ul li.hover .dbtop{background-image:url('/images/menubar/bg-dropDownBtn1Top.png') !important; background-position:center center; background-repeat:no-repeat; }
+			#myEdlineSingle ul li ul li.hover .dbbtm{background-image:url('/images/menubar/bg-dropDownBtn1Btm.png') !important; background-position:center center; background-repeat:no-repeat;}
+
+
+			
+			#toolsSingle .ed-menuButton.hover{background:url('/images/menubar/icon-hoverTools.png') center center no-repeat; color:#fff;}
+			#toolsSingle .ed-menuButton.onState{background-image:url('/images/menubar/icon-onTools.png');}
+			#toolsSingle .ed-dropDown{width:235px; height:auto; padding-top: 1px; background:url('/images/transparent.gif');}
+			#toolsSingle .ed-dropBGWrap{padding:10px 0 25px 0;}
+			#toolsSingle ul{margin-left:20px;min-height:1%;}
+			#toolsSingle ul li{width:186px !important; height:auto; padding:0; }
+			#toolsSingle ul li a{display:block; width:156px !important; width:186px; padding:0 10px 0 20px; }
+			#toolsSingle ul li a.ed-hasSub{background-image:url('/images/menubar/bg-dropDownArrow.png'); background-position:135px center; background-repeat:no-repeat; }
+			#toolsSingle ul li.hover{background-image:none !important;}
+			#toolsSingle ul li:hover{background-image:none !important;}
+			#toolsSingle ul li .dbtop{width:186px; height:5px; margin:0; padding:0; font-size:0;}
+			#toolsSingle ul li .dbbtm{width:186px; height:5px; margin:0; padding:0; font-size:0; }
+			#toolsSingle ul li:hover a{background-image:url('/images/menubar/bg-dropDownBtn2BG.png'); background-position:center center; background-repeat:no-repeat;}
+			#toolsSingle ul li.hover a{background-image:url('/images/menubar/bg-dropDownBtn2BG.png'); background-position:center center; background-repeat:no-repeat;}
+			#toolsSingle ul li:hover a.ed-hasSub{background-image:url('/images/menubar/bg-dropDownBtn2ArrowBG.png'); background-position:center center; background-repeat:no-repeat;}
+			#toolsSingle ul li.hover a.ed-hasSub{background-image:url('/images/menubar/bg-dropDownBtn2ArrowBG.png'); background-position:center center; background-repeat:no-repeat;}
+			#toolsSingle ul li:hover .dbtop{background-image:url('/images/menubar/bg-dropDownBtn2Top.png'); background-position:center center; background-repeat:no-repeat; }
+			#toolsSingle ul li.hover .dbtop{background-image:url('/images/menubar/bg-dropDownBtn2Top.png'); background-position:center center; background-repeat:no-repeat; }
+			#toolsSingle ul li:hover .dbbtm{background-image:url('/images/menubar/bg-dropDownBtn2Btm.png'); background-position:center center; background-repeat:no-repeat;}
+			#toolsSingle ul li.hover .dbbtm{background-image:url('/images/menubar/bg-dropDownBtn2Btm.png'); background-position:center center; background-repeat:no-repeat;}
+			
+			
+			#view .ed-dropDown{width:284px; height:auto; background:url('/images/menubar/bg-dropdown-viewTop.png') top left no-repeat; position:absolute; top:36px; right:-230px;}
+			#view .ed-dropDown .ed-dropHeader{padding:15px 40px 22px;}
+			#view .ed-dropBGWrap{background:url('/images/menubar/bg-dropdown-viewBtm.png') left bottom no-repeat; padding:20px 0 30px 0; list-style-type:none; }
+			#view ul{border:1px solid #ccc; width:202px; position:relative; left:38px; padding:0;}
+			#view ul li{background-color:#efefef; border:1px solid #999; border-top:none; padding:0;  width:202px !important; height:36px; margin-left:-1px;}
+			#view ul li a{display:block; color:#666; line-height:34px; padding:0; margin:0; border:1px solid #efefef; text-indent:50px; height:34px; width:200px !important;}	
+			#view ul li a:hover, #view ul li a.hover, #view ul li.hover a{background-image:url('/images/menubar/bg-blockHover.png') !important; background-repeat:no-repeat; }
+				#standardView, #standardView.hover, #standardView:hover{background-image:url('/images/menubar/icon-standardView.png') !important; background-repeat:no-repeat; background-position:12px 3px;}
+				#folderView, #folderView.hover, #folderView:hover{background-image:url('/images/menubar/icon-folderView.png') !important; background-repeat:no-repeat; background-position:12px 3px;}
+                #mobileView, #mobileView.hover, #mobileView:hover{background-image:url('/demos/images/icons/icon-mobileView.png') !important; background-repeat:no-repeat; background-position:12px 3px;}
+                #calendarView, #calendarView.hover, #calendarView:hover{background-image:url('/images/menubar/icon-calendarView.png') !important; background-repeat:no-repeat; background-position:12px 3px;}
+
+			#language .ed-dropDown{width:308px; height:auto; background:url('/images/menubar/bg-dropdown-languageTop.png') top left no-repeat; position:absolute; top:36px; right:-255px;}
+			#language .ed-dropDown .ed-dropHeader{padding:15px 40px 22px; min-height: 34px;}
+			#language .ed-dropBGWrap{background:url('/images/menubar/bg-dropdown-languageBtm.png') left bottom no-repeat; padding:1px 0 50px;}
+            #language .ed-langBtm106{background:url('/images/menubar/bg-dropdown-languageBtm-106.png') left bottom no-repeat; padding:1px 0 50px;}
+            #language .ed-dropDown .ed-dropBGWrap #google_translate_element{position:relative; top:20px; left:45px;}
+			#language ul{border:1px solid #ccc; width:216px; height:139px !important; padding:0; margin:0; overflow-y:scroll; overflow-x:hidden; position:relative; left:45px; top:20px; background-color:#BBB;}
+			#language ul li{background-color:#efefef; padding:0; width:200px !important; height:35px; margin:0 0 0 -1px; border:0; }
+			#language .ed-dropDown ul li.curLanguage{background-color:#fff; color:#000;}
+			#language .ed-dropDown ul li a{display:block; color:#666; line-height:34px; padding:0; text-indent:10px; margin:0; height:34px; width:200px !important; border-bottom:1px solid #999;}
+			#language .ed-dropDown ul li a:hover, #language .ed-dropDown ul li.hover a{background:url('/images/menubar/bg-blockHover.png') 0 0 no-repeat; }
+
+
+            #social .ed-dropDown{width:284px;height:auto; background:url('/images/menubar/bg-dropdown-socialTop2.png') top left no-repeat; position:absolute; top:36px;right:-230px;}
+            #social .ed-dropDown .ed-dropHeader{padding:15px 40px 22px;}
+			#social .ed-dropBGWrap{background:url('/images/menubar/bg-dropdown-socialBtm.png') left bottom no-repeat; padding:20px 0 30px 0; list-style-type:none;}
+			#social ul li{background-color:#efefef; border:1px solid #999; border-top:none; padding:9px 0 0 17px; max-width:185px !important; height:30px; margin: 0 auto;}
+
+            #search .ed-dropDown {height:auto; position:absolute; top:36px; left:-122px; padding: 0 75px 75px 75px; background:url('/images/transparent.gif') repeat transparent; }
+			#search .ed-dropDownInner {width:317px; height:auto; background:url('/images/menubar/bg-dropdown-searchTop.png') top left no-repeat;}
+			#search .ed-dropDownInner .ed-dropHeader{ padding:15px 40px; position:relative;}
+			#search .ed-dropDownInner .searchForm{background:url('/images/menubar/bg-dropdown-searchBtm.png') left bottom no-repeat; padding:15px 22px 22px; position:relative; top:6px; }
+                .searchForm .ed-inputGroup{padding:0 0 0 10px;}
+                .searchForm label{font:bold 13px/22px "Trebuchet MS", Arial, Helvetica, sans-serif; color:#fff; text-transform:none;}
+                .searchForm .mainInput      {width:261px; margin:0 auto 10px; padding:0;}
+                .searchForm .mainInputStrict{width:261px; margin:0 auto 10px; padding:0;}
+                .searchForm .mainInput .ed-searchWrapper{width:171px; height:auto; float:left; background:url('/images/menubar/bg-searchField.png') 0px 0px no-repeat; padding:7px 15px 13px 30px;}
+                .searchForm .mainInputStrict .ed-searchWrapper{width:171px; height:auto; float:left; background:url('/images/menubar/bg-searchField.png') 0px 0px no-repeat; padding:7px 15px 13px 30px;}
+                .searchForm .mainInput input{background:none; border:0; font:normal 11px/11px Arial, Helvetica, sans-serif; width:165px;}
+                .searchForm .mainInputStrict input{background:none; border:0; font:normal 11px/11px Arial, Helvetica, sans-serif; width:165px;}
+                .searchForm button.advance{width:30px; height:30px; font-size:0; background:url('/images/menubar/icon-searchGo.png'); border:0; cursor:pointer; float:right; margin:2px 8px 0 0;}
+                .searchForm button.advanceStrict{width:30px; height:30px; font-size:0; background:url('/images/menubar/icon-searchGo.png'); border:0; cursor:pointer; float:right; margin:2px 8px 0 0;}

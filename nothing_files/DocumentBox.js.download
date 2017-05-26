@@ -1,0 +1,614 @@
+// Keep in mind that this script is referenced from both DocumentBox.jsp and GroupHome.jsp.  If this creates a
+// problem for the following global variable, consider moving the global variable elsewhere.
+
+var dbClosePendingForFloatingEditBox = new Array();
+
+
+function dbRecursivelySetAnchorTargets(pElement)
+{
+    if (pElement.nodeType == 1)   // 1 = an html element
+    {
+        if (pElement.tagName == 'A')   // A = an anchor tag
+        {
+            pElement.setAttribute("target", "_blank");
+        }
+        else
+        {
+            var children = pElement.childNodes;
+            for (var i = 0; i < children.length; i++)
+            {
+                dbRecursivelySetAnchorTargets(children[i]);
+            }
+        }   // A
+    }   // nodeType
+}
+
+
+function dbOnSwfRegisterObject(pEvent)
+{
+    // This can be helpful during debugging to verify that the sfwobject is being registered properly.
+    // console.log("e.success = " + pEvent.success + "  e.id = " + pEvent.id + "  e.ref = " + pEvent.ref);
+}
+
+
+function dbIsIFrameDocumentBodyReady(pFrameId)
+{
+
+    // Could get "permission denied" (for a web doc, for example)
+    try
+    {
+        var isReady = window.frames[pFrameId] != null && window.frames[pFrameId].document != null &&
+                window.frames[pFrameId].document.body != null;
+
+        return isReady;
+    }
+    catch (e)
+    {
+        return window.frames[pFrameId] != null;
+    }
+}
+
+
+function dbOnloadDoc(pDocEntid)
+{
+    var ghPinnedDocInfo = ghPinnedDocsToLoad["Doc" + pDocEntid];
+
+    if (ghPinnedDocInfo == undefined)
+    {
+        return;
+    }
+
+    var horizontalPaddingMarginBorder = ghPinnedDocInfo.sumOfAllHorizontalPaddingMarginBorder + ghPinnedDocInfo.highlightBorderPadding;
+
+    if (ghPinnedDocInfo.showEmptyAreaPlaceholder)
+    {
+        dbAdjustPlaceholderWithMostlyEmptySpaceArea(
+                ghPinnedDocInfo.boxContentsElementId,
+                ghPinnedDocInfo.hostZoneWidthStr,
+                ghPinnedDocInfo.hostZoneFrameId,
+                horizontalPaddingMarginBorder,
+                ghPinnedDocInfo.rawImageDimWidth,
+                ghPinnedDocInfo.rawImageDimHeight,
+                ghPinnedDocInfo.entidFromActualDoc,
+                ghPinnedDocInfo.displayingDashedPlaceholderImageBorder);
+
+    }
+    else
+    {
+        // Firefox frame behavior is different than other browsers.  See function ghOnloadPinnedDocsHandler in GroupHome.js
+        if (ghIsFirefox && window.frames[ghPinnedDocInfo.iFrameId] != null && !dbIsIFrameDocumentBodyReady(ghPinnedDocInfo.iFrameId))
+        {
+            return;
+        }
+
+        if (ghPinnedDocInfo.canShowInlineEditableDoc && !ghPinnedDocInfo.autofitImageProperty &&
+                ghPinnedDocInfo.isMultimediaEmbedContentAvailable)
+        {
+            eval("dbInitInlineEditor" + ghPinnedDocInfo.entidFromActualDoc + "();");
+        }
+
+        // If there is no standard iframe (such as when an inline editable doc is present, don't perform any iframe tweaks
+        if (window.frames[ghPinnedDocInfo.iFrameId] == null)
+        {
+            return;
+        }
+
+        /* IE uses browser background color instead of iframe style's background color.  I couldn't find a way to push
+         the color down through styles (stylesheet) or IE's proprietary allowtransparency="true" iframe attribute,
+         so Javascript is used to set the background color under some circumstances.  See TT 4387. */
+
+        var docBgColor = ghPinnedDocInfo.iFrameBackgroundColor;
+
+        if (ghPinnedDocInfo.isAWebDoc)
+        {
+
+            // Depending on the web doc, could get an "access denied" so wrap in try/catch
+            try
+            {
+                var frameBodyElement = window.frames[ghPinnedDocInfo.iFrameId].document.body;
+                var frameBodyBgColor = frameBodyElement.getAttribute("bgcolor");
+
+                if (frameBodyBgColor == null || frameBodyBgColor == undefined || frameBodyBgColor == "")
+                {
+                    frameBodyBgColor = frameBodyElement.style.backgroundColor;
+
+                    if (frameBodyBgColor != null && frameBodyBgColor != undefined && frameBodyBgColor != "")
+                    {
+                        docBgColor = frameBodyBgColor;
+                    }
+                }
+                else
+                {
+                    docBgColor = frameBodyBgColor;
+                }
+            }
+            catch (ex)
+            {
+                // Ignore
+            }
+
+
+        }
+
+        if (ghPinnedDocInfo.isShowingContentsAutoHt)
+        {
+            if (ghPinnedDocInfo.iFrameHeight == 0)
+            {
+                dbSetIFrameWidth(ghPinnedDocInfo.iFrameId, ghPinnedDocInfo.hostZoneWidthStr,
+                        ghPinnedDocInfo.hostZoneFrameId, ghPinnedDocInfo.entidFromActualDoc,
+                        horizontalPaddingMarginBorder, ghPinnedDocInfo.rawImageDimWidth,
+                        ghPinnedDocInfo.rawImageDimHeight, ghPinnedDocInfo.docViewBodyTableCellPadding,
+                        ghPinnedDocInfo.isALinkExternalToEdline, ghPinnedDocInfo.isAWebDoc);
+
+                dbHandleAutoFitImage(ghPinnedDocInfo.iFrameId, ghPinnedDocInfo.autofitImageProperty,
+                        ghPinnedDocInfo.boxNetWidthIncludingSideSpacingStr, ghPinnedDocInfo.hostZoneFrameId,
+                        ghPinnedDocInfo.entidFromActualDoc,horizontalPaddingMarginBorder, ghPinnedDocInfo.isALinkExternalToEdline);
+
+                dbFullyExpandIFrame(ghPinnedDocInfo.iFrameId, ghPinnedDocInfo.hasNoContentsWhatsoever);
+                dbSetBackgroundColor(ghPinnedDocInfo.iFrameId, docBgColor, ghPinnedDocInfo.isALinkExternalToEdline);
+
+            }
+            else
+            {
+
+                dbSetIFrameWidth(ghPinnedDocInfo.iFrameId, ghPinnedDocInfo.hostZoneWidthStr,
+                        ghPinnedDocInfo.hostZoneFrameId, ghPinnedDocInfo.entidFromActualDoc, horizontalPaddingMarginBorder,
+                        ghPinnedDocInfo.rawImageDimWidth, ghPinnedDocInfo.rawImageDimHeight,
+                        ghPinnedDocInfo.docViewBodyTableCellPadding, ghPinnedDocInfo.isALinkExternalToEdline,
+                        ghPinnedDocInfo.isAWebDoc);
+
+                dbHandleAutoFitImage(ghPinnedDocInfo.iFrameId, ghPinnedDocInfo.autofitImageProperty,
+                        ghPinnedDocInfo.boxNetWidthIncludingSideSpacingStr, ghPinnedDocInfo.hostZoneFrameId,
+                        ghPinnedDocInfo.entidFromActualDoc,horizontalPaddingMarginBorder, ghPinnedDocInfo.isALinkExternalToEdline);
+
+                dbSetBackgroundColor(ghPinnedDocInfo.iFrameId, docBgColor, ghPinnedDocInfo.isALinkExternalToEdline);
+            }
+        }
+
+        if (ghPinnedDocInfo.isShowingContentsFixedHt)
+        {
+            dbSetIFrameWidth(ghPinnedDocInfo.iFrameId, ghPinnedDocInfo.hostZoneWidthStr,
+                    ghPinnedDocInfo.hostZoneFrameId, ghPinnedDocInfo.entidFromActualDoc, horizontalPaddingMarginBorder, 0, 0,
+                    ghPinnedDocInfo.docViewBodyTableCellPadding, ghPinnedDocInfo.isALinkExternalToEdline,
+                    ghPinnedDocInfo.isAWebDoc);
+
+            dbHandleAutoFitImage(ghPinnedDocInfo.iFrameId, ghPinnedDocInfo.autofitImageProperty,
+                    ghPinnedDocInfo.boxNetWidthIncludingSideSpacingStr, ghPinnedDocInfo.hostZoneFrameId,
+                    ghPinnedDocInfo.entidFromActualDoc,horizontalPaddingMarginBorder, ghPinnedDocInfo.isALinkExternalToEdline);
+
+            dbExpandIFrameParentContainerHeight(ghPinnedDocInfo.iFrameHeight);
+            dbSetBackgroundColor(ghPinnedDocInfo.iFrameId, docBgColor, ghPinnedDocInfo.isALinkExternalToEdline);
+        }
+
+    }
+}
+
+             
+function dbFullyExpandIFrame(iFrameId, pDocHasNoContentsWhatsoever)
+{
+    var newHeight = 250;   // default
+    var horizontalScrollbarAdjustment = 0;
+
+    // IE throws an "Access is denied" exception for window.frames[iFrameId].document under some conditions;
+    // in that case, our default newHeight of 250 will be used.
+    try
+    {
+        if (window.frames[iFrameId].document.body.scrollWidth > document.getElementById(iFrameId).offsetWidth)
+        {
+            horizontalScrollbarAdjustment = 20;
+        }
+
+        var onScreenFlashHeight = 0;
+        var onScreenFlashElem = $(window.frames[iFrameId].document.body).find(".onScreenFlash");
+
+        if (onScreenFlashElem.length)
+        {
+            onScreenFlashHeight = onScreenFlashElem.height();
+        }
+
+        var iframeBodyScrollHeight = parseInt(window.frames[iFrameId].document.body.scrollHeight, 10) || 0;
+        newHeight = Math.max(onScreenFlashHeight, iframeBodyScrollHeight);
+
+        if (newHeight > 0)
+        {
+            if (pDocHasNoContentsWhatsoever)
+            {
+                newHeight = newHeight + horizontalScrollbarAdjustment;
+            }
+
+            // Note: Opera returns a scrollHeight of 1 sometimes - for Flash TT 4252; if so, don't override default newHeight
+            else if (iframeBodyScrollHeight > 1)
+            {
+                // Original comment for stmt below: " + 1" fixes EDL-8791
+                // New comment: IE displays metrics in real numbers, like: 41.47; jQuery doesn't.  Not sure of best
+                // long term resolution.
+                newHeight = newHeight + horizontalScrollbarAdjustment + (isMSIE ? 1 : 0);
+            }
+        }
+    }
+    catch (exception)
+    {
+    }
+
+    var iFrameElem = document.getElementById(iFrameId);
+    dbSetHeightEl(iFrameElem,newHeight + "px");
+
+    // Expand the height of the container div to account for the new iframe height:
+    dbSetHeightQuery($("#ghOuterMostTable"),"auto");
+}
+
+
+function dbExpandIFrameParentContainerHeight(heightChange)
+{
+    /*
+    var containerElem = document.getElementById('ghOuterMostTable');
+    var containerExistingHeight = parseInt(containerElem.offsetHeight);
+    var containerNewHeight = containerExistingHeight + heightChange;
+    dbSetHeightEl(containerElem,containerNewHeight + "px");
+    */
+	dbSetHeightQuery($("#ghOuterMostTable"),"auto");
+}
+
+
+function dbGetDynamicHostZoneFrameWidth(pHostZoneFrameId, pSumOfHorizontalPaddingMarginBorder)
+{
+    var containerElem = document.getElementById(pHostZoneFrameId);
+    var containerQuery = $(containerElem);
+    var containerLeftBorder = parseInt(containerQuery.css("border-left-width"),10) || 0;
+    var containerRightBorder = parseInt(containerQuery.css("border-right-width"),10) || 0;
+
+    return parseInt(containerElem.offsetWidth,10) -
+               containerLeftBorder -
+               containerRightBorder -
+               pSumOfHorizontalPaddingMarginBorder;
+
+}
+
+
+function dbSetIFrameWidth(pIFrameId, pHostZoneWidthStr, pHostZoneFrameId, pEntid, pSumOfHorizontalPaddingMarginBorder,
+                          pRawImageWidth, pRawImageHeight, pDocViewBodyTableCellPadding, pIsALinkExternalToEdline,
+                          pIsAWebDoc)
+{
+    var newWidth = 0;
+    var frameWindow = parent.frames[pIFrameId];
+
+    if (pHostZoneWidthStr == "*")
+    {
+        newWidth = dbGetDynamicHostZoneFrameWidth(pHostZoneFrameId, pSumOfHorizontalPaddingMarginBorder);
+        dbSetIFrameWidthPart2(pEntid, pIFrameId, frameWindow, newWidth, pDocViewBodyTableCellPadding, pIsALinkExternalToEdline, pIsAWebDoc);
+    }
+    else
+    {
+        newWidth = parseInt(pHostZoneWidthStr,10) - pSumOfHorizontalPaddingMarginBorder;
+        dbSetIFrameWidthPart2(pEntid, pIFrameId, frameWindow, newWidth, pDocViewBodyTableCellPadding, pIsALinkExternalToEdline, pIsAWebDoc);
+    }
+
+    // If an imported image is being processed, adjust its width and height according to the width of its
+    // container -- the iframe.  However, don't ever increase the size of the image.
+    if (pRawImageWidth > 0 && pRawImageHeight > 0)
+    {
+        var ratio =  newWidth / pRawImageWidth;
+        if (ratio <= 1.0)
+        {
+            var heightBeforeRounding = pRawImageHeight * ratio;
+            var newHeight = Math.round(heightBeforeRounding);
+            setElementWidth(pIFrameId, newWidth + "px");
+            setElementHeight(pIFrameId, newHeight + "px");
+
+            // "Reach inside" the iframe and tweak the auto-generated IMG tag's width and height
+            var imgElem = null;
+
+            try
+            {
+                imgElem = frameWindow.document.getElementsByTagName("img");
+            }
+            catch(ex)
+            {
+                // Ignore; this case happens for PDF files in IE -- TT #5354
+            }
+
+            if (imgElem != null && imgElem[0] != null && imgElem[0] != undefined)
+            {
+                imgElem[0].style.width = newWidth + "px";
+                imgElem[0].style.height = newHeight + "px";
+            }
+        }
+    }
+
+}
+
+
+function dbSetIFrameWidthPart2(pEntid, pIFrameId, pFrameWindow, pNewWidth, pDocViewBodyTableCellPadding,
+                               pIsALinkExternalToEdline, pIsAWebDoc)
+{
+    setElementWidth(pIFrameId, pNewWidth + "px");
+
+    if (pIsALinkExternalToEdline || pIsAWebDoc)
+    {
+        return;
+    }
+
+    // Added the following to affect the width of hand-entered text:
+
+    var docViewBodyTableElem = pFrameWindow.document.getElementById('docViewBodyTable' + pEntid);
+    var docViewBodyCommentsApprovalCellElem = pFrameWindow.document.getElementById('docViewBodyCommentsApprovalCell' + pEntid);
+    var docViewBodyCommentHeaderCellElem = pFrameWindow.document.getElementById('docViewBodyCommentHeaderCell' + pEntid);
+    var docViewBodyMainCellElem = pFrameWindow.document.getElementById('docViewBodyMainCell' + pEntid);
+
+    var widthWithinTable = pNewWidth - (pDocViewBodyTableCellPadding * 2);
+
+    if (isMSIE)
+    {
+        try
+        {
+            dbSetHtmlElementWidth(docViewBodyTableElem, pNewWidth);
+            dbSetHtmlElementWidth(docViewBodyCommentsApprovalCellElem, widthWithinTable);
+            dbSetHtmlElementWidth(docViewBodyCommentHeaderCellElem, widthWithinTable);
+            dbSetHtmlElementWidth(docViewBodyMainCellElem, widthWithinTable);
+
+            /*
+            dbSetHtmlElementMinWidthStyle(docViewBodyTableElem, pNewWidth);
+            dbSetHtmlElementMinWidthStyle(docViewBodyCommentsApprovalCellElem, widthWithinTable);
+            dbSetHtmlElementMinWidthStyle(docViewBodyCommentHeaderCellElem, widthWithinTable);
+            dbSetHtmlElementMinWidthStyle(docViewBodyMainCellElem, widthWithinTable);
+            */
+        }
+        catch(ex)
+        {
+            // Ignore; this case happens for PDF files in IE -- TT #5354
+        }
+    }
+    else
+    {
+        dbSetHtmlElementWidth(docViewBodyTableElem, pNewWidth);
+        dbSetHtmlElementWidth(docViewBodyCommentsApprovalCellElem, widthWithinTable);
+        dbSetHtmlElementWidth(docViewBodyCommentHeaderCellElem, widthWithinTable);
+        dbSetHtmlElementWidth(docViewBodyMainCellElem, widthWithinTable);
+
+        /*
+        dbSetHtmlElementMinWidthStyle(docViewBodyTableElem, pNewWidth);
+        dbSetHtmlElementMinWidthStyle(docViewBodyCommentsApprovalCellElem, widthWithinTable);
+        dbSetHtmlElementMinWidthStyle(docViewBodyCommentHeaderCellElem, widthWithinTable);
+        dbSetHtmlElementMinWidthStyle(docViewBodyMainCellElem, widthWithinTable);
+        */
+    }
+}
+
+
+function dbAdjustPlaceholderWithMostlyEmptySpaceArea(pBoxContentsElementId, pHostZoneWidthStr, pHostZoneFrameId,
+        pSumOfHorizontalPaddingAndMargin, pRawImageWidth, pRawImageHeight, pActualDocEntid, pDisplayingDashedPlaceholderImageBorder)
+{
+    var newWidth = 0;
+
+    if (pHostZoneWidthStr == "*")
+    {
+        var containerElem = document.getElementById(pHostZoneFrameId);
+        newWidth = parseInt(containerElem.offsetWidth,10) - pSumOfHorizontalPaddingAndMargin;
+    }
+    else
+    {
+        newWidth = parseInt(pHostZoneWidthStr,10) - pSumOfHorizontalPaddingAndMargin;
+    }
+
+    var ratio =  newWidth / pRawImageWidth;
+
+    if (ratio <= 1.0)
+    {
+        var heightBeforeRounding = pRawImageHeight * ratio;
+        var newHeight = Math.round(heightBeforeRounding);
+
+        var borderPixels = pDisplayingDashedPlaceholderImageBorder ? 2 : 0;
+
+        setElementWidth(pBoxContentsElementId, (newWidth - borderPixels) + "px");
+        setElementHeight(pBoxContentsElementId, (newHeight - borderPixels) + "px");
+
+        if (pDisplayingDashedPlaceholderImageBorder)
+        {
+            var dimensionsSpan = document.getElementById("dimensions_" + pActualDocEntid);
+            if (dimensionsSpan != null)   // Would be null for a small image, which doesn't carry the span tag
+            {
+                dimensionsSpan.innerHTML = newWidth + "W x " + newHeight + "H";
+            }
+        }
+    }
+
+
+}
+
+
+function dbSetHtmlElementWidth(pHtmlElement, pNewWidth)
+{
+    if (  (pHtmlElement != undefined) && (pHtmlElement != null)  )
+    {
+        pHtmlElement.setAttribute("width", pNewWidth);
+    }
+
+}
+
+
+function dbSetHtmlElementMinWidthStyle(pHtmlElement, pNewMinWidth)
+{
+    if (  (pHtmlElement != undefined) && (pHtmlElement != null)  )
+    {
+        $(pHtmlElement).css("min-width", pNewMinWidth + "px");
+    }
+
+}
+
+
+function dbSetBackgroundColor(pIFrameId, pBgColor, pIsALinkExternalToEdline)
+{
+    if (pIsALinkExternalToEdline)
+    {
+        return;
+    }
+
+    try
+    {
+        window.frames[pIFrameId].document.body.style.backgroundColor = pBgColor;
+    }
+    catch(ex)
+    {
+        // Ignore; this case happens for PDF files in IE -- TT #5354.  I've also seen it happen for Edline docs that
+        // contain a "web page" zip file and that zip fileuses https, whereas the main page uses http (or vice versa)
+        // -- EPB-6559.
+    }
+}
+
+
+// This only processes document OPTIONAL images -- not imported images.
+function dbHandleAutoFitImage(pIFrameId,
+                              pAutofitImageProperty,
+                              pBoxNetWidthStr,
+                              pHostZoneFrameId,
+                              pEntid,
+                              pSumOfHorizontalPaddingAndMargin,
+                              pIsALinkExternalToEdline)
+{
+    if (pIsALinkExternalToEdline)
+    {
+        return;
+    }
+
+    if (pAutofitImageProperty == "true")
+    {
+        var frameWindow = parent.frames[pIFrameId];
+
+        var imageElem = null;
+
+        try
+        {
+            imageElem = frameWindow.document.getElementById('autofitImage' + pEntid);
+        }
+        catch(ex)
+        {
+            // Ignore; this case happens for PDF files in IE -- TT #5354
+        }
+
+        if ( imageElem != undefined && imageElem != null )
+        {
+            var containerElem = document.getElementById(pHostZoneFrameId);
+            var newWidth = parseInt(containerElem.offsetWidth,10) - 16 - pSumOfHorizontalPaddingAndMargin;
+            imageElem.setAttribute("width", newWidth);
+        }
+    }
+}
+
+
+function dbGetMinIframeWidthAndPotentiallyWidenHotEditor(pDocEntid)
+{
+    var minIframeWidth = -1;
+    var hotEditorQuery = $("#dbHotEditor_" + pDocEntid);
+    var hotEditorWidth = hotEditorQuery.width();
+    var imageWidth = $("#autofitImage" + pDocEntid).width();
+
+    if (imageWidth > hotEditorWidth)
+    {
+        minIframeWidth = imageWidth;
+        dbSetWidthQuery(hotEditorQuery,imageWidth + "px");
+    }
+
+    return minIframeWidth;
+}
+
+
+function dbShowFloatingEditDiv(pDocBoxDivId)
+{
+    if (ghDragDropPhase2Inited || ghDragDropInProgress)
+    {
+        return;
+    }
+
+    dbClosePendingForFloatingEditBox[pDocBoxDivId] = false;
+
+    var docBoxDivQuery = $("#" + pDocBoxDivId);
+    var docBoxOffset = docBoxDivQuery.offset();
+
+    // Because the rounded cornerz script might change a div's position to relative (and other reasons), we need to
+    // consider the box's parent offsets.  Normally, the parent is the body and the body's offsets are (0,0), but that
+    // is not always the case with rounded corners (lesson learned via TT #4981.)
+    var docBoxOffsetParent = docBoxDivQuery.offsetParent();
+    var docBoxOffsetParentOffset = docBoxOffsetParent.offset();
+
+    var docBoxOffsetParentTopMargin = parseInt( docBoxOffsetParent.css("margin-top"),10) || 0;
+    var docBoxOffsetParentLeftMargin = parseInt( docBoxOffsetParent.css("margin-left"),10) || 0;
+
+    var docBoxOffsetLeft = docBoxOffset.left - docBoxOffsetParentOffset.left + docBoxOffsetParentLeftMargin;
+    var docBoxOffsetTop = docBoxOffset.top - docBoxOffsetParentOffset.top + docBoxOffsetParentTopMargin;
+
+    var docBoxOuterWidth = docBoxDivQuery.outerWidth(false);
+    var docBoxLeftBorderWidth = parseInt( docBoxDivQuery.css("border-left-width"),10) || 0;
+    var docBoxTopCenterX = docBoxOffsetLeft - docBoxLeftBorderWidth + (docBoxOuterWidth / 2);
+
+    var docBoxTopPadding = parseInt( docBoxDivQuery.css("padding-top"),10);
+    var docBoxTopBorderWidth = parseInt( docBoxDivQuery.css("border-top-width"),10) || 0;
+    var docBoxTopCenterY = docBoxOffsetTop + docBoxTopPadding + docBoxTopBorderWidth;
+
+    var editBoxOuterWidth = $("#dbFloatingEditDiv_" + pDocBoxDivId).outerWidth(false);
+
+    var editDiv = document.getElementById("dbFloatingEditDiv_" + pDocBoxDivId);
+
+    editDiv.style.top = (docBoxTopCenterY + 2) + "px";
+    editDiv.style.left = (docBoxTopCenterX - (editBoxOuterWidth / 2) ) + "px";
+    editDiv.style.zIndex = 2;
+    editDiv.style.display = "block";
+}
+
+
+function dbHideFloatingEditDiv(pDocBoxDivId)
+{
+    if (ghDragDropInProgress)
+    {
+        return;
+    }
+
+    dbClosePendingForFloatingEditBox[pDocBoxDivId] = true;
+    setTimeout( function() { dbReallyHideFloatingEditDiv(pDocBoxDivId); }, 500);
+}
+
+
+function dbReallyHideFloatingEditDiv(pDocBoxDivId)
+{
+    if (dbClosePendingForFloatingEditBox[pDocBoxDivId] == true)
+    {
+        dbClosePendingForFloatingEditBox[pDocBoxDivId] = false;
+
+        var editDiv = document.getElementById("dbFloatingEditDiv_" + pDocBoxDivId);
+
+        editDiv.style.zIndex = 0;
+        editDiv.style.display = "none";
+        editDiv.style.top = "-1000px";
+    }
+}
+
+
+function dbMouseOverFloatingEditDiv(pDocBoxDivId)
+{
+    dbClosePendingForFloatingEditBox[pDocBoxDivId] = false;
+}
+
+/* functions below are to isolate inline JS that is manipulating DOM, ideally these should be in classes that we toggle! */
+function dbSetHeightEl(el,val){
+	if(el!=null){
+		el.style.height = val;
+	}
+}
+function dbSetWidthEl(el,val){
+	if(el!=null){
+		el.style.width = val;
+	}
+}
+function dbSetHeightQuery(el,val){
+	el.css("height", val);
+}
+function dbSetWidthQuery(el,val){
+	el.css("width", val);
+}
+function dbSetHeightId(id,val){
+	var el = document.getElementById(id);
+	dbSetHeightEl(el,val);
+}
+function dbSetWidthId(id,val){
+	var el = document.getElementById(id);
+	dbSetWidthEl(el,val);
+}

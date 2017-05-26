@@ -1,0 +1,2069 @@
+var ajaxReq;
+var ssoWindow;
+var ssoPostParms = new Object();
+
+var sessionRenewal = new Object();
+
+var preservedSessionRenewal = new Object();
+var pageBody = document.body;
+var hdrGlobalMouseOverMenu = false;
+
+
+// Add client "session awareness tracking" for some pages:
+//The following variable has to be defined on any page that wants to use sessionRenewal:
+//<script type="text/javascript">window.sessionRenewalUsed = true;</script>
+if (window.sessionRenewalUsed != undefined)
+{
+    if (window.sessionRenewalUsed)
+    {
+        var func = "initSessionRenewalProcess();";
+        // TODO update to use JQuery method!
+        //if(window.addEventListener){
+        //	var f = new Function(func);
+        //	window.addEventListener("load", f, false);
+        //} else {
+        if(pageBody != null)
+        {
+            if (pageBody.attachEvent != undefined)   // attachEvent is an IE8 and earlier method
+            {
+                pageBody.onload = appendToFunction(pageBody.onload, func);
+            }
+            else
+            {
+                addHtmlAttribute(pageBody, "onload", func);
+            }
+        }        //}
+    }
+}
+
+/* MOVED functions to bottom */
+
+function clearFrames(allowClearFrames)
+{
+    if (window.top.location != window.document.location && !allowClearFrames)
+    {
+        window.top.location.replace(window.document.location.href); //replace keeps url out of browser history
+    }
+}
+
+function initMenuBar(menuBarName)
+{
+    if (document.all && document.getElementById)
+    {
+        var menuBar = document.getElementById(menuBarName);
+
+        if (menuBar == null) { return; }
+
+        for (var i = 0; i < menuBar.childNodes.length; i++)
+        {
+            var node = menuBar.childNodes[i];
+
+            if (node.nodeName=="DIV")
+            {
+                node.onmouseover
+                    = function()
+                      {
+                			var CLS = " edlMenuMouseOver";// leading space is intentional!
+                            if (this.className.indexOf(CLS) < 0)
+                            {
+                                // Clear all others first.
+                                var parNode = this.parentNode;
+                                for (var i = 0; i < parNode.childNodes.length; i++)
+                                {
+                                    var sibling = parNode.childNodes[i];
+
+                                    if (sibling.nodeName == "DIV" && sibling.className.indexOf(CLS) >= 0)
+                                    {
+                                        sibling.className = sibling.className.replace(CLS, "");
+                                    }
+                                }
+                                this.className += CLS;
+                            }
+                      };
+
+                for (var j = 0; j < node.childNodes.length; j++)
+                {
+                    var subNode = node.childNodes[j];
+
+                    if (subNode.nodeName == "DIV")
+                    {
+                        subNode.onmouseout
+                            = function()
+                                {
+                                    this.parentNode.className = this.parentNode.className.replace(" edlMenuMouseOver", "");
+                                };
+                    }
+                }
+            }
+        }
+    }
+}
+
+function initMainMenuBar()
+{
+    initMenuBar("mainMenuBar");
+}
+
+function doNothing(e)
+{
+    return true;
+}
+
+function openPopupWindow(theURL, winName, features)
+{
+	// this opens and focuses the window but gives no return
+	var pWin = hdrPopup(theURL, winName, features);
+	hdrFocus(pWin);
+}
+
+
+function hdrGetContentsDataResourceAttributeValue(pResource, pAttrName)
+{
+    var resElem = pResource.getElementsByTagName(pAttrName)[0];
+
+    /*
+        The attribute value is normally in "data" -- example for attribute "title": "My Resource Title".
+
+        Also, resElem.firstChild.nodeType is usually 3.
+     */
+
+    var attrVal = resElem.firstChild.data;
+
+    if (typeof attrVal == "undefined")
+    {
+        /*
+            However, when the page is being translated with the new Google Translate widget, the markup gets
+            manipulated by Google and the element markup looks like this:
+
+                "<font><font>My Resource Title Translated<</font></font>"
+
+            When being translated resElem.firstChild.nodeType is 1.
+         */
+
+        if (typeof resElem.firstChild.firstChild != "undefined")
+        {
+            attrVal = resElem.firstChild.firstChild.innerHTML;
+        }
+    }
+
+    return attrVal;
+}
+
+
+function hdrPopup(theURL, winName, features)
+{
+	// this is a standard approach that returns the window reference to the caller if needed
+	var pWin = window.open(theURL, winName, features);
+	//pWin.opener = self;//TODO OR "pWin.opener = window;" may be a useful addition to later to prevent orphaned windows 
+	return pWin;
+}
+
+
+function hdrGetHeightOfGoogleTranslateBanner()
+{
+    var bannerFrameQuery = $("iframe.goog-te-banner-frame");
+
+    if (bannerFrameQuery.length)
+    {
+        if (bannerFrameQuery.parent().css("display") == "none")   // div surrounding iframe
+        {
+            return 0;
+        }
+
+        return bannerFrameQuery.outerHeight();
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+
+function touchSession()
+{
+    var theURL   = "\CourseDetails.page";
+    var winName  = "_touchsession";
+    var features = "toolbar=no,location=no,directories=no,status=no,menubar=no,resizable=yes,copyhistory=no,scrollbars=no,left=2000,top=2000,width=10,height=10";
+    var pWin = hdrPopup(theURL, winName, features);
+    pWin.close();
+}
+
+function goToPage()
+{
+    var args=goToPage.arguments;
+    for (var i=0; i<(args.length-1); i+=2){
+    	eval(args[i]+".location='"+args[i+1]+"'");
+    }
+}
+
+function openHelpWin()
+{
+    // context sensitive help
+    submitEvent('clickHelp', 'TCNK=headerComponent');
+}
+
+function invokeHelpLink(pageNm)
+{
+    submitEvent( 'clickHelpLink', 'TCNK=headerComponent;helpLinkPageName='+pageNm);
+}
+
+function openPopupHelpWin(pgRoot)
+{
+    var pgName = 'HelpPop' + pgRoot + '.page';
+    openPopupWindow(pgName,"edline_popup_help","toolbar=no,resizable=1,scrollbars=1,width=550,height=375");
+}
+
+function closePopupWin()
+{
+    //Check both win and doc, since NS returns non-null for closed window.opener
+    if ((window.opener && window.opener.document) && (window.opener.closed == false))
+    {
+    	hdrFocus(window.opener); 
+    }
+    self.close();
+    return;
+}
+
+function displayMessage(message)
+{
+	// TODO convert to modal overlay, change all use of 'alert()' to direct here!
+	if (message != null && message != '')
+	{
+	    alert(message);
+	}
+}
+
+
+function linkSubmitForm(formName, message, isFatalErrorMessage)
+{
+    displayMessage(message);
+
+    if (message != null && message.length > 0 && isFatalErrorMessage)
+    {
+        return;
+    }
+
+    formName.submit();
+    // Nothing can be done after the submit is called.
+}
+
+
+function submitSsoForm(message, isFatalErrorMessage)
+{
+    if (isFatalErrorMessage)
+    {
+        ssoWindow.close();
+    }
+
+    displayMessage(message);
+
+    if (message != null && message.length > 0 && isFatalErrorMessage)
+    {
+        return;
+    }
+
+    ssoWindow.processForm(ssoPostParms.originalForm);
+    hdrFocus(ssoWindow);
+}
+
+
+function submitSsoLink(theURL, winName, features, message, isFatalErrorMessage)
+{
+    displayMessage(message);
+
+    if (message != null && message.length > 0 && isFatalErrorMessage)
+    {
+        ssoWindow.close();
+        return;
+    }
+
+    if (winName == null || winName == '' || winName.length == 0)
+    {
+        ssoWindow.close();
+        window.location.href = theURL;
+        // Nothing can be done after this line.
+    }
+    else
+    {
+        ssoWindow.location.href = theURL;
+        hdrFocus(ssoWindow);
+    }
+}
+
+
+function linkOpenUrl(theURL, winName, features, message, isFatalErrorMessage)
+{
+    displayMessage(message);
+
+    if (message != null && message.length > 0 && isFatalErrorMessage)
+    {
+        return;
+    }
+
+    if (winName == null || winName == '' || winName.length == 0)
+    {
+        window.location.href = theURL;
+        // Nothing can be done after this line.
+    }
+    else
+    {
+        openPopupWindow(theURL, winName, features);
+    }
+}
+
+
+function changeLoginInfo(websiteid)
+{
+  //submitEvent('changeLoginInfo', 'TCNK=headerComponent;websiteid=' + websiteid + ';returnpage=');
+    submitEvent('changeLoginInfo', 'websiteid=' + websiteid); // <%= AuthWebsite.WEBSITE_ID %>
+}
+
+
+function hdrViewUserRedisplay(user_entid)
+{
+  //submitEvent( 'viewAs','TCNK=viewAsBoxComponent;targetUserEntid='+user_entid + ';menuRedisplay=true');
+    submitEvent( 'viewAsChange','TCNK=headerComponent;targetViewAsUserEntid='+user_entid + ';viewAsMenuRedisplay=true');
+}
+
+
+// My Shortcuts View User Item
+function va_msViewUser(user_entid)
+{
+  //submitEvent( 'viewAs','TCNK=viewAsBoxComponent;targetUserEntid='+user_entid);
+    submitEvent( 'viewAsChange','TCNK=headerComponent;targetViewAsUserEntid='+user_entid);
+}
+
+function va_onVusrListChange(frm, vusrListComboBox)
+{
+    var queryStringUserValue = vusrListComboBox[vusrListComboBox.selectedIndex].value;
+    va_msViewUser(queryStringUserValue);
+}
+
+// Used for MyClasses combox box pulldown menu
+function hdrViewItm(res_entid)
+{
+    submitEvent( 'viewResource', 'TCNK=headerComponent;targetResEntid='+res_entid);
+}
+
+function hdrViewItmSetViewAs(res_entid, user_entid)
+{
+    submitEvent( 'viewResourceSetViewAs', 'TCNK=headerComponent;targetResEntid='+res_entid+';targetViewAsUserEntid='+user_entid);
+}
+
+
+// Used for MyClasses combox box pulldown menu
+function mcViewItm(res_entid, viewAsUserEntidOptional)
+{
+    if (typeof viewAsUserEntidOptional == "undefined")
+    {
+        submitEvent( 'myClassesResourceView', 'TCNK=headerComponent;targetResEntid='+res_entid);
+    }
+    else
+    {
+        submitEvent( 'myClassesResourceView', 'TCNK=headerComponent;targetResEntid='+res_entid+';targetViewAsUserEntid='+viewAsUserEntidOptional);
+    }
+}
+
+
+// Used for MyForms combo box pulldown menu
+function mfViewItm(res_entid, viewAsUserEntidOptional)
+{
+    if (typeof viewAsUserEntidOptional == "undefined")
+    {
+        submitEvent( 'myFormsResourceView', 'TCNK=headerComponent;targetResEntid='+res_entid);
+    }
+    else
+    {
+        submitEvent( 'myFormsResourceView', 'TCNK=headerComponent;targetResEntid='+res_entid+';targetViewAsUserEntid='+viewAsUserEntidOptional);
+    }
+}
+
+function loginButtonClicked()
+{
+    submitEvent('login','TCNK=headerComponent');
+}
+
+
+function downloadPluginInstaller(installerUrl)
+{
+    window.location = installerUrl;
+    displayMessage('The plugin is about to be downloaded.\n\nAfter the download is complete, please:\n\n1. INSTALL the plugin.\n\n2. RESTART the web browser.');
+}
+
+
+function updateGuestLoginBoxScreenName()
+{
+  document.guestLoginBox.screenName.value = document.guestLoginScreenNameBox.screenName.value;
+}
+
+function inactiveCheck()
+{
+    var RECHECK_INTERVAL_SECS = 5;
+    secsTilMsg     = secsTilMsg - RECHECK_INTERVAL_SECS;
+    if (secsTilMsg <= 0)
+    {
+        var startWait = new Date().getTime();
+        displayMessage("To confirm that you are still there, please click the OK button within the next minute (" + new Date().toLocaleString() + ") or you will be signed out for security reasons.");
+        secsTilMsg = CONFIRM_MSG_SECS;
+
+        var endWait = new Date().getTime();
+        if ((endWait - startWait) <= CLICK_OK_BUTTON_DURATION * 1000)
+        {
+            touchSession();
+            secsTilMsg = CONFIRM_MSG_SECS; // reset countdown time
+        }
+        else
+        {
+            window.top.location.href = "/timeout.html";
+        }
+    }
+    setTimeout( function() { inactiveCheck(); }, RECHECK_INTERVAL_SECS * 1000);
+}
+
+
+/*
+    There are two purposes for the following 3 variables and 2 functions:
+
+     1. Prevent a user from rapidly, repeatedly, clicking a "submit form" link to the server.  In other words, only
+        let the form be submitted once.
+
+     2. For iOS devices, a boolean "hdrAlreadySubmitted" variable isn't sufficient because when the browser Back
+        button is used, Javascript doesn't reload or run on these devices.  Variable "hdrAlreadySubmitted" doesn't
+        get reset to false like it does for other browsers/devices.  Therefore submits are tracked with variable
+        "hdrLastSubmittedTime".
+ */
+
+
+var hdrAlreadySubmitted = false;
+
+var hdrIsIPadPodPhone = navigator.userAgent.match(/iPad/i) ||
+        navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/iPhone/i);
+
+var hdrLastSubmittedTime = 0;   // Dec 31, 1969
+
+
+function hdrIsEventSubmissionAllowed()
+{
+    if (hdrIsIPadPodPhone)
+    {
+        var timeNow = new Date().getTime();
+        var msSinceLastSubmitted = timeNow - hdrLastSubmittedTime;
+
+        // If the form hasn't been submitted in the last 1.5 seconds, allow it to be submitted
+        return msSinceLastSubmitted > 1500;
+    }
+    else
+    {
+        return !hdrAlreadySubmitted;
+    }
+}
+
+
+function hdrFlagEventAsSubmitted()
+{
+    if (hdrIsIPadPodPhone)
+    {
+        hdrLastSubmittedTime = new Date().getTime();
+    }
+    else
+    {
+        hdrAlreadySubmitted = true;
+    }
+}
+
+function submitTheForm(theForm)
+{
+    var uaCheck = navigator.userAgent;
+    var isChrome = uaCheck.indexOf('Chrome') != -1;
+    if (!isChrome)
+    {
+        theForm.submit(); // submit immediately
+    }
+    else
+    {
+        // submit on a delay because gui interactions can be interrupted in SSL mode which
+        // give the appearance of broken links when the form submits in the middle of other script operations.
+        // Give it a split second to actually submit so that other UI interactions can complete without being interrupted.
+        setTimeout(function () {
+            theForm.submit();
+        }, 100);
+    }
+
+}
+
+
+/* TODO - DANGER: JAVASCRIPT DOES NOT SUPPORT FUNCTION OVERLOADING -- Very likely just uses the second definition of the function */
+function submitEvent(eventName)
+{
+    if (!hdrIsEventSubmissionAllowed())
+    {
+        return;
+    }
+
+    if(typeof haltSlideShow == 'function') {
+        haltSlideShow();
+    }
+
+    var frm = document.EventForm;
+    frm.invokeEvent.value = eventName;
+    hdrFlagEventAsSubmitted();
+    submitTheForm(frm);
+}
+
+
+function submitEvent(eventName, parms)
+{
+    if (!hdrIsEventSubmissionAllowed())
+    {
+        return;
+    }
+
+    if(typeof haltSlideShow == 'function') {
+        haltSlideShow();
+    }
+
+	var frm = document.EventForm;
+	frm.invokeEvent.value = eventName;
+	frm.eventParms.value = parms;
+    hdrFlagEventAsSubmitted();
+    submitTheForm(frm);
+
+}
+
+
+function edJawsCloseAllSubmenus(event)
+{
+	var CLSON = 'onState';
+	var edmenu = $("#ed-menuBar");
+	var ar = edmenu.find("div.ed-menuButton");
+	var i = ar.length;
+	var obj;
+	while(i--)
+    {
+		obj = $(ar[i]);
+		var b = obj.hasClass(CLSON);
+		if(b)
+        {
+			edJawsMenuHide(obj);
+		}
+	}
+	return true;
+}
+
+try{
+	if(typeof jQuery != 'undefined')
+    {
+		// jQuery is loaded
+		jQuery(document).ready(function()
+        {
+//			jQuery('div.ed-menuButton').keydown(function(event){
+//				edJawsMenuToggle(event);
+//			});
+//
+//            jQuery('div.ed-dropDown a').keydown(function(event){
+//				edJawsMenuToggle(event);
+//			});
+
+//			jQuery('div.ed-menuButton').focus(function(event){
+//				edJawsMenuFocus(event);
+//			});
+
+
+//
+//			jQuery('img.sdToolbarImg').keydown(function(event){
+//				edJawsMenuToggle(event);
+//			});
+//			jQuery('div.ed-button').keydown(function(event){
+//				edJawsMenuToggle(event);
+//			});
+
+
+            edJawsGetMenuButtons();
+
+            this.$openMenu = undefined;
+
+            edJawsSubmenuItemFocusHandler('div.ed-dropDown a');
+
+            edJawsSetSkipLink();
+
+//            jQuery('#skip-nav').focus();
+		});
+	}
+}catch(e){
+	// jQuery is not loaded
+}
+
+function edJawsSetSkipLink()
+{
+    // Determine the correct link target.
+    // List of common IDs to link to.
+    var potentialTargets = ['#edlThemeMainZonePane',
+    '#ed-pageHeader',
+    '#ed-formArea',
+    '#edlHomePageDocBoxArea',
+    '#directoryList',
+    '#ed-pageContainer'];
+
+    var target = undefined;
+
+    try
+    {
+        for(i=0; i<potentialTargets.length; i++)
+        {
+            if($(potentialTargets[i]).length)
+            {
+                target = potentialTargets[i];
+                break;
+            }
+        }
+
+        if(target == undefined)
+        {
+            $('#skiplink').remove();
+        }
+        else
+        {
+            $('#skip-nav').attr('href', target);
+        }
+	}catch(e)
+    {
+		alert(e);
+	}
+}
+
+// Sets up CSS behavior when for the given element.
+function edJawsSubmenuItemFocusHandler(pQuerySelector)
+{
+    $(pQuerySelector).focus(function(){
+        var parent = $(this).closest('li');
+        parent.addClass('hover');
+    }).blur(function(){
+        try
+        {
+            var parent = $(this).closest('li');
+            parent.removeClass('hover');
+        }
+        catch (exception)
+        {
+        }
+    });
+}
+
+function edJawsGetMenuButtons()
+{
+    var allMenubarItems = jQuery('div.ed-menuItem:visible');
+    this.$menubarButtons = allMenubarItems.find('div.ed-menuButton');
+
+//    this.$menubarButtons = $('div.ed-menuButton');
+}
+
+
+
+
+function edJawsMenuToggle(event){
+	// NOTE: this approximates keyboard navigation for the top menu		
+	var rc = true;
+	var key = edKeyCode(event);
+	try{
+		var el = event.target;
+		var myel = $(el);
+
+        event.stopPropagation();
+
+        if(this.$openMenu == undefined)
+        {
+            this.$openMenu = edJawsGetOpenMenu();
+        }
+        var index = this.$menubarButtons.index(this.$openMenu);
+        var maxIndex = this.$menubarButtons.length - 1;
+        var oldMenuButton = this.$menubarButtons.eq(index);
+
+		var CLSON = 'onState';
+		var bIsOpen = myel.hasClass(CLSON);
+		var bDoOpen = false;
+		var bDoClose = false;
+        var bMenuRight = false;
+        var bMenuLeft = false;
+        var bIsMenuButton = myel.hasClass('ed-menuButton');
+        var bDown = false;
+        var bUp = false;
+
+        var p = myel.parent();
+		var obj = p.children('div.ed-dropDown');
+		var i = obj.length;
+		var bIsSingle = false;
+        var bDoClick = false;
+
+        if(i<1 && bIsMenuButton)
+        {
+			bIsSingle = true;    // No submenu items.
+		}
+
+		switch(key)
+        {
+			case 9: // tab = skip
+				break;
+			case 37: // left arrow
+                bMenuLeft = true;
+                bDoClose = true;
+
+                break;
+			case 39: // right arrow
+                bMenuRight = true;
+                bDoClose = true;
+
+                break;
+			case 46: // delete = close
+			case 27: // escape = close!
+//				bDoClose = true;
+				break;
+			case 32:	// treat space like enter (fallthru)
+                bDoClick = true;
+			case 13:	
+				if(bIsOpen)
+                {
+					bDoClose = true;
+				}
+                else
+                {
+					bDoOpen = true;
+				}
+				break;
+			case 33:	// page up
+
+				if(bIsOpen)
+                {
+					bDoClose = true;
+				}
+                break;
+			case 38:	// up arrow
+                bUp = true;
+				break;
+			case 34:	// page down (fallthru)
+			case 40:	// down arrow
+                bDown = true;
+				if(!bIsOpen)
+                {
+					bDoOpen = true;
+				}
+				break;
+			default:
+				//alert('toggle:key=' + key + '|open=' + bIsOpen);
+				break;
+		}
+
+		if(bDoOpen)
+        {
+			if(bIsSingle || bDoClick)
+            {
+				fireOnclick(el);
+			}
+		}
+		if(bDoClose)
+        {
+			if(bIsSingle)
+            {
+				// noop
+			} else
+            {
+				edJawsCloseAllSubmenus(event);
+			}
+		}
+
+
+        if(bMenuLeft)
+        {
+            edJawsNavigateMenuBar(index -1, maxIndex, oldMenuButton)
+            return false;
+        }
+
+        if(bMenuRight)
+        {
+           edJawsNavigateMenuBar(index + 1, maxIndex, oldMenuButton)
+           return false;
+        }
+
+        if(bDown)
+        {
+            edJawsNavigateSubmenu(1, myel)
+        }
+
+        if(bUp)
+        {
+            edJawsNavigateSubmenu(-1, myel)
+        }
+
+	
+	}catch(e){
+		alert(e);	
+	}
+	return rc;
+}
+
+function edJawsGetOpenMenu()
+{
+	var CLSON = 'onState';
+    var CLSHOVER = 'hover';
+	var edmenu = $("#ed-menuBar");
+	var ar = edmenu.find("div.ed-menuButton");
+	var i = ar.length;
+	var obj;
+	while(i--)
+    {
+		obj = $(ar[i]);
+		var b = obj.is(CLSON, CLSHOVER);
+		if(b)
+        {
+			return obj;
+		}
+	}
+}
+
+function edJawsNavigateMenuBar(newIndex, maxIndex, oldMenuButton)
+{
+    if(newIndex > maxIndex)
+    {
+        newIndex = 0;
+    }
+
+    if(newIndex < 0)
+    {
+        newIndex = maxIndex;
+    }
+
+    oldMenuButton.blur();
+
+    var newMenu = this.$menubarButtons.eq(newIndex);
+    edMenuHover(newMenu);
+
+    this.$openMenu.focus();
+
+    edJawsMenuShow(this.$openMenu);
+    edJawsFocusFirstMenuItem(this.$openMenu);
+
+}
+
+
+function edJawsNavigateSubmenu(offset, myel)
+{
+    var parent = this.$openMenu.parent(); // the error thrown here probably
+    var submenu = parent.children('div.ed-dropDown');
+    var submenuItems = submenu.find('a');
+    var submenuIndex = submenuItems.index(myel);
+    var nextSubmenuIndex = submenuIndex + offset;
+
+    if(nextSubmenuIndex >= submenuItems.length)
+    {
+        nextSubmenuIndex = 0;
+    }
+
+    if(nextSubmenuIndex < 0)
+    {
+        nextSubmenuIndex = submenuItems.length - 1;
+    }
+
+    var nextSubmenuItem = submenuItems[nextSubmenuIndex]; //eq(nextSubmenuIndex);
+    nextSubmenuItem.focus();
+
+}
+
+function edJawsMenuShow(el){
+	edJawsCloseAllSubmenus();
+	var CLSON = 'onState';
+	var b = el.hasClass(CLSON);
+	if(!b){
+		var p = el.parent();
+		var obj = p.children('div.ed-dropDown');
+		el.addClass(CLSON);
+		el.addClass('hover');//see:hcFauxHover
+		obj.show(1);
+	}
+
+}
+
+
+function edMenuHover($menu)
+{
+   if (this.$openMenu != undefined && $menu.get(0) != this.$openMenu.get(0))
+   {
+       this.$openMenu.removeClass('hover');
+   }
+
+    $menu.addClass('hover');//see:hcFauxHover
+
+    this.$openMenu = $menu;
+}
+
+function edJawsMenuHide(el){
+	var CLSON = 'onState';
+	var b = el.hasClass(CLSON);
+    var p = el.parent();
+    var obj = p.children('div.ed-dropDown');
+
+    var subMenuVisible = $(obj).css("display") != "none";
+
+	if(b || subMenuVisible){
+		el.removeClass(CLSON);
+		el.removeClass('hover');//see:hcFauxHover
+		var p = el.parent();
+		var obj = p.children('div.ed-dropDown');
+		obj.hide(1);
+	}
+}
+
+
+function edJawsFocusFirstMenuItem(menu)
+{
+    var parent = menu.parent();
+    var submenu = parent.children('div.ed-dropDown');
+    var firstMenuItem = submenu.find('a:first');
+    firstMenuItem.focus();
+}
+
+function edKeyCode(event){
+	 var keyCode = ('which' in event) ? event.which : event.keyCode;
+	 return keyCode;
+}
+function rfop1(tar)
+{
+	var frm = document.Rd1Form;
+	frm.rdUrl.value = tar;
+    frm.submit();
+}
+
+function rfop2(tar)
+{
+	var frm = document.Rd2Form;
+	frm.rdUrl.value = tar;
+	frm.submit();
+}
+
+function handleSubmitOnEnterHeaderIncluded(e)
+{
+    var keyPressed = '';
+    //var eventTarget = null;
+    var isMSIE = navigator.userAgent.indexOf('MSIE') != -1;
+
+    if (isMSIE)
+    {
+        keyPressed  = String.fromCharCode(window.event.keyCode);
+    }
+    else
+    {
+        keyPressed = String.fromCharCode(e.which);
+    }
+    var eventTarget = e ? e.target : window.event.srcElement;
+    var isTextArea = (eventTarget.type == 'textarea');
+    var isButton =  (eventTarget.type == 'button');
+
+    if (!isTextArea && (keyPressed == "\r" || keyPressed == "\n"))
+    {
+        // handle case where key pressed is on a button, and it is not the default Enter key
+        if (isButton) {
+            //window.document.onkeypress = doNothing;
+            if (HAS_DEFAULT_ENTER_KEY)
+            {
+                var htmlElem2 = eval(DEFAULT_ENTER_KEY_NAME);
+                if (eventTarget != htmlElem2) 
+                {
+                    return true;
+                }
+            } 
+            else 
+            {
+                return true;
+            }
+        }
+
+        if (HAS_DEFAULT_ENTER_KEY)
+        {
+            if (HAS_PAGE_VALIDATION)
+            {
+                pageValidationSucceeded = eval(PAGE_VALIDATION);
+            }
+            else
+            {
+                pageValidationSucceeded = true;
+            }
+
+            if (pageValidationSucceeded)
+            {
+                try
+                {
+                    var htmlElem = eval(DEFAULT_ENTER_KEY_NAME);
+                    if (htmlElem.click != null)
+                    {
+						htmlElem.click();
+					}
+                    else
+                    {
+						fireOnclick(htmlElem);	
+					}
+                }
+                catch(ex)
+                {
+                }
+                window.document.onkeypress = doNothing;
+            }
+            return false;
+        }
+        else
+        {
+            return isTextArea;
+        }
+    }
+
+    return true;
+}
+
+function fireOnclick(target)
+{
+	if(document.dispatchEvent)
+    { // W3C
+		var oEvent = document.createEvent( "MouseEvents" );
+		oEvent.initMouseEvent("click", true, true,window, 1, 1, 1, 1, 1, false, false, false, false, 0, target);
+		target.dispatchEvent( oEvent );
+	} else {
+		if(document.fireEvent)
+		{ // IE
+			target.fireEvent("onclick");
+		}
+	}
+}
+
+function isAjaxSupported()
+{
+    return initAjaxRequest();
+}
+
+
+function initAjaxRequest()
+{
+    var result = "yes";
+
+    try
+    {
+         // Firefox, Opera 8.0+, Safari
+         ajaxReq = new XMLHttpRequest();
+    }
+    catch (e)
+    {
+         // Internet Explorer
+         try
+         {
+              ajaxReq = new ActiveXObject("Msxml2.XMLHTTP");
+         }
+         catch (e)
+         {
+              try
+              {
+                  ajaxReq = new ActiveXObject("Microsoft.XMLHTTP");
+              }
+              catch (e)
+              {
+                  result = "no";
+              }
+         }
+    }
+
+    return result;
+}
+
+
+function refer(target)
+{
+    var theURL = "http://www.edline.net/tr.html?tr=" + target;
+    openPopupWindow(theUrl, "_blank", "");
+}
+
+
+function requestAjaxSsoData(docEntid)
+{
+   ssoWindow = hdrPopup("/LinkSsoWindow.html", "_" + docEntid,"");
+
+   // Initialize ajaxReq variable
+   var ignoreAnswer = initAjaxRequest();
+
+   ajaxReq.onreadystatechange = receiveAjaxSsoData;  // <-- set callback function to process response
+
+   // The framework prefers Ajax POST requests (vs GET)
+   var url = "/UserSsoData.page";
+   var frm = document.EventForm;
+   var key = "" + docEntid + "" + frm.ajaxRequestKeySuffix.value;
+   var parameters = "key=" + key;
+
+   ajaxReq.open('POST', url, true);
+   ajaxReq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+   ajaxReq.setRequestHeader("Content-length", parameters.length);
+   ajaxReq.setRequestHeader("Connection", "close");
+   ajaxReq.send(parameters);
+}
+
+function requestSsoDataByWebsiteId(websiteId) {
+    var windowName;
+    if (websiteId.length > 2) {
+        // remove < and > characters
+        windowName = websiteId.replace("<", "_").replace(">", "_");
+    } else {
+        windowName = "SSOWindow";
+    }
+    ssoWindow = hdrPopup("/LinkSsoWindow.html", "_" + windowName,"");
+    var ignoreAnswer = initAjaxRequest();                                               // browser-specific AJAX request initialization
+    ajaxReq.onreadystatechange = receiveAjaxSsoData;                                    // set callback function to process response
+                                                                                        // - callback is same as from original requestSsoData
+
+   var url = "/UserSsoDataByWebsite.page";                                              // The framework prefers Ajax POST requests (vs GET)
+   var frm = document.EventForm;
+   var key = "-1" + frm.ajaxRequestKeySuffix.value;
+   var parameters = "key=" + key + "&websiteId=" + websiteId;
+
+   ajaxReq.open('POST', url, true);
+   ajaxReq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+   ajaxReq.setRequestHeader("Content-length", parameters.length);
+   ajaxReq.setRequestHeader("Connection", "close");
+   ajaxReq.send(parameters);
+}
+
+function receiveAjaxSsoData()
+{
+  if (ajaxReq != null && ajaxReq.readyState == 4)
+  {
+    if (ajaxReq.status == 200)
+    {
+      var entries = ajaxReq.responseXML.getElementsByTagName("entry");
+
+      // Grab the first entry (there is only one)
+      var entry = entries[0];
+      var method              = entry.getElementsByTagName("method")[0].firstChild.data;
+      var originalJavascript  = entry.getElementsByTagName("originalJavascript")[0].firstChild.data;
+      var originalForm        = entry.getElementsByTagName("originalForm")[0].firstChild.data;
+      var message             = entry.getElementsByTagName("message")[0].firstChild.data;
+      var isFatalErrorMessage = entry.getElementsByTagName("isFatalErrorMessage")[0].firstChild.data == 'true';
+      var isShowEndUserSetup  = entry.getElementsByTagName("isShowEndUserSetup")[0].firstChild.data == 'true';
+      var dontGoToMyHallPass  = entry.getElementsByTagName("dontGoToMyHallPass")[0].firstChild.data == 'true';
+
+
+      // Safari needed non-blank values for the 5 fields above.  Trim message field.
+      if (message == " ")
+      {
+          message = "";
+      }
+
+      // We have retrieved all the variables we need to null it out as soon as possible in case a post/submit
+      // occurs which exits the page.
+      ajaxReq = null;
+
+      // Handle the GET method (url with query string parameters):
+      if (method == 'GET')
+      {
+        var myFunction = new Function("" + originalJavascript);
+        myFunction.call();
+      }
+
+      // Handle the POST method:
+      if (method == 'POST')
+      {
+        if (isShowEndUserSetup) {
+            ssoPostParms.message = message;
+            submitSsoForm(ssoPostParms.message, true);
+            var ssoEntitId = entry.getElementsByTagName("ssoEntitId")[0].firstChild.data;
+            submitEvent('manageSsoUser', 'TCNK=headerComponent;ssoid=' + ssoEntitId);
+        } else if (isFatalErrorMessage) {
+            submitSsoForm(message, isFatalErrorMessage);
+            if (!dontGoToMyHallPass){
+              var ssoEntitId = entry.getElementsByTagName("ssoEntitId")[0].firstChild.data;
+              submitEvent('manageSsoUser', 'TCNK=headerComponent;ssoid=' + ssoEntitId);
+            }
+        } else {
+            // Safari needs a slight delay (1 sec)
+            ssoPostParms.originalForm = originalForm;
+            ssoPostParms.message = message;
+            ssoPostParms.isFatalErrorMessage = isFatalErrorMessage;
+            setTimeout( function() { submitSsoForm(ssoPostParms.message, ssoPostParms.isFatalErrorMessage); }, 1000);
+        }
+      }   // if POST
+
+    }   // ajaxReq.status
+  }   // ajaxReq.readyState
+}   // function receiveAjaxSsoData
+
+
+function requestAjaxSessionRenewal()
+{
+   sessionRenewal.sessionLastAccessTime = new Date();
+
+   var url = "/SessionRenewal.page";
+   var frm = document.EventForm;
+   var parameters = "key=" + frm.ajaxRequestKeySuffix.value;
+
+   // Initialize ajaxReq variable
+   var ignoreAnswer = isAjaxSupported();   // already tested at login time
+
+   ajaxReq.onreadystatechange = receiveAjaxSessionRenewal;  // <-- function to process response
+   ajaxReq.open('POST', url, true);  // The framework prefers Ajax POST requests (vs GET)
+   ajaxReq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+   ajaxReq.setRequestHeader("Content-length", parameters.length);
+   ajaxReq.setRequestHeader("Connection", "close");
+   ajaxReq.send(parameters);
+}
+
+
+function receiveAjaxSessionRenewal()
+{
+  if (ajaxReq.readyState == 4)
+  {
+    if (ajaxReq.status == 200)
+    {
+	  // Do nothing with response
+      ajaxReq = null;
+    }
+  }
+}
+
+
+function addHtmlAttribute(element, attributeName, attributeValue)
+{
+    var tempVar = "";
+    if (element.hasAttribute(attributeName) == true)
+    {
+       tempVar = element.getAttribute(attributeName);
+    }
+    element.setAttribute(attributeName, attributeValue + tempVar);
+}
+
+
+function renewSessionWithAutoRefresh()
+{
+    return (   window.sessionRenewalAutoRefresh === true
+            && window.sessionRenewalAutoRefreshIntervalSeconds !== null
+            && window.sessionRenewalAutoRefreshLimit !== null);
+}
+
+
+function initSessionRenewalProcess()
+{
+    if (renewSessionWithAutoRefresh())
+    {
+        initSessionRenewalProcessByAutoRefresh();
+    }
+    else
+    {
+        initSessionRenewalProcessByUserActivity();
+    }
+}
+
+
+function initSessionRenewalProcessByAutoRefresh()
+{
+	var frm = document.EventForm;
+    sessionRenewal.enabled = frm.sessionRenewalEnabled.value;
+
+    if ((sessionRenewal.enabled == "yes") && (isAjaxSupported() == "yes"))
+    {
+        sessionRenewal.autoRefreshIntervalSeconds = window.sessionRenewalAutoRefreshIntervalSeconds;
+        sessionRenewal.autoRefreshCount = 0;
+        sessionRenewal.autoRefreshLimit = window.sessionRenewalAutoRefreshLimit;
+
+        setTimeout( function() { autoRenewSession(); }, 1000 * sessionRenewal.autoRefreshIntervalSeconds);
+    }
+}
+
+function isInlineEditingInProgress()
+{
+    return (typeof dsTinyInlineEditingInProgress !== "undefined") && dsTinyInlineEditingInProgress;
+}
+
+
+function initSessionRenewalProcessByUserActivity()
+{
+   var form = document.EventForm;
+
+   sessionRenewal.sessionLastAccessTime = new Date();
+   sessionRenewal.timeoutId = null;
+   sessionRenewal.enabled = form.sessionRenewalEnabled.value;
+
+   if ((sessionRenewal.enabled == "yes") && (isAjaxSupported() == "yes"))
+   {
+       // Candidate fix for EDL-7496, EDL-8663, EDL-8709, Lou Keeble 7/3/2012.
+       // For inline editing: initialization, finalization, and client activity tracking will be done by functions
+       // coded in DesignSidebar.js. So we only run this code if inline editing is NOT in progress.
+       if (!isInlineEditingInProgress())
+       {
+    	   var funcUnload = "finalizeSessionRenewalProcess()";
+    	   var func = "registerClientActivity()";
+    	   // TODO - add modern browser support with: if(document.body.addEventListener){}
+           if (pageBody.attachEvent)   // attachEvent is an IE method that does not work correctly but does exist.
+           {
+               pageBody.onunload    = appendToFunction(pageBody.onunload,    funcUnload);
+               pageBody.onmouseup   = appendToFunction(pageBody.onmouseup,   func);
+               pageBody.onkeyup     = appendToFunction(pageBody.onkeyup,     func);
+               pageBody.onmouseover = appendToFunction(pageBody.onmouseover, func);
+               pageBody.onclick =     appendToFunction(pageBody.onclick, func);
+           }
+           else
+           {
+               addHtmlAttribute(pageBody, "onunload",    funcUnload + ";");
+               func = func + ";"; // 
+               addHtmlAttribute(pageBody, "onmouseup",   func);
+               addHtmlAttribute(pageBody, "onkeyup",     func);
+               addHtmlAttribute(pageBody, "onmouseover", func);
+               addHtmlAttribute(pageBody, "onclick", func);
+           }
+       }
+
+
+       // Lou Keeble, Fix for EDL-8709, 7496, 8663.
+       // Convert string to int when reading any values from forms that will be used as ints.
+       // Otherwise strange things happen.
+      sessionRenewal.hardTimeoutSeconds = parseInt(form.sessionHardTimeoutSeconds.value);
+      sessionRenewal.intervalSeconds = parseInt(form.sessionRenewalIntervalSeconds.value);
+      sessionRenewal.ignoreInitialActivitySeconds = Math.max(15, Math.min(parseInt(form.sessionIgnoreInitialActivitySeconds.value), sessionRenewal.intervalSeconds));
+      sessionRenewal.maxNumberOfRenewals = parseInt(form.sessionRenewalMaxNumberOfRenewals.value);
+      sessionRenewal.count = 0;
+      sessionRenewal.clientActivityOccurred = false;
+
+      sessionRenewal.timeoutId                    = setTimeout( function() { renewSession(); }, 1000 * sessionRenewal.ignoreInitialActivitySeconds);
+   }
+}
+
+
+function finalizeSessionRenewalProcess()
+{
+  if (sessionRenewal.timeoutId != null)
+  {
+     clearTimeout(sessionRenewal.timeoutId);
+  }
+}
+
+var timeFudgeSeconds       = 10;  // 10 or 15 seconds are the best values to pick between.
+var timeFudgeSecondsOffset =  5;  // MUST be less than timeFudgeSeconds.
+
+function renewSession()
+{
+    var currentTime = new Date();
+
+    var sessionRenewed = false;
+    sessionRenewal.timeoutId = null;
+
+    var isFirstRenewalCheck = sessionRenewal.count <= 0;
+    var sessionAgeInSeconds = Math.round(((currentTime - sessionRenewal.sessionLastAccessTime) / 1000));
+    var isSessionTimedOut   = sessionAgeInSeconds >= sessionRenewal.hardTimeoutSeconds;
+    var secondsUntilTimeOut = 0;
+
+    preservedSessionRenewal.enabled                      = sessionRenewal.enabled;
+    preservedSessionRenewal.intervalSeconds              = sessionRenewal.intervalSeconds;
+    preservedSessionRenewal.maxNumberOfRenewals          = sessionRenewal.maxNumberOfRenewals;
+    preservedSessionRenewal.count                        = sessionRenewal.count;
+    preservedSessionRenewal.clientActivityOccurred       = sessionRenewal.clientActivityOccurred;
+    preservedSessionRenewal.hardTimeoutSeconds           = sessionRenewal.hardTimeoutSeconds;
+    preservedSessionRenewal.ignoreInitialActivitySeconds = sessionRenewal.ignoreInitialActivitySeconds;
+    preservedSessionRenewal.sessionLastAccessTime        = sessionRenewal.sessionLastAccessTime;
+
+    if (!isSessionTimedOut)
+    {
+        if (sessionRenewal.clientActivityOccurred)
+        {
+            // Do NOT renew session on the first check.
+            // Also be aware that the first check interval is 60 seconds. The reason is that we
+            // want to ignore any user activity for the first 60 seconds that the page is viewed
+            // because almost every page will have some activity when it is first displayed and
+            // we do not want to renew the session if they used it less than a minute and then
+            // did nothing else.
+            if (!isFirstRenewalCheck)
+            {
+                requestAjaxSessionRenewal();
+                sessionRenewed = true;
+                sessionRenewal.sessionLastAccessTime = new Date();
+            }
+
+            sessionRenewal.clientActivityOccurred = false;
+        }
+
+        sessionRenewal.count = sessionRenewal.count + 1;
+
+        sessionAgeInSeconds = Math.round(((currentTime - sessionRenewal.sessionLastAccessTime) / 1000)); // Need to recalc in case sessionLastAccessTime changed.
+        secondsUntilTimeOut = Math.max(0, sessionRenewal.hardTimeoutSeconds - sessionAgeInSeconds);
+
+        // If max number of renewal intervals not reached, set timer to check again later:
+        var nextCheckIntervalSeconds = sessionRenewal.intervalSeconds; // initialize in case the code below does not initialize it
+        if (sessionRenewal.count < sessionRenewal.maxNumberOfRenewals)
+        {
+            if (isFirstRenewalCheck)
+            {
+                var remainingCheckIntervalSeconds = sessionRenewal.intervalSeconds - sessionRenewal.ignoreInitialActivitySeconds;
+
+                // If less than 12 seconds to the next check, then simply do the full next check and skip this special block.
+                if (remainingCheckIntervalSeconds > timeFudgeSeconds)
+                {
+                    // After the ignore initial activity time period passes, we want to check again
+                    // when we would have checked if we had waited sessionRenewal.intervalSeconds,
+                    // so set the check interval to the remaining number of seconds.
+                    nextCheckIntervalSeconds = remainingCheckIntervalSeconds;
+                }
+            }
+
+            if (secondsUntilTimeOut < (timeFudgeSeconds + timeFudgeSecondsOffset))
+            {
+                // Check again right AFTER the session times out so we can display javascript alert that session timed out.
+                nextCheckIntervalSeconds = secondsUntilTimeOut + Math.max(5, (timeFudgeSeconds - timeFudgeSecondsOffset));
+            }
+            else
+            {
+                if (secondsUntilTimeOut < (nextCheckIntervalSeconds + timeFudgeSeconds))
+                {
+                    // Check for activity and be able to renew the session 10 seconds before the session times out.
+                    nextCheckIntervalSeconds = secondsUntilTimeOut - timeFudgeSeconds;
+                }
+            }
+
+            sessionRenewal.timeoutId = setTimeout( function() { renewSession(); }, 1000 * nextCheckIntervalSeconds);
+        }
+    }
+
+    preservedSessionRenewal.sessionRenewed = sessionRenewed;
+    preservedSessionRenewal.sessionAgeInSeconds = sessionAgeInSeconds;
+    preservedSessionRenewal.secondsUntilTimeOut = secondsUntilTimeOut;
+
+    if (isSessionTimedOut)
+    {
+        sessionRenewal.maxNumberOfRenewals = 0;
+        preservedSessionRenewal.maxNumberOfRenewals = sessionRenewal.maxNumberOfRenewals;
+    }
+
+    // This line is used for testing that the session renewal is working correctly.
+    // var w = hdrPopup("/SessionRenewalTraceWindow.html", "traceWindow", "");
+
+    if (isSessionTimedOut)
+    {
+        displayMessage('Due to inactivity, your Edline session has timed out.');
+    }
+}
+
+
+function autoRenewSession()
+{
+    if (sessionRenewal.autoRefreshCount < sessionRenewal.autoRefreshLimit)
+    {
+        requestAjaxSessionRenewal();
+        sessionRenewal.autoRefreshCount++;
+        setTimeout( function() { autoRenewSession(); }, 1000 * sessionRenewal.autoRefreshIntervalSeconds);
+    }
+    else 
+    {
+        initSessionRenewalProcessByUserActivity();
+    }
+}
+
+
+function registerClientActivity()
+{
+    sessionRenewal.clientActivityOccurred = true;
+}
+
+
+// Added function mdss 4/1/08
+function setElementHeight(pElementId, pHeight)
+{
+    var elem = document.getElementById(pElementId);
+    if (  (elem != null) && (elem != undefined)  )
+    {
+
+    /* 9/27/12 EA - standards mode REQUIRES proper syntax or it's IGNORED. If adding to the style attribute
+            you MUST include the unit of measure (px) and not just the number. Otherwise can remove the .style
+            and just set the element's HTML property (elem.height = pHeight) */
+
+        elem.style.height = pHeight;
+    }
+}
+
+
+// Added function mdss 11/2/07
+function setElementWidth(pElementId, pWidth)
+{
+    var elem = document.getElementById(pElementId);
+    if (  (elem != null) && (elem != undefined)  )
+    {
+        //9/27/12 EA - see note above.
+        elem.style.width = pWidth;
+    }
+}
+
+
+function hdrGetWindowWidth(myWindow)
+{
+	var rc;
+    if (myWindow.innerWidth){
+        rc = myWindow.innerWidth;
+    } else { 
+    	if (myWindow.document.compatMode=='CSS1Compat'){
+    		rc = myWindow.document.documentElement.clientWidth;
+    	} else {
+    		rc = myWindow.document.body.clientWidth;
+    	}
+    }
+    return rc;
+}
+
+
+function hdrGetWindowHeight(myWindow)
+{
+	var rc;
+    if (myWindow.innerHeight){
+        rc = myWindow.innerHeight;
+    } else {
+    	if (myWindow.document.compatMode=='CSS1Compat'){
+    		rc = myWindow.document.documentElement.clientHeight;
+    	} else {
+    		rc = myWindow.document.body.clientHeight;
+    	}
+    }
+    return rc;
+}
+
+
+/* Two remarks:
+    1. In function below, wouldn't work if function calls made to hdrSetMouseEnteredMenu() and
+        hdrSetMouseLeftMenu().
+    2. For anchor tags, hdrAddMouseEnterLeaveTracking couldn't be called directly; their onmouseover and 
+        onmouseout events had to be coded.
+ */
+function hdrAddMouseEnterLeaveTracking(pMenuId, pCalledFromNewUINavigationBar)
+{
+    // Track when mouse enters and leaves:
+    $("#" + pMenuId).mouseenter(
+            function() {
+                hdrGlobalMouseOverMenu = true;
+            }).
+            mouseleave(
+            function() {
+                hdrGlobalMouseOverMenu = false;
+                setTimeout( function() { hdrMouseOverMenuCheck(); }, ( pCalledFromNewUINavigationBar ? hcjNewUiHomeBreadcrumbShowMenuAfterMouseOffMs : hcjOldStyleShowMenuAfterMouseOffMs ) );
+            });
+}
+
+
+function hdrSetMouseEnteredMenu()
+{
+    hdrGlobalMouseOverMenu = true;
+}
+
+
+function hdrSetMouseLeftMenu()
+{
+    hdrGlobalMouseOverMenu = false;
+    setTimeout( function() { hdrMouseOverMenuCheck(); }, hcjOldStyleShowMenuAfterMouseOffMs);
+}
+
+
+function hdrMouseOverMenuCheck()
+{
+    if (!hdrGlobalMouseOverMenu)
+    {
+        hdrHideAllDropDownMenus();
+        if (window.hideMenuBarMenus != undefined && window.hideMenuBarMenus != null)
+        {
+            hideMenuBarMenus();   // hides jsdomenubar-style menubar menus
+        }
+    }
+}
+
+
+function hdrHideAllDropDownMenus()
+{
+    hideAllMenus();   // hides jsdomenu-style menus
+    $("#nbnBreadcrumbsDropDownMenu").hide();//.css("display","none");
+}
+
+
+function hdrIsSafari_1_3_2()
+{	/* NOTE: this idenfies very old versions of Safari */
+    return navigator.userAgent.indexOf("Safari/312") >= 0;
+}
+
+
+function hdrCancelEventBubbling(pEvent)
+{
+    if (typeof pEvent.stopPropagation != "undefined")
+    {
+        pEvent.stopPropagation();
+    }
+
+    if (typeof pEvent.cancelBubble != "undefined")
+    {
+        pEvent.cancelBubble = true;
+    }
+}
+
+function customScrollPaneMove(id,spd)
+{
+    var obj=document.getElementById(id);
+    var max=-obj.offsetHeight+obj.parentNode.offsetHeight;
+    var top=parseInt(obj.style.top,10);
+
+    if ((spd>0&&top<=0)||(spd<0&&top>=max))
+    {
+        obj.style.top=top+spd+"px";
+        customScrollPaneMove.to=setTimeout(function(){ customScrollPaneMove(id,spd); },20);
+    }
+    else
+    {
+        obj.style.top=(spd>0?0:max)+"px";
+    }
+}
+
+function hdrLaunchDvbGoToLink(pDocEntid, pLinkHref, pLinkInternalImported, pViewLinkInNewWindow)
+{
+    // If NOT called from group home, make call using a doc view reference
+    if (window.ghPinnedDocsToLoad == undefined)
+    {
+        docViewBody.dvbGoToLink(pLinkHref, pLinkInternalImported, pViewLinkInNewWindow);
+    }
+
+    // If called from group home, make call using pinned doc reference
+    else
+    {
+        window.frames["iFrame_edlElement_" + pDocEntid + "_document"].dvbGoToLink(pLinkHref, pLinkInternalImported,
+                pViewLinkInNewWindow);
+    }
+}
+function hdrFocus(el){
+	// This is a placeholder for future implementation of EDL-7763
+    if (el != null && typeof el.focus != "undefined")
+    {
+        el.focus();
+    }
+}
+function appendToFunction(func, str)
+{
+    var nfs = "";
+    if (func != null){
+        var ofs = func.toString();
+        var fcb = ofs.indexOf("{");
+        var lcb = ofs.indexOf("}",fcb+1);
+        var oss = ofs.substring(fcb + 1, lcb);
+        nfs = hdrStripLeadingSemicolons(oss);
+    }
+    var s = hdrStripLeadingSemicolons(nfs + ";" + str);
+    var f = new Function(s);
+    return f;
+}
+function appendToFunctionPutNewJSFirst(func, str)
+{
+    var nfs = "";
+    if (func != null){
+        var ofs = func.toString();
+        var fcb = ofs.indexOf("{");
+        var lcb = ofs.indexOf("}",fcb+1);
+        var oss = ofs.substring(fcb + 1, lcb);
+        nfs = hdrStripLeadingSemicolons(oss);
+    }
+    var s = hdrStripLeadingSemicolons(str + ";" + nfs);//NOTE: order is intentionally swapped
+    var f = new Function(s);
+    return f;
+}
+function hdrStripLeadingSemicolons(s){
+	while (s.substr(0,1) == ';' && s.length>1) {
+    	s = s.substr(1);// REMOVE LEADING SEMICOLONS
+    }
+	return s;
+}
+
+
+function hdrTinyMCECommandHandler(editor_id, elm, command, user_interface, value) {
+        var linkElm, imageElm, inst;
+
+    var editor = tinyMCE.get(editor_id);
+
+    /* NOTE: Big lesson here: always use Tiny MCE's dom.setStyle function vs. jQuery or elm.style.color.  This
+        is because their special attribute "_mce_style" comes into play.
+     */
+
+        switch (command)
+        {
+            case "ForeColor":
+                hdrTinyMCESetLinkStyle(elm, editor, "color", value);
+                break;
+            case "FontSize":
+                hdrTinyMCESetLinkStyle(elm, editor, "font-size", value);
+                break;
+            case "FontName":
+                hdrTinyMCESetLinkStyle(elm, editor, "font-family", value);
+                break;
+            case "Bold":
+                var setBoldOn = !$("#" + editor_id + "_bold").hasClass("mceButtonActive");
+                hdrTinyMCESetLinkStyle(elm, editor, "font-weight", (setBoldOn ? "bold" : "normal") );
+                break;
+            case "Italic":
+                var setItalicOn = !$("#" + editor_id + "_italic").hasClass("mceButtonActive");
+                hdrTinyMCESetLinkStyle(elm, editor, "font-style", (setItalicOn ? "italic" : "normal") );
+                break;
+        }
+
+        return false; // Pass to next handler in chain
+}
+
+
+function hdrTinyMCESetLinkStyle(pElm, pEditor, pCssPropName, pCssValue)
+{
+    if (pElm.nodeName == "A")
+    {
+        pEditor.dom.setStyle(pElm, pCssPropName, pCssValue);
+    }
+    else
+    {
+        /*
+        Process the anchors within the selected content.  There was no simple method of reliably grabbing anchors
+        within the selection.  They needed to be grabbed in such a way that we had DOM element handles to them.
+        Therefore, the approach below was used.
+
+        Step 1. Build contentAnchors array -- one array element per anchor, value is true/false whether anchor is in selection
+        Step 2. Build domAnchors array -- dom elements
+
+        Indexes of both arrays should match up.
+         */
+
+        var fullContent = pEditor.getContent();
+        var selectionContent = pEditor.selection.getContent();
+        var selStart = fullContent.indexOf(selectionContent);
+        var selEnd = selStart + selectionContent.length;
+        var contentAnchors = new Array();
+        var done = false;
+        var nextSearchPos = 0;
+
+        while (!done)
+        {
+            var anchorStart = fullContent.indexOf("<a ", nextSearchPos);
+
+            if (anchorStart < 0)
+            {
+                done = true;
+            }
+            else
+            {
+                var anchorEnd = fullContent.indexOf("</a>", anchorStart + 3);
+                nextSearchPos = Math.max(anchorStart + 3, anchorEnd + 4);
+
+                // Track whether anchor is within selection
+                contentAnchors[contentAnchors.length] = anchorStart >= selStart && anchorEnd <= selEnd;
+            }
+        }
+
+        // The relative orders/positions of contentAnchors array indexes and dom.select("a") items below should match up
+
+        // var domAnchors = tinymce.grep(inst.dom.select("a"), function(n) {return inst.dom.getAttrib(n, 'href') == '#mce_temp_url#';});
+        var domAnchors = pEditor.dom.select("a");
+
+        for (var i = 0; i < domAnchors.length; i++)
+        {
+            // Only process anchors found within the selection
+            if (contentAnchors[i])
+            {
+                pEditor.dom.setStyle(domAnchors[i], pCssPropName, pCssValue);
+            }
+        }
+    }
+}
+
+function hdrIsIE11()
+{
+    return (navigator.appName == 'Netscape') && (new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) != null);
+}
+
+function hdrIsFlashAvailable()
+{
+    var hasFlash = false;
+    try {
+        var fo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+        if (fo) {
+            hasFlash = true;
+        }
+    } catch (e) {
+        if (navigator.mimeTypes
+            && navigator.mimeTypes['application/x-shockwave-flash'] != undefined
+            && navigator.mimeTypes['application/x-shockwave-flash'].enabledPlugin) {
+            hasFlash = true;
+        }
+    }
+
+    return hasFlash;
+}
+
+function hdrFixNavAccessibility()
+{
+    function visitNavLink(scope)
+    {
+        var href = $(scope).find('a').prop('href');
+        var newWindow = ($(scope).find('a').prop('target') == "_blank");
+
+        if (newWindow)
+            window.open(href);
+        else
+            window.location.href=href;
+
+        return;
+    }
+
+    function openSubmenu(parentItem)
+    {
+        var menuName = getSubmenuName(parentItem);
+
+        if (typeof(menuName) != "undefined")
+        {
+            $(parentItem).trigger('mouseover');
+            getSubmenuElm(parentItem).find('.voice').each(function(index, elm) {
+                var arialabel = $(elm).find('a').text();
+                var hasPopup = "false";
+                if (typeof(getSubmenuName(elm)) != "undefined")
+                    hasPopup = "true";
+                $(elm).prop('tabindex', "0").attr('aria-label', arialabel).attr('role', "link").attr('aria-haspopup', hasPopup).attr('role', 'menuitem');
+                if (index == 0) { $(elm).focus(); }
+            });
+        }
+
+        return false;
+    }
+
+    function closeSubmenu(parentItem)
+    {
+        if ($(parentItem).hasClass('rootVoice'))
+            $(parentItem).trigger('mouseout');
+
+        $(parentItem).focus();
+
+        return false;
+    }
+
+    function getSubmenuName(parentItem)
+    {
+        var menuName;
+
+        if ( $(parentItem).hasClass('rootVoice') )
+            menuName = $(parentItem).attr('menu');
+        else
+            menuName = $(parentItem).find('a').attr('menu');
+
+        return menuName;
+    }
+
+    function getSubmenuElm(parentItem)
+    {
+        return $("#mb_" + getSubmenuName(parentItem));
+    }
+
+    $('.rootVoice').bind('keyup', function(e) {
+        var isVertical = $(this).closest('table').parent().attr('id') == 'globalSideNavMenu' ||
+            $(this).closest('table').parent().attr('id') == 'localSideNavMenu';
+        var rootScope = this;
+        var code = e.keyCode || e.which;
+        // first level
+        if (isVertical) {
+            switch (code) {
+                case 32: //spacebar
+                case 13: //enter
+                    visitNavLink(rootScope);
+                    break;
+                case 38: //up
+                    getPreviousItemOnFirstLevel(this, isVertical).focus();
+                    break;
+                case 40: //down
+                    getNextItemOnFirstLevel(this, isVertical).focus();
+                    break;
+                case 39: //right
+                    attachKeyEventListenersToMenuItem(rootScope, isVertical);
+                    break;
+                default:
+                    return;
+            }
+        } else {
+            switch (code) {
+                case 32: //spacebar
+                case 13: //enter
+                    visitNavLink(rootScope);
+                    break;
+                case 37: //left
+                    getPreviousItemOnFirstLevel(this, isVertical).focus();
+                    break;
+                case 39: //right
+                    getNextItemOnFirstLevel(this, isVertical).focus();
+                    break;
+                case 40: //down
+                    attachKeyEventListenersToMenuItem(rootScope, isVertical);
+                    break;
+                default:
+                    return;
+            }
+        }
+        e.preventDefault();
+    });
+
+    $('.edlBoxListItem').bind('keydown', function(e)
+    {
+        var code = e.keyCode || e.which;
+        if (code == 13)
+            visitNavLink($(this).find('td').last());
+        else
+            return;
+
+        e.preventDefault();
+    });
+
+    function attachKeyEventListenersToMenuItem(rootScope, isVertical) {
+        openSubmenu(rootScope);
+        getSubmenuElm(rootScope).find('.voice').bind('keyup', function(e) {
+            var secondScope = this;
+            var code = e.keyCode || e.which;
+            // second level
+            switch (code) {
+                case 32: //spacebar
+                case 13: //enter
+                    visitNavLink(secondScope);
+                    break;
+                case 38: //up
+                    getPreviousItemOnNextLevel(secondScope).focus();
+                    break;
+                case 40: //down
+                    getNextItemOnNextLevel(secondScope).focus();
+                    break;
+                case 27: //esc
+                    closeSubmenu(rootScope);
+                    break;
+                case 37: //left
+                    closeSubmenu(rootScope);
+                    if (!isVertical) {
+                        openSubmenu(getPreviousItemOnFirstLevel(rootScope, isVertical));
+                        getPreviousItemOnFirstLevel(rootScope, isVertical).focus();
+                        getSubmenuElm(getPreviousItemOnFirstLevel(rootScope, isVertical)).find('td.voice').focus();
+                        attachKeyEventListenersToMenuItem(getPreviousItemOnFirstLevel(rootScope, isVertical)[0], isVertical);
+                    }
+                    break;
+                case 39: //right
+                    if (typeof(getSubmenuName(secondScope)) == "undefined") {
+                        closeSubmenu(rootScope);
+                        openSubmenu(getNextItemOnFirstLevel(rootScope));
+                        getNextItemOnFirstLevel(rootScope).focus();
+                        getSubmenuElm(getNextItemOnFirstLevel(rootScope)).find('td.voice').focus();
+                        attachKeyEventListenersToMenuItem(getNextItemOnFirstLevel(rootScope)[0], isVertical);
+                        break;
+                    } else {
+                        openSubmenu(secondScope);
+                        getSubmenuElm(secondScope).find('.voice').bind('keyup', function(e) {
+                            var thirdScope = this;
+                            var code = e.keyCode || e.which;
+                            // third level
+                            switch (code) {
+                                case 32: //spacebar
+                                case 13: //enter
+                                    visitNavLink(thirdScope);
+                                    break;
+                                case 38: //up
+                                    getPreviousItemOnNextLevel(thirdScope).focus();
+                                    break;
+                                case 40: //down
+                                    getNextItemOnNextLevel(thirdScope).focus();
+                                    break;
+                                case 27: //esc
+                                case 37: //left
+                                    $(getSubmenuElm(secondScope)).remove();
+                                    $(secondScope).focus();
+                                    break;
+                                case 39: //right
+                                    if (!isVertical) {
+                                        closeSubmenu(rootScope);
+                                        openSubmenu($(rootScope).next().next());
+                                        getSubmenuElm($(rootScope).next().next()[0]).find('td.voice').first().focus();
+                                        attachKeyEventListenersToMenuItem($(rootScope).next().next()[0], isVertical);
+                                    }
+                                    break;
+                                default:
+                                    return;
+                            }
+                            e.preventDefault();
+                        });
+                    }
+                    break;
+                default:
+                    return;
+            }
+            e.preventDefault();
+        });
+    }
+
+    function getPreviousItemOnFirstLevel(rootScope, isVertical) {
+        if (isVertical) {
+            if ($(rootScope).parent().prevAll().find(".rootVoice").length == 0) {
+                return $(rootScope).parent().parent().children().find(".rootVoice").last();
+            } else {
+                return $(rootScope).parent().prevAll().find(".rootVoice").last();
+            }
+        } else {
+            if ($(rootScope).prevAll(".rootVoice").length == 0) {
+                return $(rootScope).parent().children(".rootVoice").last();
+            } else {
+                return $(rootScope).prevAll(".rootVoice").first();
+            }
+        }
+    }
+
+    function getNextItemOnFirstLevel(rootScope, isVertical) {
+        if (isVertical) {
+            if ($(rootScope).parent().nextAll().find(".rootVoice").length == 0) {
+                return $(rootScope).parent().parent().children().find(".rootVoice").first();
+            } else {
+                return $(rootScope).parent().nextAll().find(".rootVoice").first();
+            }
+        } else {
+            if ($(rootScope).nextAll(".rootVoice").length == 0) {
+                return $(rootScope).parent().children(".rootVoice").first();
+            } else {
+                return $(rootScope).nextAll(".rootVoice").first();
+            }
+        }
+    }
+
+    function getNextItemOnNextLevel(secondAndThirdScope) {
+        if ($(secondAndThirdScope).closest('table').next().length == 0) {
+            return $(secondAndThirdScope).closest('table').parent().children().first().find('td:nth-child(2)');
+        } else {
+            return $(secondAndThirdScope).closest('table').next().find('td:nth-child(2)');
+        }
+    }
+
+    function getPreviousItemOnNextLevel(secondAndThirdScope) {
+        if ($(secondAndThirdScope).closest('table').prev().length == 0) {
+            return $(secondAndThirdScope).closest('table').parent().children().last().find('td:nth-child(2)');
+        } else {
+            return $(secondAndThirdScope).closest('table').prev().find('td:nth-child(2)');
+        }
+    }
+
+    return;
+}
+
+// simulates a click if the user presses enter on a focused link.
+function hdrFixAnchorAccessibility()
+{
+    function visitLink(anchor)
+    {
+        var href = $(anchor).prop('href');
+        var newWindow = ($(anchor).prop('target') == "_blank");
+
+        if (newWindow)
+            window.open(href);
+        else
+            window.location.href=href;
+
+        return;
+    }
+
+    $('a').bind('keypress', function(e) {
+        var code = e.keyCode || e.which;
+        switch (code) {
+            case 13:
+                visitLink(this);
+                break;
+            default:
+                return;
+        }
+        e.preventDefault();
+    });
+}

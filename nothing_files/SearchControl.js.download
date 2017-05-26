@@ -1,0 +1,135 @@
+var searchCtlr = {
+    searchForm: null,
+    tokenInput: null,
+    urlHidden: null,
+    init: function() {
+        this.searchForm = document.forms["hcSearchForm"];
+        if ( this.searchForm == null )
+            return;
+        this.tokenInput = this.searchForm.token;
+        this.tokenInput.maxLength = 100;
+        this.urlHidden = this.searchForm.urlCur;
+        this.urlHidden.value = document.URL;
+
+ //       if(!$.browser.msie)
+        {
+            $('#search-modal-blank').focus(function(){
+                setTimeout(function(){
+                       $('#token').focus();
+                }, 100);
+            });
+        }
+
+    },
+    submitOnEnter: function(field, e) {
+        var keycode;
+        if (window.event)
+            keycode = window.event.keyCode;
+        else if (e)
+            keycode = e.which;
+        else
+            return true;
+
+        if (keycode == 13) {
+            if ( searchCtlr.checkPost() ) {
+                this.searchForm.submit();
+                return false;
+            }
+        }
+        return true;
+    },
+    checkPost: function()    {
+        var tokenSanitized = jQuery.trim(this.tokenInput.value).replace(/<(?:.|\n)*?>/gm, '');
+        var isQuoted = tokenSanitized.search(/[\"]/) > -1;
+        if (isQuoted == true) {
+            tokenSanitized = tokenSanitized.replace(/[\"]/g, "");
+        }
+        var tokens = tokenSanitized.split(" ");
+        var common_words = ["a","an","are","as","at","be","but","by","for","if","in","into","is","it","no","not","of","or","on","s","such","t","that","the","their","then","there","these","they","this","to","was","will","with"];
+        var errors = "";
+        var tokensOut = "";
+
+        function containsSpecialOperators(isQuoted, tokenSanitized)
+        {
+            return (isQuoted == false) && (tokenSanitized.indexOf("AND") == -1);
+        }
+
+        if(containsSpecialOperators(isQuoted, tokenSanitized))   //Do not clean strings with special operators. Like quoted strings and strings containing AND operator.
+        {
+            for (var i=0; i<tokens.length; i++ )
+            {
+                token = tokens[i].toLowerCase();
+
+                if(token == "AND")
+                {
+                    //Discard and token at the beginning or the end.
+                    token = (i!=0 || i!=tokens.length)?"AND":"";
+                }
+
+                // Check for too broad
+                if (token == "*" || (token.length < 3) || (token.length <= 3 && token.indexOf("*") > -1))
+                {
+                    if (errors.length == 0)
+                    {
+                        errors = "The search term is too broad. Please try again.";
+                    }
+                    token = "";
+                }
+                else if ("+-&|!(){}<>[]^~*?:".indexOf(token.charAt(0)) > -1)
+                {
+                    if (errors.length == 0)
+                    {
+                        errors = "The search term cannot start with '" + token.charAt(0) + "'. Please try again.";
+                    }
+                    token = "";
+                }
+                else if ( token.length >= 100 )
+                {
+                    token = token.substr(0, 100);
+                }
+                else
+                {
+                    // check for common words
+                    for (var j=0; j<common_words.length; j++)
+                    {
+                        if (token == common_words[j])
+                        {
+                            if (errors.length == 0)
+                            {
+                                errors = "Too common of word. Please try again with a more specific query.";
+                            }
+                            token = "";
+                        }
+                    }
+                }
+
+                if (token.length > 0 )
+                {
+                    tokensOut += token + " ";
+                }
+            }
+        }
+        else
+        {
+            tokensOut = tokenSanitized;
+        }
+
+        tokensOut = jQuery.trim(tokensOut);
+        if (isQuoted == true) {
+            tokensOut = "\"" + tokensOut + "\"";
+        }
+
+        if (tokensOut.length == 0) {
+            if (errors.length > 0) {
+                $('#search-modal-error').html("<p id='search-modal-error-text'>Error: " + errors + "</p>");
+                $('#search-modal-blank').focus();
+            }
+            return false;
+        }
+        this.tokenInput.value = tokensOut;
+        return true;
+    }
+};
+$(document).ready( function() {
+    searchCtlr.init();
+});

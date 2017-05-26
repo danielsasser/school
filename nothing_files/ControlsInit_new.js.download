@@ -1,0 +1,254 @@
+var ciBtnDown = 0;
+
+
+//the main controls init function
+function ciInitControls(){
+
+    // S Swett 1/14/11: The following seems unnecessary because no HTML elements with class docSummary appear to exist
+    /*
+	$('.docSummary').mouseenter(function(){
+        $('.summaryHelp').show(1);
+    });
+    */
+
+    // S Swett 1/14/11: The following seems unnecessary because no HTML elements with class miniCal appear to exist
+    /*
+    var miniCalQuery = $('.miniCal');
+
+    miniCalQuery.click(function(){
+        miniCalQuery.find('.datePicker').show(1);
+    });
+    */
+
+
+    if ($.browser.msie)
+    {
+        setTimeout(function() { ciPreloadImages(); }, 0);   // Queue/delay this to run after the current event finishes
+    }
+    else
+    {
+        ciPreloadImages();
+    }
+
+	$('div.ed-formArea').each(function(){
+		$(this).find('div.ed-toggleFormBtn')
+		.bind('click keypress', function(e){
+                //mouse click and keyboard (Enter Key, Space Bar) responses
+                if (e.type != "keypress" || (e.which == 13 || e.which== 32))
+                {
+                    toggleExpandCollapseOnPageSection($(this));
+                }
+		})
+		.end();
+        $(this).find('div.ed-toTopFormBtn')
+        .bind('click keypress', function(e){
+                //mouse click and keyboard (Enter Key, Space Bar) responses
+                if (e.type != "keypress" || (e.which == 13 || e.which== 32))
+                {
+                    window.scrollTo(0,0);
+
+                    if ($('div[role="main"]').length > 0)
+                    {
+                        $('div[role="main"]').first().find('h1').focus();
+                    }
+                }
+		})
+        .end();
+
+	});
+
+}
+
+function toggleExpandCollapseOnPageSection(target)
+{
+    var btnParent = $(target).parent();
+    var btnGrandparent = btnParent.parent();
+    var formArea = btnGrandparent.parent();
+
+    //Not how we'd like it to be done, but checking for IE version
+    var browserMajorVer = $.browser.version.substr(0, $.browser.version.indexOf("."));
+    if ($.browser.msie && browserMajorVer < 8) {
+        btnGrandparent.siblings('div.ed-formBtm').toggle();
+        btnGrandparent.siblings('div.ed-formContent').toggle();
+    } else {
+        btnGrandparent.siblings('div.ed-formBtm').slideToggle('fast');
+        btnGrandparent.siblings('div.ed-formContent').slideToggle('fast');
+    }
+    if (formArea.hasClass('ed-resModifySection'))
+    {
+        var sectionId = formArea.attr('id');
+
+        if (sectionId != null && sectionId.length > 0)
+        {
+
+            expSpecMap[sectionId] = formArea.hasClass('collapsed') ? 'expanded' : 'collapsed';
+
+            setCookie('expSpecMap', encodeSimpleStringMap(expSpecMap));
+        }
+    }
+
+    formArea.toggleClass('collapsed');
+
+    formArea.attr("aria-expanded", !formArea.hasClass('collapsed'));
+
+    $(target).toggleClass('collapsed');
+}
+
+
+function ciPreloadImages()
+{
+    // Preload images for the "sleek" buttons
+
+	// Preload the base images
+	iuPreloadImages("/images/sleek/", "bg-btnD36-left.png,bg-btnD36.png,bg-btnD36-right.png");
+	iuPreloadImages("/images/sleek/", "bg-btnD30-left.png,bg-btnD30.png,bg-btnD30-right.png");
+	iuPreloadImages("/images/sleek/", "bg-btnM36-left.png,bg-btnM36.png,bg-btnM36-right.png");
+	iuPreloadImages("/images/sleek/", "bg-btnM30-left.png,bg-btnM30.png,bg-btnM30-right.png");
+	iuPreloadImages("/images/sleek/", "bg-btnM22-left.png,bg-btnM22.png,bg-btnM22-right.png");
+
+	// Preload the hover images
+	iuPreloadImages("/images/sleek/", "bg-btnD36-leftHoverBlue.png,bg-btnD36-hoverBlue.png,bg-btnD36-rightHoverBlue.png");
+	iuPreloadImages("/images/sleek/", "bg-btnD30-leftHoverBlue.png,bg-btnD30-hoverBlue.png,bg-btnD30-rightHoverBlue.png");
+	iuPreloadImages("/images/sleek/", "bg-btnM36-leftHoverBlue.png,bg-btnM36-hoverBlue.png,bg-btnM36-rightHoverBlue.png");
+	iuPreloadImages("/images/sleek/", "bg-btnM30-leftHoverBlue.png,bg-btnM30-hoverBlue.png,bg-btnM30-rightHoverBlue.png");
+	iuPreloadImages("/images/sleek/", "bg-btnM22-leftHoverBlue.png,bg-btnM22-hoverBlue.png,bg-btnM22-rightHoverBlue.png");
+
+	// Preload the depressed images
+	iuPreloadImages("/images/sleek/", "bg-btnD36-leftOn.png,bg-btnD36-on.png,bg-btnD36-rightOn.png");
+	iuPreloadImages("/images/sleek/", "bg-btnD30-leftOn.png,bg-btnD30-on.png,bg-btnD30-rightOn.png");
+	iuPreloadImages("/images/sleek/", "bg-btnM36-leftOn.png,bg-btnM36-on.png,bg-btnM36-rightOn.png");
+	iuPreloadImages("/images/sleek/", "bg-btnM30-leftOn.png,bg-btnM30-on.png,bg-btnM30-rightOn.png");
+	iuPreloadImages("/images/sleek/", "bg-btnM22-leftOn.png,bg-btnM22-on.png,bg-btnM22-rightOn.png");
+
+    // Preload MenuBar Images
+//    iuPreloadImages("/images/menubar/", "bg-dropdown-100.png,bg-dropdown2Col-100.png");
+//    iuPreloadImages("/images/menubar/", "bg-dropdown-200.png,bg-dropdown2Col-200.png");
+//    iuPreloadImages("/images/menubar/", "bg-dropdown-300.png,bg-dropdown2Col-300.png");
+//    iuPreloadImages("/images/menubar/", "bg-dropdown-400.png,bg-dropdown2Col-400.png");
+//    iuPreloadImages("/images/menubar/", "bg-dropdown-500.png,bg-dropdown2Col-500.png");
+//    iuPreloadImages("/images/menubar/", "bg-dropdown-600.png,bg-dropdown2Col-600.png");
+//    iuPreloadImages("/images/menubar/", "bg-dropdown-700.png,bg-dropdown2Col-700.png");
+//    iuPreloadImages("/images/menubar/", "bg-dropdown-800.png,bg-dropdown2Col-800.png");
+//    iuPreloadImages("/images/menubar/", "bg-dropdown-BGall.png,bg-dropdown2Col-BGall.png");
+
+}
+
+
+//assign behavior to the ed-buttons
+function ciAssignBehavior(btn){
+
+    var btnJquery = $(btn);
+
+    btnJquery.mouseenter(function(){
+        //add hover class
+		var hoverEle = $(this).children('span');
+        hoverEle.addClass("hovered");
+
+		//alert(behavEle);
+
+        $(this).mousedown(function(){
+
+            ciBtnDown = 1;
+
+            //remove hover class and add depressed class
+            hoverEle.removeClass("hovered");
+            hoverEle.addClass("depressed");
+
+            $(this).mouseleave(function(){
+                //remove the depressed class
+                hoverEle.removeClass("depressed");
+
+                $(this).mouseenter(function(){
+                    //add it back
+                    if(ciBtnDown == 1){
+                        hoverEle.addClass("depressed");
+                    }
+                });
+            });
+        });
+    });
+
+    //mouse leave behavior
+    btnJquery.mouseleave(function(){
+        $(this).children('span').removeClass("hovered");
+    });
+
+    //mouse up behavior
+    btnJquery.mouseup(function(){
+        ciBtnDown = 0;
+        $(this).children('span').removeClass("depressed");
+    });
+
+}
+
+
+//hover and depressed behavior for the icon-like form header buttons
+function ciAssignIconBehavior(btn)
+{
+    var btnJquery = $(btn);
+
+    btnJquery.mouseenter(function(){
+        //add hover class
+        $(this).addClass("hovered").mousedown(function(){
+
+            ciBtnDown = 1;
+
+            //remove hover class and add depressed class
+            $(this).removeClass("hovered").addClass("depressed").mouseleave(function(){
+                //remove the depressed class
+                $(this).removeClass("depressed").mouseenter(function(){
+                    //add it back
+                    if(ciBtnDown == 1){
+                        $(this).addClass("depressed");
+                    }
+                });
+            });
+        });
+    });
+
+    //mouse leave behavior
+    btnJquery.mouseleave(function(){
+        $(this).removeClass("hovered");
+    });
+
+    //mouse up behavior
+    btnJquery.mouseup(function(){
+        ciBtnDown = 0;
+        $(this).removeClass("depressed");
+    });
+
+}
+
+
+function ciOnDocumentReady()
+{
+    ciBtnDown = 0;
+
+    ciInitControls();
+
+    //register button states for all the button types
+    ciAssignBehavior('div.ed-button');
+
+    ciAssignIconBehavior('div.ed-toggleFormBtn');
+    ciAssignIconBehavior('div.ed-toTopFormBtn');
+    ciAssignIconBehavior('div.ed-doneFormBtn');
+    ciAssignIconBehavior('div.ed-jumpToSectionBtn');
+    ciAssignIconBehavior('div.ed-cancelFormBtn');
+    
+    //register button states for all the accessible button types
+    ciAssignBehavior('button.ed-button');
+
+    ciAssignIconBehavior('button.ed-toggleFormBtn');
+    ciAssignIconBehavior('button.ed-toTopFormBtn');
+    ciAssignIconBehavior('button.ed-doneFormBtn');
+    ciAssignIconBehavior('button.ed-jumpToSectionBtn');
+    ciAssignIconBehavior('button.ed-cancelFormBtn');
+}
+
+
+//We can only execute this document.ready() block if jQuery has actually been loaded
+if(typeof jQuery != 'undefined') {
+    $(function(){
+        ciOnDocumentReady();
+    });
+}

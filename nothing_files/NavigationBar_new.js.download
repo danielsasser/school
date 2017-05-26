@@ -1,0 +1,1285 @@
+var nbnIsRequestSuccessful = false;
+var nbnCalledFromResourceList = false;
+var nbnMouseEnterLeaveTrackingAdded = false;
+// var nbnResCount = 0;
+var nbnCachedResourcesXML = new Array();
+var nbnDataForMoreAndEditItems = new Array();
+// var nbnCachedResourceCount = new Array();
+var nbnToolTipsBuilt = new Array();
+var nbnGaveTimeoutWarning = false;
+var nbnClientAjaxParms = new Array();
+var nbnVerticalSpaceRequiredPerItem;
+var nbnItemNamesList = "";
+var nbnUniqueItemNamesSuffix = 0;
+var nbnAnchorLinkTimesProcessed = 0;
+var NBN_VERTICAL_SPACE_INITIAL_VALUE = 36;
+var NBN_VERTICAL_SPACE_RETRY_INCREMENT = 20;
+var NBN_VERTICAL_SPACE_LIMIT = 90;
+var NBN_TRIMMED_RESOURCES_TYPE = "deleted";
+var isMSIE9Higher = navigator.userAgent.indexOf ('MSIE 9') != -1 || navigator.userAgent.indexOf ('MSIE 1') != -1;
+
+
+function nbnNavigationBarOnload(pCalledFromResourceList)
+{
+    nbnCalledFromResourceList = pCalledFromResourceList;
+
+    if (isAjaxSupported() != "yes")
+    {
+        var breadcrumbElem = document.getElementById('ed-navBar');
+        if (  (breadcrumbElem != null) && (breadcrumbElem != undefined)  )
+        {
+            breadcrumbElem.style.display = "none";
+        }
+        return;
+    }
+
+    nbnCreateMenuShell();
+
+    // Add nbKeyPressHandler to potentially hide menus when Esc is pressed
+    var func = "nbnKeyPressHandler(event);";
+ // TODO update to use JQuery method!
+	//if(window.addEventListener) {
+	//	var f = new Function(func);
+	//	pageBody.addEventListener("keypress", f, false );
+	//} else {
+	    if (pageBody.attachEvent != undefined)   // attachEvent is an IE method
+	    {
+	        pageBody.onkeypress = appendToFunction(pageBody.onkeypress, func);
+	    }
+	    else
+	    {
+	        addHtmlAttribute(pageBody, "onkeypress", func);
+	    }
+    //}
+
+    var homeQuery = $("#home");
+
+    if (hdrIsSafari_1_3_2())
+    {
+        // Assign mouse over and onclick actions to breadcrumb links and Home button:
+        var elemList = document.getElementsByTagName("*");
+        for (var li = 0; li < elemList.length; li++)
+        {
+        	var obj = elemList[li];
+            if (obj.className == "breadcrumbLink" || obj.id == "home")
+            {
+                addHtmlAttribute(obj, "onmouseover", "nbnBreadcrumbOver(event);");
+                addHtmlAttribute(obj, "onclick", "navLinkClicked = true;");
+            }
+        }
+
+        // Assign body onclick event to close all menus on mouse click:
+        addHtmlAttribute(pageBody, "onclick", "nbnPotentiallyHideAllMenus();");
+    }
+    else
+    {
+        homeQuery.bind("click", function(){
+            navLinkClicked = true;
+        });
+
+        var breadcrumbItemQuery = $("div.ed-breadCrumbItem");
+
+        breadcrumbItemQuery.mouseenter(function(){
+            var breadcrumbLinkId = $(this).find("a.breadcrumbLink").attr("id");
+
+            if (breadcrumbLinkId)
+            {
+            	var b = jQuery.fn.hoverIntent;
+            	if(b){
+	                $("#" + breadcrumbLinkId).hoverIntent({
+	                    sensitivity: 1,
+	                    interval: nbBreadcrumbStripDropDownMenuFetchDelayMs,
+	                    over: function() { nbnBreadcrumbOver(breadcrumbLinkId, this, false); } ,
+	                    timeout: (nbBreadcrumbStripDropDownMenuFetchDelayMs + 10),
+	                    out: nbnBreadcrumbOut } );
+            	} else {
+
+	                $("#" + breadcrumbLinkId).hover({
+	                    sensitivity: 1,
+	                    interval: nbBreadcrumbStripDropDownMenuFetchDelayMs,
+	                    over: function() { nbnBreadcrumbOver(breadcrumbLinkId, this, false); } ,
+	                    timeout: (nbBreadcrumbStripDropDownMenuFetchDelayMs + 10),
+	                    out: nbnBreadcrumbOut } );
+            	}
+
+                // nbnBreadcrumbOver(breadcrumbLinkId, this, false);
+                hdrSetMouseEnteredMenu();   // Should keep breadcrumb item drop-down menu from disappearing right away
+            }
+        });
+
+        // Assign click action to breadcrumb links to flag that a link has been clicked.  Search for "navLinkClicked".
+        $("a.breadcrumbLink").bind("click", function(){
+            navLinkClicked = true;
+        });
+
+        // This makes it so clicking the container of the breadcrumb link, <a>, behaves as if the link itself was clicked
+        breadcrumbItemQuery.bind("click", function(){
+            var breadcrumbLinkHref = $(this).find("a.breadcrumbLink").attr("href");
+
+            if (breadcrumbLinkHref)
+            {
+                navLinkClicked = true;
+                window.location = breadcrumbLinkHref;
+            }
+        });
+
+
+        // Assign body onclick event to close all menus on mouse click:
+        $("body").bind("click", function(){
+            nbnPotentiallyHideAllMenus();
+        });
+    }
+
+    // for the hover state of the breadcrumb strip buttons
+    var bcButtonQuery = $("div.ed-bcButton");
+
+    bcButtonQuery.mouseenter(function(){
+        var breadcrumbLinkId = $(this).find("a.breadcrumbLink").attr("id");
+
+        if (breadcrumbLinkId)
+        {
+            $(this).addClass('hover');
+        }
+    });
+
+    bcButtonQuery.mouseleave(function(){
+        $(this).removeClass('hover');
+    });
+
+    var bcDropDownQuery = $("div.ed-bcDropDown");
+
+    // for the "on" state of the breadcrumb strip buttons
+    bcDropDownQuery.mouseenter(function(){
+        $("#bcb" + this.id.substring(1)).addClass('onState');
+    });
+
+    bcDropDownQuery.mouseleave(function(){
+        $("#bcb" + this.id.substring(1)).removeClass('onState'); 
+    });
+
+    // Preload the cache for the Home link
+    /*
+    if (homeQuery.length)
+    {
+        nbnBreadcrumbOver("home", document.getElementById("home"), true);
+    }
+    */
+
+    // New preload technique:
+    nbnPreloadCacheFromHiddenServerSideData();
+
+    timeOfPageLoad = new Date();
+}
+
+
+function nbnHandleMouseEnterHomeMenuItem(pHomeMenuItemElem)
+{
+    nbnBreadcrumbOver(pHomeMenuItemElem.id, pHomeMenuItemElem, false);
+    hdrSetMouseEnteredMenu();   // Should keep Home menu drop-down from disappearing right away
+}
+
+
+function nbnPreloadCacheFromHiddenServerSideData()
+{
+    $("iframe.nbHiddenResources").each(
+            function()
+            {
+                var iframe = window.frames[this.id];
+                var ieXmlDataIsland = iframe.document.getElementById('ieXmlDataIsland');
+
+                if (ieXmlDataIsland)
+                {
+                    var xmlDoc = ieXmlDataIsland.XMLDocument;   // most probable for IE
+                }
+                else if (iframe.contentDocument)
+                {
+                    xmlDoc = iframe.contentDocument;   // most probable for other browsers
+                }
+                else if (iframe.document.XMLDocument)
+                {
+                    xmlDoc = iframe.document.XMLDocument;
+                }
+                else
+                {
+                    xmlDoc = iframe.document;
+                }
+
+                var resourcesElem = xmlDoc.getElementsByTagName("resources")[0];
+                var entid = resourcesElem.getAttribute("entid");
+                nbnSetDataForMoreItem(resourcesElem, entid);
+
+                // Cache the resources:
+                if (typeof nbnCachedResourcesXML[entid] == "undefined")
+                {
+                    var resources = xmlDoc.getElementsByTagName("resource");
+
+                    // Try to avoid "invalid calling object" issue in IE 9 and above.
+                    if (isMSIE9Higher)
+                    {
+                        nbnCachedResourcesXML[entid] = jQuery.extend(true, {}, resources);   // jQuery deep clone trick
+                    }
+                    else
+                    {
+                        nbnCachedResourcesXML[entid] = resources;
+                    }
+                }
+            }
+
+            );
+}
+
+
+function nbnSetDataForMoreItem(pResourcesElem, pEntid)
+{
+    var data = new Object();
+    data.moreTitle = pResourcesElem.getAttribute("moreTitle");
+    data.moreUrl = pResourcesElem.getAttribute("moreUrl");
+    data.editTitle = pResourcesElem.getAttribute("editTitle");
+    data.editUrl = pResourcesElem.getAttribute("editUrl");
+    nbnDataForMoreAndEditItems[pEntid] = data;
+}
+
+
+function nbnClearCache()
+{
+    nbnCachedResourcesXML = null;
+    // nbnCachedResourceCount = null;
+    nbnCachedResourcesXML = new Array();
+    // nbnCachedResourceCount = new Array();
+}
+
+
+function nbnKeyPressHandler(e)
+{
+  // keyCode 27 is the Esc key
+  if (e.keyCode == '27')
+  {
+    nbnPotentiallyHideAllMenus();
+  }
+
+}
+
+
+function nbnPotentiallyHideAllMenus()
+{
+    if (!overrideMenuHiding)
+    {
+      hdrHideAllDropDownMenus();
+    }
+
+    overrideMenuHiding = false;
+}
+
+
+function nbnGetEntidFromLinkId(pLinkId)
+{
+    var separator = pLinkId.indexOf("--sep--");
+    return pLinkId.substring(1, separator);
+}
+
+
+function nbnGetDescrFromLinkId(pLinkId)
+{
+    var separator = pLinkId.indexOf("--sep--");
+    return pLinkId.substring(separator + 7);
+}
+
+
+function nbnBreadcrumbOver(pLinkId, pContainerElem, pPreloadCacheOnly)
+{
+    var timeNow = new Date();
+
+    // Could have used Ajax request entid for clientParmsKey but a timestamp is more precise
+    var clientParmsKey = timeNow.getTime();
+    var clientParmsEntry = new Object();
+
+    var timeSinceLoad = timeNow - timeOfPageLoad;
+
+    var containerElemQuery = $(pContainerElem);
+
+    var breadcrumbItemDivQuery = containerElemQuery.hasClass("breadcrumbLink") ?
+            containerElemQuery.closest("div.ed-breadCrumbItem") : containerElemQuery;
+
+    var breadcrumbItemDivOffset = breadcrumbItemDivQuery.offset();
+    clientParmsEntry.containerLeftEdge = breadcrumbItemDivOffset.left;
+    var breadcrumbItemDivBottomEdge = breadcrumbItemDivOffset.top + breadcrumbItemDivQuery[0].offsetHeight;
+
+    // In below, "16" was added to deal with new rounded top
+    clientParmsEntry.dropDownTopEdge =
+            ( pLinkId == "home" ? breadcrumbItemDivBottomEdge : breadcrumbItemDivBottomEdge - 1 + 16 ) -
+                    hdrGetHeightOfGoogleTranslateBanner();
+
+    var bcDropDownMenuQuery = $("#nbnBreadcrumbsDropDownMenu");
+
+    if (pLinkId.indexOf("root-") == 0)
+    {
+        hdrHideAllDropDownMenus();
+        pLinkId = pLinkId.substring(5);   // chop off "root-"
+        bcDropDownMenuQuery.removeClass("srcHome srcBreadcrumb").addClass("srcBreadcrumb");
+    }
+    else if (pLinkId.indexOf("home") == 0)
+    {
+        hdrHideAllDropDownMenus();
+        pLinkId = nbHomeLinkId.substring(5);   // chop off "root-"
+        bcDropDownMenuQuery.removeClass("srcHome srcBreadcrumb").addClass("srcHome");
+    }
+
+    if (  (!navLinkClicked) && (timeSinceLoad > 600)  )
+    {
+
+        var entid = nbnGetEntidFromLinkId(pLinkId);
+        // var descr = nbnGetDescrFromLinkId(linkId);
+
+        // May want to use "nbn_" in place of "x" below
+        bcDropDownMenuQuery.children("div").attr("id", "x" + entid);
+
+
+        /* Populate the outermost menu: */
+        var isBreadCrumbDropDown = containerElemQuery.hasClass("ed-breadCrumbItem") ||
+                containerElemQuery.hasClass("breadcrumbLink");
+
+        clientParmsEntry.ajaxCalledFromBreadcrumbOver = true;
+        clientParmsEntry.ajaxCalledFromFolderMenuItemOver = false;
+
+        nbnClientAjaxParms[clientParmsKey] = clientParmsEntry;
+
+        nbnPopulateSubMenuItemsIfNecessary("x" + entid, true, pPreloadCacheOnly, isBreadCrumbDropDown, clientParmsKey);
+    }
+}
+ 
+  
+function nbnBreadcrumbOut()
+{
+}
+
+
+function nbnFolderMenuItemOver(hoveredMenuItemId)
+{
+    var hoveredMenuItemQuery = $("#" + hoveredMenuItemId);
+
+    // For THIS submenu, populate if necessary, then show
+    if (hoveredMenuItemQuery.hasClass("ed-hasSub"))
+    {
+        $("#" + hoveredMenuItemId + "_wrapper a").addClass("bcTrail");
+
+        // Handle situation where no more room on right to pop up a submenu
+
+        var availableHorizontalSpace = $(window).width() -
+                                       ( hoveredMenuItemQuery.parent().offset().left +
+                                         hoveredMenuItemQuery.parent().outerWidth(false) );
+
+        if (availableHorizontalSpace < 200)
+        {
+            if (!nbnToolTipsBuilt[hoveredMenuItemId])
+            {
+                hoveredMenuItemQuery.attr("title", "Click folder name to drill further (shows a separate page)");
+                hoveredMenuItemQuery.tooltip( { position: "bottom center", offset:[0, -65] } );
+                try{
+                	hoveredMenuItemQuery.data("tooltip").show();
+                }catch(e){
+                	//eat it
+                }
+                nbnToolTipsBuilt[hoveredMenuItemId] = true;
+            }
+        }
+        else
+        {
+            // Could have used Ajax request entid for clientParmsKey but a timestamp is more precise
+            var clientParmsKey = new Date().getTime();
+            var clientParmsEntry = new Object();
+
+            clientParmsEntry.ajaxCalledFromBreadcrumbOver = false;
+            clientParmsEntry.ajaxCalledFromFolderMenuItemOver = true;
+            clientParmsEntry.ulSelector = "#" + hoveredMenuItemId + " > ul";
+
+            nbnClientAjaxParms[clientParmsKey] = clientParmsEntry;
+
+            nbnPopulateSubMenuItemsIfNecessary(hoveredMenuItemId, true, false, false, clientParmsKey);
+        }
+
+    }
+
+}
+
+
+function nbnFolderMenuItemOut()
+{
+}
+
+
+function nbnAdjustSubMenuTop(pUnorderedListjQuerySelector)
+{
+    var unorderedListQuery = $(pUnorderedListjQuerySelector);
+
+    //    EPB-4326: Prevent JS error if no matching items found.
+    if (unorderedListQuery.size() == 0) {
+        return;
+    }
+
+    var unorderedListOffsetTop = unorderedListQuery.offset().top;
+    var unorderedListOuterHeight = unorderedListQuery.outerHeight(false);
+    var windowHeight = $(window).height();
+
+    // Handle case where too low
+    if ( unorderedListOffsetTop + unorderedListOuterHeight > windowHeight )
+    {
+        var diffBetweenAbsoluteAndRelativeTop = unorderedListOffsetTop - parseInt( unorderedListQuery.css("top"),10 );
+        var distanceBelowWindowBottom = unorderedListOffsetTop + unorderedListOuterHeight - windowHeight;
+        var newAbsoluteTop = unorderedListOffsetTop - distanceBelowWindowBottom;
+
+        if (newAbsoluteTop < 0)
+        {
+            newAbsoluteTop = 0;
+        }
+
+        var newTop = newAbsoluteTop - diffBetweenAbsoluteAndRelativeTop;
+        unorderedListQuery.css("top", newTop + "px");
+    }
+}
+
+
+function nbnGetAvailableVerticalSpace()
+{
+    var topElemId = $("#ed-navBarContainer").length ? "ed-navBarContainer" : GH_TOOLBAR_AREA_DIV_ID;
+    var topElemQuery = $("#" + topElemId);
+    return $(window).height() - ( topElemQuery.offset().top + topElemQuery.outerHeight(false) );
+}
+
+
+function nbnRequestContentsData(pEntid, pClientAjaxParmsKey)
+{
+    // Determine max items to request based on available vertical space
+    var maxClientItems = Math.floor(nbnGetAvailableVerticalSpace() / nbnVerticalSpaceRequiredPerItem);
+  
+    var key = "" + pEntid;
+
+    var parameters = "key=" + key +
+                     "&translatableUsingGoogleV2PaidAPI=" + hcTranslatableUsingGoogleV2PaidAPI +
+                     "&calledFromResourceList=" + nbnCalledFromResourceList +
+                     "&maxClientItems=" + maxClientItems +
+                     "&clientAjaxParmsKey=" + pClientAjaxParmsKey;
+
+    $.ajax({
+      type: "POST",
+      url: "/ContentsData.page",
+      async: false,
+      data: parameters,
+      complete: function(xmlRequestObject, successString){
+        nbnReceiveContentsData(xmlRequestObject, successString);
+      }
+    });
+  
+}
+        
+
+function nbnReceiveContentsData(pAjaxReq, successString)
+{
+    // If a navigation link has been clicked since the Ajax request was fired, ignore the Ajax response
+    if (navLinkClicked)
+    {
+        return;
+    }
+
+    // successString was "error" when Firefox was showing "Stopped" in status bar; see TT 4732 for more information
+    if (successString.indexOf("error") != -1)
+    {
+        if (nbShowAjaxErrorsToWorldUsers && nbIsWorldUser)
+        {
+            alert('There was an unexpected ' + successString + ' in function nbnReceiveContentsData in NavigationBar_new.js.');
+        }
+        return;
+    }
+
+    var xmlRespDoc = pAjaxReq.responseXML ? pAjaxReq.responseXML : $.parseXML(pAjaxReq.responseText);
+
+    if (  (xmlRespDoc == null) || (xmlRespDoc.firstChild == null)  )
+    {
+        nbnGiveTimeoutWarning();
+        return;
+    }
+    
+    var resourcesElem = xmlRespDoc.getElementsByTagName("resources")[0];
+    var errorMsg = resourcesElem.getAttribute("error");
+
+    if (errorMsg)
+    {
+        notifyAjaxFailed(errorMsg);
+        return;
+    }
+
+    ajaxRequestEntid = resourcesElem.getAttribute("entid");
+    nbnSetDataForMoreItem(resourcesElem, ajaxRequestEntid);
+    var clientAjaxParmsKey = resourcesElem.getAttribute("clientAjaxParmsKey");
+
+    var resources = xmlRespDoc.getElementsByTagName("resource");
+    nbnLoadArraysFromResourcesXML(resources);
+
+    // Cache the resources:
+    if (typeof nbnCachedResourcesXML[ajaxRequestEntid] == "undefined")
+    {
+        // Avoid "invalid calling object" issue in IE 9 and above.
+        if (isMSIE9Higher)
+        {
+            nbnCachedResourcesXML[ajaxRequestEntid] = jQuery.extend(true, {}, resources);   // jQuery deep clone trick
+        }
+        else
+        {
+            nbnCachedResourcesXML[ajaxRequestEntid] = resources;
+        }
+    }
+
+    nbnLoadAndShowMenusAfterLoadingArrays(ajaxRequestEntid, clientAjaxParmsKey);
+}
+
+
+function nbnLoadAndShowMenusAfterLoadingArrays(pEntid, pClientAjaxParmsKey)
+{
+    var clientAjaxParms = nbnClientAjaxParms[pClientAjaxParmsKey];
+
+    if (!clientAjaxParms.preloadCacheOnly)
+    {
+        globalMenuItem = clientAjaxParms.itemId;
+        nbnPopulateMenuFromArrays(globalMenuItem);
+    }
+
+    if (clientAjaxParms.ajaxCalledFromBreadcrumbOver)
+    {
+        // If too tall, try again (but only a couple of times)
+
+        if (nbnVerticalSpaceRequiredPerItem < NBN_VERTICAL_SPACE_LIMIT &&
+            nbnIsElementTallerThanAvailableSpace("#nbnBreadcrumbsDropDownMenu", clientAjaxParms))
+        {
+            nbnVerticalSpaceRequiredPerItem += NBN_VERTICAL_SPACE_RETRY_INCREMENT;
+
+            /*
+            // Old approach
+            nbnCachedResourcesXML[pEntid] = undefined;
+            nbnRequestContentsData(pEntid, pClientAjaxParmsKey);
+             */
+
+            // New approach
+            var maxClientItems = Math.floor(nbnGetAvailableVerticalSpace() / nbnVerticalSpaceRequiredPerItem);
+            nbnTrimCachedResources(pEntid, maxClientItems);
+            nbnLoadArraysFromResourcesXML(nbnCachedResourcesXML[pEntid]);
+            nbnLoadAndShowMenusAfterLoadingArrays(pEntid, pClientAjaxParmsKey);
+        }
+        else
+        {
+            if (!clientAjaxParms.preloadCacheOnly)
+            {
+                var breadcrumbsDropDownMenuQuery = $("#nbnBreadcrumbsDropDownMenu");
+
+                breadcrumbsDropDownMenuQuery.css( {
+                    top: clientAjaxParms.dropDownTopEdge + 1,
+                    left: clientAjaxParms.containerLeftEdge,
+                    display: "inline-block" } );
+
+                breadcrumbsDropDownMenuQuery.children("div.ed-bcDropDown").css("display", "inline-block");
+            }
+        }
+
+    }
+
+    if (clientAjaxParms.ajaxCalledFromFolderMenuItemOver)
+    {
+        // If too tall, try again (but only a couple of times)
+
+        if (nbnVerticalSpaceRequiredPerItem < NBN_VERTICAL_SPACE_LIMIT &&
+            nbnIsElementTallerThanAvailableSpace(clientAjaxParms.ulSelector, clientAjaxParms))
+        {
+            nbnVerticalSpaceRequiredPerItem += NBN_VERTICAL_SPACE_RETRY_INCREMENT;
+            nbnCachedResourcesXML[pEntid] = undefined;
+            nbnRequestContentsData(pEntid, pClientAjaxParmsKey);
+        }
+        else
+        {
+            $(clientAjaxParms.ulSelector).css("display", "inline-block");
+            nbnAdjustSubMenuTop(clientAjaxParms.ulSelector);
+        }
+    }
+}
+
+
+function nbnTrimCachedResources(pEntid, pTrimToSize)
+{
+    if (pTrimToSize > 0 && nbnCachedResourcesXML[pEntid].length > pTrimToSize)
+    {
+        var data = nbnDataForMoreAndEditItems[pEntid];
+
+        if (data.editUrl.length > 0)
+        {
+            // Turn last one into an "Edit" link
+            nbnOverrideCachedResourceItem(pTrimToSize - 1, data.editTitle, pEntid, "edit", data.editUrl);
+
+            if (pTrimToSize - 2 >= 0)
+            {
+                // Turn next to last one into a "More" link
+                nbnOverrideCachedResourceItem(pTrimToSize - 2, data.moreTitle, pEntid, "more", data.moreUrl);
+            }
+        }
+        else
+        {
+            // Turn last one into a "More" link
+            nbnOverrideCachedResourceItem(pTrimToSize - 1, data.moreTitle, pEntid, "more", data.moreUrl);
+        }
+
+
+        // Discard the rest
+
+        // Couldn't just adjust nbnCachedResourcesXML[pEntid].length or do node removal or set node to null;
+        // had to use "flag and ignore" approach.
+
+        // Flag trimmed entries (and ignore in other functions)
+
+        for (var x = pTrimToSize; x < nbnCachedResourcesXML[pEntid].length; x++ )
+        {
+            nbnSetResourceTagValue(nbnCachedResourcesXML[pEntid][x], "type", NBN_TRIMMED_RESOURCES_TYPE);
+        }
+
+    }
+}
+
+
+function nbnOverrideCachedResourceItem(pCacheIndex, pTitle, pEntid, pType, pUrl)
+{
+    var resource = nbnCachedResourcesXML[pEntid][pCacheIndex];
+
+    nbnSetResourceTagValue(resource, "title", pTitle);
+    nbnSetResourceTagValue(resource, "entid", pEntid);
+    nbnSetResourceTagValue(resource, "type", pType);
+    nbnSetResourceTagValue(resource, "url", pUrl);
+
+    nbnSetResourceTagValue(resource, "iconClass", "");
+    nbnSetResourceTagValue(resource, "iconUrl", "");
+    nbnSetResourceTagValue(resource, "spanClass", "");
+    nbnSetResourceTagValue(resource, "targetWindow", "");
+    nbnSetResourceTagValue(resource, "onClick", "");
+}
+
+
+function nbnSetResourceTagValue(pResourceXmlNode, pTagName, pTagValue)
+{
+    var targetTag = pResourceXmlNode.getElementsByTagName(pTagName)[0].firstChild;
+
+    if (targetTag != null)
+    {
+        targetTag.data = pTagValue;
+    }
+
+}
+
+
+function nbnIsElementTallerThanAvailableSpace(pElemSelector, pClientAjaxParms)
+{
+    var elemQuery = $(pElemSelector);
+
+    // Display off-screen so we can check height
+    var origLeft = elemQuery.css("left");
+    var origDisplay = elemQuery.css("display");
+    elemQuery.css( { left:-1000, display:"inline-block"  } );
+
+    // Normally, "div.ed-bcDropDown" is display:none at this time, so need to override that temporarily so height
+    // can be computed.
+    var bcDropDownQuery = elemQuery.children("div.ed-bcDropDown");
+    var origBcDropDownStyle = bcDropDownQuery.attr("style") || "";
+    bcDropDownQuery.attr("style", origBcDropDownStyle + ";display:inline-block;");
+
+    var dropDownHeight = elemQuery.outerHeight(false);
+
+    bcDropDownQuery.attr("style", origBcDropDownStyle);
+    elemQuery.css( { left:pClientAjaxParms.ajaxCalledFromFolderMenuItemOver ? "auto" : origLeft, display:origDisplay  } );
+
+    return (dropDownHeight > nbnGetAvailableVerticalSpace());
+}
+
+
+function nbnGiveTimeoutWarning()
+{
+    if (!nbnGaveTimeoutWarning)
+    {
+        nbnGaveTimeoutWarning = true;
+        notifyAjaxFailed("The web server was unable to respond, probably due to a session time out.  Please start over.");
+    }
+}
+
+
+function nbnLoadArraysFromResourcesXML(pResourcesXML)
+{
+    itemDescrArray.length = 0;
+    itemNameArray.length = 0;
+    itemTypeArray.length = 0;
+    itemUrlArray.length = 0;
+    itemTargetArray.length = 0;
+    itemIconClassArray.length = 0;
+    itemHasItemsArray.length = 0;
+
+    for (var x = 0; x < pResourcesXML.length; x++)
+    {
+        var resource = pResourcesXML[x];
+
+        var resType = hdrGetContentsDataResourceAttributeValue(resource, "type");
+
+        // Ignore resources trimmed/deleted (from the cache)
+        if (resType == NBN_TRIMMED_RESOURCES_TYPE)
+        {
+            continue;
+        }
+
+        itemDescrArray[x] = hdrGetContentsDataResourceAttributeValue(resource, "title");
+        itemNameArray[x] = "x" + hdrGetContentsDataResourceAttributeValue(resource, "entid");
+        itemTypeArray[x] = resType;
+        itemUrlArray[x] = decodeURIComponent(hdrGetContentsDataResourceAttributeValue(resource, "url"));
+
+        if (resource.getElementsByTagName("targetWindow")[0].firstChild == null)
+        {
+            itemTargetArray[x] = "";
+        }
+        else
+        {
+            itemTargetArray[x] = hdrGetContentsDataResourceAttributeValue(resource, "targetWindow");
+        }
+
+        if (resource.getElementsByTagName("iconClass")[0].firstChild == null)
+        {
+            itemIconClassArray[x] = "";
+        }
+        else
+        {
+            itemIconClassArray[x] = hdrGetContentsDataResourceAttributeValue(resource, "iconClass");
+        }
+
+        var hasItemsElem = resource.getElementsByTagName("hasItems")[0];
+
+        if (typeof hasItemsElem == "undefined" || hasItemsElem == null || hasItemsElem.firstChild == null)
+        {
+            itemHasItemsArray[x] = "";
+        }
+        else
+        {
+            itemHasItemsArray[x] = hdrGetContentsDataResourceAttributeValue(resource, "hasItems");
+        }
+
+        urlsPerEntidArray[itemNameArray[x]] = itemUrlArray[x];
+        descrsPerEntidArray[itemNameArray[x]] = itemDescrArray[x];
+    }
+}
+
+
+function nbnExtractEntid(pItemId)
+{
+    // remove leading "x"
+    var result = pItemId.substring(1);
+
+    // remove unique suffix, if present (like "_0" or "_1", etc.)
+    var underscorePos = result.indexOf("_");
+
+    if (underscorePos >= 0)
+    {
+        return result.substring(0, underscorePos);
+    }
+
+    return result;
+}
+
+
+function nbnBuildDynamicMenuItems(pItemId, pPreloadCacheOnly, pIsBreadCrumbDropDown, pClientAjaxParmsKey)
+{
+    var itemQuery = $("#" + pItemId);
+    var itemUnorderedListQuery = itemQuery.children("ul");
+
+    // Make sure there is an empty <ul> element within the item (clear it if necessary)
+    if (itemUnorderedListQuery.length > 0)
+    {
+        itemUnorderedListQuery.html("");
+    }
+    else
+    {
+        itemQuery.append("<ul></ul>");
+        itemUnorderedListQuery = itemQuery.children("ul");
+    }
+
+    if (pIsBreadCrumbDropDown)
+    {
+        // This span puts a rounded corner "cap" on the breadcrumb drop-down menu "column"
+        itemUnorderedListQuery.append("<span class=\"ed-subTopShort\"></span>");
+    }
+    else
+    {
+        // Oddly, this empty span ensures that the first menu item in the drop-down menu doesn't just out to the left
+        itemUnorderedListQuery.append("<span></span>");
+    }
+
+    // Extract the entid:
+    var entid = nbnExtractEntid(pItemId);
+
+    nbnClientAjaxParms[pClientAjaxParmsKey].preloadCacheOnly = pPreloadCacheOnly;
+    nbnClientAjaxParms[pClientAjaxParmsKey].itemId = pItemId;
+    nbnVerticalSpaceRequiredPerItem = NBN_VERTICAL_SPACE_INITIAL_VALUE;
+
+
+    // Use Ajax call or cache of previous Ajax call to load arrays
+
+    var cacheValid = true;
+    if (typeof nbnCachedResourcesXML[entid] == "undefined")
+    {
+        cacheValid = false;
+    }
+
+    // EPB-4326: In IE9 we sometimes see "invalid calling object" for the nbnCachedresourcesXML[entid], which is not undefined but it's not valid either.
+    // If that happens, don't use the cache, we make another ajax call.
+    // 3/28/13: I have left this safety code in place for bullet-proofing but I have also attempted to avoid the MSIE 9 "invalid calling object" issue using a
+    // jQuery deep clone trick, per Steve. Search for "deep clone trick" in this file to find that workaround..
+    if (cacheValid)
+    {
+        try
+        {
+            var len = nbnCachedResourcesXML[entid].length;
+        }
+        catch(ex)
+        {
+            cacheValid = false;
+        }
+    }
+
+    if (!cacheValid)
+    {
+        nbnRequestContentsData(entid, pClientAjaxParmsKey);
+    }
+    else
+    {
+        nbnLoadArraysFromResourcesXML(nbnCachedResourcesXML[entid]);
+        nbnLoadAndShowMenusAfterLoadingArrays(entid, pClientAjaxParmsKey);
+    }
+}
+
+
+function nbnClickAnchorLinkContainer(ele) {
+	var aTag = $(ele).find('a:first');
+	if (aTag != undefined) {
+		var aHref = aTag.attr("href") || "";
+		if(aHref.substr(0,11) == "javascript:"){
+			var jsFunc = aHref.substr(11);
+			eval(jsFunc);
+		}else{
+			window.location = aHref;
+		}
+	}
+}
+
+
+function nbnClickAnchorLink(pUrl)
+{
+    if (nbnAnchorLinkTimesProcessed == 0)
+    {
+        openPopupWindow(pUrl,'','');
+        nbnPotentiallyHideAllMenus();
+    }
+
+    nbnAnchorLinkTimesProcessed++;
+}
+
+
+function nbnMenuItemClicked(elem) {
+
+    var elemQuery = $(elem);
+
+    if (!elemQuery.hasClass("clicked")) {
+        elemQuery.toggleClass("clicked");
+        return true;
+    }
+    return false;
+}
+
+function nbnPopulateMenuFromArrays(pItemId)
+{
+    var itemQuery = $("#" + pItemId);
+    var itemUnorderedListQuery = itemQuery.children("ul");
+
+    // First clear the menu (because this method could be called again for the same pItemId):
+    itemUnorderedListQuery.find("li").remove();
+
+    if (itemDescrArray.length == 0)
+    {
+        //Get rid of the former logic to display "empty folder" sub menus
+        itemQuery.find("ul").remove();
+
+        //TT#7658: JS Hack to traverse the DOM-tree and flip the ">" to ""
+        var dbContentElement = $("#" + pItemId + "_wrapper").children(".dbContent");
+        dbContentElement.children(":first-child").children(":first-child").children(":first-child").children(":nth-child(3)").removeClass("bcArrowColFilled").addClass("bcArrowColEmpty");
+    }
+
+    for (var x = 0; x < itemDescrArray.length; x++)
+    {
+        itemDescription = itemDescrArray[x];
+        itemName = itemNameArray[x];
+        itemType = itemTypeArray[x];
+        itemHasItems = itemHasItemsArray[x];
+        itemIconClass = itemIconClassArray[x];
+
+        actionHref = "";
+
+        if (itemType != nbFolderGroupTypeString && itemType != nbWebPageGroupTypeString)
+        {
+            if (itemTargetArray[x] == "_blank")
+            {
+                actionHref = "javascript:nbnClickAnchorLink('" + itemUrlArray[x] + "');";
+            }
+            else
+            {
+                    actionHref = itemUrlArray[x];
+            }
+        }
+        else
+        {
+            actionHref = itemUrlArray[x];
+        }
+
+        populatingASubmenu = x == 0 && itemQuery.hasClass("ed-hasSub");
+
+        // If link description is "More ..." the itemName will match pItemId.  We need a unique value for <li> id.
+        listItemId = itemName == pItemId ? nbnGetUniqueItemName(itemName) + "_" + x : nbnGetUniqueItemName(itemName);
+
+        nbnPopulateOneMenuItem(listItemId, populatingASubmenu, itemUnorderedListQuery,
+                itemDescription, itemType, itemHasItems, itemIconClass, actionHref);
+
+    }   // for
+
+     // TODO sms 9/7/10 - Do special handling later
+    /*
+    var submenuDiv = document.getElementById(pItemId.subMenu.menuObj.id);
+
+    var maxMenuHeight = Math.round(hdrGetWindowHeight(window) * 0.7);
+
+    // Conditionally change the height of the menubar on the fly and add a scrollbar:
+
+    else if (submenuDiv.offsetHeight > maxMenuHeight)
+    {
+        submenuDiv.style.height = maxMenuHeight + "px";
+        submenuDiv.style.overflow = "auto";
+        if (isMacFirefox)
+        {
+            // Save list of auto adjusted divs so they can be reset to counter Mac Firefox's bug TT #4084
+            overflowAdjustedDivsArray[pItemId.subMenu.menuObj.id] = true;
+        }
+    }
+    */
+}
+
+
+function nbnGetUniqueItemName(pItemName)
+{
+    if (nbnItemNamesList.indexOf(pItemName) >= 0)
+    {
+        var uniqueItemName = pItemName + "_" + nbnUniqueItemNamesSuffix;
+        nbnUniqueItemNamesSuffix++;
+    }
+    else
+    {
+        uniqueItemName = pItemName;
+
+        if (nbnItemNamesList.length > 0)
+        {
+            nbnItemNamesList += ",";
+        }
+
+        nbnItemNamesList += pItemName;
+    }
+
+    return uniqueItemName;
+}
+
+
+function nbnPopulateOneMenuItem(listItemId, populatingASubmenu, itemUnorderedListQuery,
+                                itemDescription, itemType, itemHasItems, itemIconClass, actionHref)
+{
+    // If populating a submenu, add a span tag that is a marker for the top (for corner rounding)
+    if (populatingASubmenu)
+    {
+        itemUnorderedListQuery.append("<span class=\"ed-subTop\"></span>");
+    }
+
+    var hasSubMenu = false;
+
+    if (itemType == nbFolderGroupTypeString || itemType == nbWebPageGroupTypeString)
+    {
+
+         /*
+
+        // Old approach:
+        var entid = nbnExtractEntid(itemName);
+
+        // Use Ajax call or cache of previous Ajax call to get resource count
+        if (typeof nbnCachedResourceCount[entid] == "undefined")
+        {
+            nbnIsRequestSuccessful = false;
+
+            var tempCount = nbnGetContentsDataResourceCountOnly(entid, true);
+
+            if (nbnIsRequestSuccessful)
+            {
+                var resCount = tempCount;
+            }
+            else
+            {
+                resCount = 0;
+            }
+        }
+        else
+        {
+            resCount = nbnCachedResourceCount[entid];
+            // console.log(entid + " used count cache");
+        }
+
+        hasSubMenu = resCount > 0;
+        */
+
+        // New approach:
+        hasSubMenu = itemHasItems == "true";
+    }
+
+    var anchorId = listItemId + "_a";
+    var iconId = listItemId + "_icon";
+
+    var listItemInnerWrapperId = listItemId + "_wrapper";
+
+    // NOTE: The table just inside the <li> tag was necessary to prevent mouseover events, such as from the
+    //       Edline Menu Box, from bleeding through the drop-down menu and trumping "closer" events TT 6333.
+
+    var itemMarkup = "<li id=\"" + listItemId + "\">" +
+
+            "<table class=\"ed-clickableArea\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" " +
+            "onmouseover=\"nbnAnchorLinkTimesProcessed = 0;\" " +
+            "onclick=\"nbnClickAnchorLinkContainer(this); return false;\" summary=\"\">" +
+            "<tr>" +
+            "<td id=\"" + listItemInnerWrapperId + "\">" +
+
+            "<div class=\"dbtop dbTopInactive\"></div>" +
+
+            "<div class=\"dbContent dbContentInactive\">" +
+
+            "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" summary=\"\">" +
+            "<tr>" +
+            "<td class=\"bcIconCol\">";
+
+    // Add icon, if applicable:
+    if (itemIconClass != '')
+    {
+        itemMarkup += "<span id=\"" + iconId + "\" class=\"" + itemIconClass + "NewNavBar\"></span>";
+    }
+
+    var arrowClass = hasSubMenu ? "bcArrowColFilled" : "bcArrowColEmpty";
+
+    itemMarkup += "</td>" +
+
+            "<td class=\"bcLinkCol\">" +
+
+            "<a id=\"" + anchorId + "\" href=\"" + actionHref + "\" " +
+            "tabindex=\"-1\"" +
+            "onmouseover=\"nbnAnchorLinkTimesProcessed = 0;\" " +
+            "onclick=\"nbnMenuItemClicked(this)\">" +
+
+            itemDescription +
+
+            "</a>" +
+
+            "</td>" +
+
+            "<td class=\"" + arrowClass + "\">" +
+            "</td>" +
+
+            "</tr>" +
+
+            "</table>" +
+
+            "</div>" +
+
+            "<div class=\"dbbtm dbBtmInactive\"></div>" +
+
+            "</td>" +
+            "</tr>" +
+            "</table>" +
+
+            "</li>";
+
+    itemUnorderedListQuery.append(itemMarkup);
+
+    var listItemQuery = $("li#" + listItemId);   // "li" added to potentially solve tricky TT #6685
+
+    if (hasSubMenu)
+    {
+        // listItemQuery.attr("class", "ed-hasSub");  // Try following instead to perhaps solve TT #6685
+        listItemQuery.addClass("ed-hasSub");
+
+        nbnToolTipsBuilt[listItemId] = false;
+
+        // Add a trigger to make an Ajax call when a submenu is hovered:
+        listItemQuery.hoverIntent({
+                    sensitivity: 1,
+                    interval: nbHomeAndBreadcrumbDropDownSubmenuFetchDelayMs,
+                    over: function() { nbnFolderMenuItemOver(this.id); },
+                    timeout: (nbHomeAndBreadcrumbDropDownSubmenuFetchDelayMs + 10),
+                    out: nbnFolderMenuItemOut } );
+
+        // Not sure if following is necessary for submenus
+        // hdrAddMouseEnterLeaveTracking(itemName, true);
+    }
+
+    // If mouseenter and mouseleave are bound on the same element as hoverIntent, above, then it doesn't work for
+    // IE 9 and Chrome.  Therefore, do the following binding on the first child of the list item.
+
+    var listItemFirstChildQuery = listItemQuery.children().filter(":first");
+
+    listItemFirstChildQuery.mouseenter(
+            function() { nbnHandleMouseEnteredListItem(listItemId); }
+            );
+
+    listItemFirstChildQuery.mouseleave(
+            function() { nbnHandleMouseLeftListItem(listItemId); }
+            );
+
+    $("#" + iconId).click(
+            function() { nbnHandleMouseClickIcon(this.id); }
+            );
+}
+
+function nbnHandleMouseEnteredListItem(pListItemId)
+{
+    hdrSetMouseEnteredMenu();   // Should keep submenu drop-down from disappearing right away
+
+    // Hide sibling submenus so only one shown at a time
+    $("#" + pListItemId).siblings("li").each(
+        function(pListItemId)
+        {
+            if (this.id != pListItemId)
+            {
+                var thisQuery = $("#" + this.id);
+
+                thisQuery.children("ul").css("display", "none");
+
+                if (thisQuery.hasClass("ed-hasSub"))
+                {
+                    $("#" + this.id + "_wrapper a").removeClass("bcTrail");
+                }
+            }
+        }
+    );
+
+    var wrapperId = pListItemId + "_wrapper";
+    var wrapperQuery = $("#" + wrapperId);
+
+    wrapperQuery.find("a").addClass("bcHighlight");
+
+    wrapperQuery.children("div.dbtop").removeClass("dbTopInactive").addClass("dbTopActive");
+    wrapperQuery.children("div.dbContent").removeClass("dbContentInactive").addClass("dbContentActive");
+    wrapperQuery.children("div.dbbtm").removeClass("dbBtmInactive").addClass("dbBtmActive");
+}
+
+
+function nbnHandleMouseLeftListItem(pListItemId)
+{
+    var wrapperId = pListItemId + "_wrapper";
+    var wrapperQuery = $("#" + wrapperId);
+
+    wrapperQuery.find("a").removeClass("bcHighlight");
+
+    wrapperQuery.children("div.dbtop").removeClass("dbTopActive").addClass("dbTopInactive");
+    wrapperQuery.children("div.dbContent").removeClass("dbContentActive").addClass("dbContentInactive");
+    wrapperQuery.children("div.dbbtm").removeClass("dbBtmActive").addClass("dbBtmInactive");
+
+    var listItemQuery = $("#" + pListItemId);
+
+    try{
+	    if (listItemQuery.data("tooltip") !== undefined && listItemQuery.data("tooltip").isShown())
+	    {
+	        listItemQuery.data("tooltip").hide();
+	    }
+    }catch(e){
+    	//eat it
+    }
+}
+
+
+function nbnHandleMouseClickIcon(pIconId)
+{
+    var suffixPos = pIconId.indexOf("_icon");
+    var linkId = pIconId.substring(0, suffixPos) + "_a";
+
+    if (nbnAnchorLinkTimesProcessed == 0)
+    {
+        var linkHref = $("#" + linkId).attr("href") || "";
+
+        if (linkHref.indexOf("javascript:") >= 0)
+        {
+            eval(linkHref);
+        }
+        else
+        {
+            window.location = linkHref;
+        }
+    }
+
+    nbnAnchorLinkTimesProcessed++;
+}
+
+
+function nbnPopulateSubMenuItemsIfNecessary(pItemId, pIsAGroupOrFolder, pPreloadCacheOnly, pIsBreadCrumbDropDown, pClientAjaxParmsKey)
+{
+    if (pIsAGroupOrFolder)
+    {
+        // If two "hover overs" happen back to back in a short period of time for the same entid/menu, don't do anything with it
+        var currentEntid = nbnExtractEntid(pItemId);
+        var currentTime = null;
+        if (currentEntid == previousEntid)
+        {
+          currentTime = new Date();
+          var timeDifference = currentTime - previousTime;
+          if (timeDifference < 1000)
+          {
+            return;
+          }
+        }
+
+        previousEntid = currentEntid;
+        previousTime = currentTime;
+
+        nbnBuildDynamicMenuItems(pItemId, pPreloadCacheOnly, pIsBreadCrumbDropDown, pClientAjaxParmsKey);
+    }
+}
+
+
+function nbnCreateMenuShell()
+{
+    // loadFirebugConsole();
+
+    var markup = "<div class=\"ed-menuItem\" id=\"nbnBreadcrumbsDropDownMenu\" style=\"position:absolute\">" +
+                 "<div class=\"ed-bcDropDown\">" +
+                 "</div>" +
+                 "</div>"
+            ;
+
+    $("body").append(markup);
+    bindObserver();
+    var homeChildrenQuery = $("#home").children("div.ed-menuButton");
+
+    $("#nbnBreadcrumbsDropDownMenu").mouseenter(function() {
+
+        if ($(this).hasClass("srcHome"))
+        {
+            homeChildrenQuery.addClass("onState");
+        }
+
+        if (!nbnMouseEnterLeaveTrackingAdded)
+        {
+            hdrAddMouseEnterLeaveTracking("nbnBreadcrumbsDropDownMenu", true);
+            nbnMouseEnterLeaveTrackingAdded = true;
+        }
+    }).
+
+    mouseleave(function() {
+        if ($(this).hasClass("srcHome"))
+        {
+            homeChildrenQuery.removeClass("onState");
+        }
+    });
+
+}

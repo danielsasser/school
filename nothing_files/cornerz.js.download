@@ -1,0 +1,504 @@
+/**
+* Cornerz 0.6 - Bullet Proof Corners
+* Jonah Fox (jonah@parkerfox.co.uk) 2008
+* 
+* Usage: $('.myclass').curve(options)
+* options is a hash with the following parameters. Bracketed is the default
+*   radius (10)
+*   borderWidth (read from BorderTopWidth or 0)
+*   background ("white"). Note that this is not calculated from the HTML as it is expensive
+*   borderColor (read from BorderTopColor)
+*   corners ("tl br tr bl"). Specify which borders
+*   fixIE ("padding") - attmepts to fix IE by incrementing the property by 1 if the outer width/height is odd.
+
+CHANGELIST from  v0.4
+
+0.5 - Now attempts to fix the odd dimension problem in IE 
+0.6 - Added semicolons for packing and fixed a problem with odd border width's in IE
+
+4/3/09 -- S Swett changed to fix a rendering problem in IE -- TT 4620.  Made it so IE doesn't blow away element
+attributes that were set with Javascript elsewhere.  When IE used "innerHTML = h" it was blowing up.  Changed to
+use $$.append, which also required touching up XML -- see function vmlCurve.
+
+4/8/09 -- S Swett changed to fix a problem in IE where thin 1 pixel vertical or horizontal lines would appear
+in corners if height or width was odd.
+
+8/14/10 -- S Swett added the new "backgroundOverridden" option and fixed yet another "IE thin lines" problem.
+
+11/5/10 -- S Swett took out the author's odd BorderTopWidth default noted in his "Usage" section above TT 6331.
+
+1/18/11 -- S Swett did some minor performanc eoptimizations.  Search for "sms 1/18/11" for more info
+
+3/24/11 -- S Swett tweaked for Firefox 4.0.  Search for "sms 3/24/11" for more info
+
+6/22/11 -- S Swett tweaked for Firefox 5 - 9.  Search for "sms 6/22/11" for more info
+
+2/2/12 -- S Swett fixed for a better way of detecting Firefox 4+.  Search for "sms 2/2/12" for more info
+
+3/25/13 -- C Clark modified to play nice with IE Standards mode. EPB-3656
+
+3/26/13 -- C Clark modified to use css3 for rounded corners if supported before falling back to canvas/vml
+
+4/12/13 -- C Clark modified css3 corner rounding to set the overflow to hidden. Necessary to prevent content overflowing the corners
+
+5/2/13 -- S Swett added the new "allowCssCorners" option.
+
+5/23/13 -- S Swett added ie8DrawCorners function.
+
+*/
+    
+;(function($){
+
+  if(typeof document.namespaces != 'undefined') {
+    if($.browser.msie && document.namespaces["v"] == null) {
+    document.namespaces.add("v", "urn:schemas-microsoft-com:vml", "#default#VML");
+    }
+  }
+
+  $.fn.cornerz = function(options){
+    
+    function canvasCorner(t,l, r,bw,bc,bgc, idOfDivBeingCornered){
+        var sa,ea,sx,sy,x,y, p = 1.5707963, css="position:absolute;";
+
+        var cornerId = (t ? "t" : "b") + (l ? "l" : "r");
+
+        if(t)
+		    {sa=-p; sy=r; y=0; css+="top:-"+bw+"px;";  }
+	    else 
+		    {sa=p; sy=0; y=r; css+="bottom:-"+bw+"px;"; }
+	    if(l) 
+		    {ea=p*2; sx=r; x=0;	css+="left:-"+bw+"px;"; }
+	    else 
+		    {ea=0; sx=0; x=r; css+="right:-"+bw+"px;";	}
+
+        var canvas=$("<canvas width="+r+"px height="+ r +"px style='" + css+"' ></canvas>");
+        var ctx=canvas[0].getContext('2d');
+
+        // sms 3/24/11 -- added test for Firefox 4; sms 6/22/11 -- improved for Firefox 5 - 9;
+        // sms 2/2/12 -- improved further by adding "isFirefoxFourOrHigher"
+
+        var isFirefoxFourOrHigher = false;
+        var userAgentString = navigator.userAgent;
+        if (userAgentString.indexOf('Firefox/') != -1)
+        {
+            isFirefoxFourOrHigher = true;
+            if (   userAgentString.indexOf('Firefox/1.') != -1
+                || userAgentString.indexOf('Firefox/2.') != -1
+                || userAgentString.indexOf('Firefox/3.') != -1)
+            {
+                isFirefoxFourOrHigher = false;
+            }
+        }
+
+        if (bw == 0 &&
+            ($.browser.safari || $.browser.opera ||
+             userAgentString.indexOf('Chrome') != -1 ||
+             isFirefoxFourOrHigher
+                ) )
+        {
+            // Override border color to transparent or overridden background color
+            if (settings.backgroundOverridden)
+            {
+                bc = settings.background;
+            }
+            else
+            {
+                bc = "rgba(255, 255, 255, 0.0)";
+            }
+        }
+
+        ctx.beginPath();
+        ctx.lineWidth=bw*2;
+        ctx.arc(sx,sy,r,sa,ea,!(t^l));
+        ctx.strokeStyle=bc;
+        ctx.stroke();
+        ctx.lineWidth = 0;
+        ctx.lineTo(x,y);
+
+        ctx.fillStyle=bgc;
+        ctx.fill();
+
+        return canvas;
+    };
+
+    function canvasCorners(corners, r, bw,bc,bg, idOfDivBeingCornered) {
+	    var hh = $("<div style='display: inherit' class='" + idOfDivBeingCornered + "_cornerz" + "' />"); // trying out style='float:left' 
+	    $.each(corners.split(" "), function() {
+          // hh.append(canvasCorner(this[0]=="t",this[1]=="l", r,bw,bc,bg));
+	      hh.append(canvasCorner(this.charAt(0)=="t",this.charAt(1)=="l", r,bw,bc,bg, idOfDivBeingCornered));
+        });
+	    return hh;
+    };
+
+    function vmlCurve(r,b,c,m,ml,mt, right_fix) {
+        var l = m-ml-right_fix;
+        var t = m-mt;
+        return "<v:arc filled='False' strokeweight='"+b+"px' strokecolor='"+c+"' startangle='0' endangle='361' style=' top:" + t +"px;left: "+ l + "px;width:" + r+ "px; height:" + r+ "px' />";
+    }
+
+    function vmlCorners(corners, r, bw, bc, bg, w) {
+      var h ="<div style='text-align:left; '>";
+      $.each($.trim(corners).split(" "), function() {
+        var css,ml=1,mt=1,right_fix=0;
+        if(this.charAt(0)=="t") {
+          css="top:-"+bw+"px;";
+        }
+        else {
+          css= "bottom:-"+bw+"px;";
+          mt=r+1;
+        }
+        if(this.charAt(1)=="l")
+          css+="left:-"+bw+"px;";
+        else {
+          css +="right:-"+(bw)+"px; "; // odd width gives wrong margin?
+           ml=r;
+           right_fix = 1;
+        }
+
+        h+="<div style='"+css+"; position: absolute; overflow:hidden; width:"+ r +"px; height: " + r + "px;'>";
+        h+= "<v:group  style='width:1000px;height:1000px;position:absolute;' coordsize='1000,1000' >";
+        h+= vmlCurve(r*3,r+bw,bg, -r/2,ml,mt,right_fix);
+        if(bw>0)
+          h+= vmlCurve(r*2-bw,bw,bc, Math.floor(bw/2+0.5),ml,mt,right_fix);
+        h+="</v:group>";
+        h+= "</div>";
+      });
+      h += "</div>";
+
+      return h;
+    };
+
+
+    function css3Corners(corners, r, elm) {
+        var pxRadius = r + "px";
+
+        if (corners.indexOf("tl") != -1) {
+            elm.css("border-top-left-radius", pxRadius);
+        }
+
+        if (corners.indexOf("tr") != -1) {
+            elm.css("border-top-right-radius", pxRadius);
+        }
+
+        if (corners.indexOf("bl") != -1) {
+            elm.css("border-bottom-left-radius", pxRadius);
+        }
+
+        if (corners.indexOf("br") != -1) {
+            elm.css("border-bottom-right-radius", pxRadius);
+        }
+
+        if (corners.length > 0 && r > 0)
+        {
+            // The following statement is problematic for EPB-5462; because of it, I added "allowCssCorners" option
+            elm.css("overflow", "hidden");
+        }
+    }
+
+
+      // In normal block flow, each canvas corner would follow the other vertically down the page.  We need to
+      // offset the natural height when setting relative position.
+      var globalHeightConsumedByPreviousCorners = 0;
+
+
+      function ie8DrawCorners(pDivBeingCorneredQuery, pCornerSettings, pRadius, pBorderWidth, pBorderColor,
+                                   pBackgroundColor)
+      {
+          // Make a new zero-height sibling div just under the div being cornered.  This is used for relative positioning.
+          var zeroHeightSiblingDivId = pDivBeingCorneredQuery.attr("id") + "_cornerz_sibling";
+          $("#" + zeroHeightSiblingDivId).remove();   // This removal is important!
+
+          pDivBeingCorneredQuery.after("<div id='" + zeroHeightSiblingDivId +
+                  "' style='position:relative; margin:0; padding:0; height:0;'></div>");
+
+          globalHeightConsumedByPreviousCorners = 0;
+
+          $.each(pCornerSettings.split(" "), function() {
+              ie8CreateAndDisplayDynamicCorner(this, pRadius, pBorderWidth, pDivBeingCorneredQuery, pBorderColor,
+                      pBackgroundColor, zeroHeightSiblingDivId);
+          });
+
+      }
+
+
+      function ie8CreateAndDisplayDynamicCorner(pCornerId, pCornerRadius, pBorderWidth, pDivBeingCorneredQuery,
+                                                pBorderColor, pBackgroundColor, pZeroHeightSiblingDivId)
+      {
+          var canvasId = pDivBeingCorneredQuery.attr("id") + pCornerId + "c";
+          var canvasContext = ie8CreateCanvasElementInitAndReturnContext(canvasId, pCornerRadius, pZeroHeightSiblingDivId);
+          ie8DrawCorner( canvasContext, pCornerId, pCornerRadius, pBorderWidth, pBackgroundColor, pBorderColor );
+          ie8PositionAndDisplayCorner( canvasContext, pCornerId, pDivBeingCorneredQuery);
+      }
+
+
+      function ie8CreateCanvasElementInitAndReturnContext(pCanvasId, pCornerRadius, pZeroHeightSiblingDivId)
+      {
+          // Remove canvas element if it already exists:
+          $("#" + pCanvasId).remove();
+          var canvasElement = document.createElement("canvas");
+
+          // ********** IN FOLLOWING, "display:block" is very important -- to prevent extra vertical space ****
+          $(canvasElement).attr({ id:pCanvasId, width:pCornerRadius, height:pCornerRadius }).
+                  css({ position:"relative", margin:"0", padding:"0", border:"0", display:"block", top:"-1000px", left:"-1000px"});
+
+          $("#" + pZeroHeightSiblingDivId).append(canvasElement);
+
+          if (typeof G_vmlCanvasManager != "undefined")
+          {
+              G_vmlCanvasManager.initElement(canvasElement, true);   // Needed for IE
+          }
+
+          var canvasContext = document.getElementById(pCanvasId).getContext('2d');
+          return canvasContext;
+      }
+
+
+      function ie8PositionAndDisplayCorner( pCanvasContext, cornerId, pDivBeingCorneredQuery)
+      {
+          var canvasElement = pCanvasContext.canvas;
+
+          var divBeingCorneredOuterWidth = pDivBeingCorneredQuery.outerWidth(false);
+          var divBeingCorneredOuterHeight = pDivBeingCorneredQuery.outerHeight(false);   // parm to include margin
+          var divBeingCorneredLeftMargin = parseInt(pDivBeingCorneredQuery.css("marginLeft")) || 0;
+          var divBeingCorneredMargin = parseInt(pDivBeingCorneredQuery.css("marginBottom")) || 0;
+
+          var top = 0;
+          var left = 0;
+
+          if (cornerId == "tl")
+          {
+              top = (divBeingCorneredOuterHeight + divBeingCorneredMargin) * -1;
+              left = divBeingCorneredLeftMargin;
+          }
+          else if (cornerId == "tr")
+          {
+              top = (divBeingCorneredOuterHeight + divBeingCorneredMargin) * -1;
+              left = divBeingCorneredOuterWidth + divBeingCorneredLeftMargin - $(canvasElement).width();
+          }
+          else if (cornerId == "bl")
+          {
+              top = 0 - divBeingCorneredMargin - $(canvasElement).height();
+              left = divBeingCorneredLeftMargin;
+          }
+          else if (cornerId == "br")
+          {
+              top = 0 - divBeingCorneredMargin - $(canvasElement).height();
+              left = divBeingCorneredOuterWidth + divBeingCorneredLeftMargin - $(canvasElement).width();
+          }
+
+          top -= globalHeightConsumedByPreviousCorners;
+
+          $(canvasElement).css({ top:top + "px", left:left + "px"});
+
+          globalHeightConsumedByPreviousCorners += $(canvasElement).height();
+      }
+
+
+      function ie8DrawCorner( pCanvasContext, pCornerId, pCornerRadius, pBorderWidth, pBackgroundColor, pBorderColor )
+      {
+          // Potentially rotate canvas
+
+          // No rotation = upper left corner
+          // 90' rotation = upper right corner
+          // 180' rotation = lower right corner
+          // 270' rotation = lower left corner
+
+          var degreesRotation = 0;
+          var centerPointX = pCornerRadius / 2;
+          var centerPointY = pCornerRadius / 2;
+
+          if (pCornerId == "tr")
+          {
+              degreesRotation = 90;
+          }
+          else if (pCornerId == "bl")
+          {
+              degreesRotation = 270;
+          }
+          else if (pCornerId == "br")
+          {
+              degreesRotation = 180;
+          }
+
+          if (degreesRotation != 0)
+          {
+              pCanvasContext.translate(centerPointX, centerPointY);
+              pCanvasContext.rotate( (Math.PI / 180) * degreesRotation );
+              pCanvasContext.translate(-1 * centerPointX, -1 * centerPointY);
+          }
+
+
+          // ***** Begin: drawing improved triangle with curve
+
+          var triangleColor = pBackgroundColor;
+          // var triangleColor = "rgba(255,255,255,0.5)";   // transparent
+
+
+          // Draw the lines along the top and left edges
+
+          pCanvasContext.beginPath();
+
+          pCanvasContext.moveTo(pCornerRadius - 1, 0);
+          pCanvasContext.lineTo(0, 0);
+          pCanvasContext.lineTo(0, pCornerRadius - 1);
+
+
+          // Draw the arc that connects the ends of the 2 lines
+
+          pCanvasContext.arc(pCornerRadius - 1, pCornerRadius - 1, pCornerRadius - 1, Math.PI, -Math.PI/2, false);
+
+
+          pCanvasContext.fillStyle = triangleColor;
+          pCanvasContext.fill();
+
+          // ***** End: drawing improved triangle with curve
+
+
+          if (pBorderWidth == 0)
+          {
+              return;
+          }
+
+
+          // ***** Begin: drawing border curve with 90 degree cut-offs
+
+          pCanvasContext.beginPath();
+          pCanvasContext.strokeStyle = pBorderColor;
+          pCanvasContext.lineWidth = 1;
+
+
+          // Draw vertical line from top right corner down to where inner arc will begin
+
+          pCanvasContext.moveTo(pCornerRadius - 1, 0);
+          pCanvasContext.lineTo(pCornerRadius - 1, pBorderWidth);
+
+
+          // Draw inner arc counter-clockwise from 270 to 180
+
+          // center of circle x, center of circle y, radius (corner radius - border width), start angle, end angle,
+          // draw counter clockwise
+          pCanvasContext.arc(pCornerRadius - 1, pCornerRadius - 1, pCornerRadius - 1 - pBorderWidth, -Math.PI/2, Math.PI, true);
+
+
+          // Draw outer arc clockwise from 180 to 270
+          pCanvasContext.arc(pCornerRadius - 1, pCornerRadius - 1, pCornerRadius - 1, Math.PI, -Math.PI/2, false);
+
+          pCanvasContext.fillStyle = pBorderColor;
+          pCanvasContext.fill();
+
+          // ***** End: drawing black border curve with 90 degree cut-offs
+      }
+
+
+      var isMSIE7or8 = navigator.userAgent.indexOf ('MSIE 7') != -1 ||
+                       navigator.userAgent.indexOf ('MSIE 8') != -1 ;
+
+    var settings = {
+      corners : "tl tr bl br",
+      radius : 10,
+      background: "white",
+      backgroundOverridden: false,
+      allowCssCorners: true,
+      borderWidth: 0,
+      fixIE: true };              
+    $.extend(settings, options || {});
+    
+    var incrementProperty = function(elem, prop, x) {
+      var y = parseInt(elem.css(prop)) || 0 ;
+      elem.css(prop, x+y);
+    }
+
+    return this.each(function() {
+      
+      var $$ = $(this);
+      var r = settings.radius*1.0;
+      var bw = (settings.borderWidth ||  0)*1.0;
+      var bg = settings.background;
+      var bc = settings.borderColor;
+      bc = bc || ( bw > 0 ? $$.css("borderTopColor") : bg);
+      var cs = settings.corners;
+
+        if (isMSIE7or8)
+        {
+            /*
+            Use a solution that doesn't change the "position" style of the div being cornered.  Adding new
+            little corner canvas elements and absolute positioning is one option, but that is risky due to
+            dynamic content or actions shifting the position of stuff on the page.  Consider the following.
+
+            1. Excanvas: add a div BELOW the div to be cornered and make IT position:relative.  Add the cornering
+               to THAT div.  TEST this on a small scale in a stand-alone environment.  THIS WORKS!
+
+            2. If necessary, try the "Curvy Corner" solution to see how it fares.
+                    https://code.google.com/p/curvycorners/downloads/list
+            */
+
+            ie8DrawCorners( $(this), cs, r, bw, bc, bg );
+        }
+        else if (settings.allowCssCorners && supportsProp("borderRadius"))
+        {
+            css3Corners(cs, r, $$);
+        }
+        else
+        {
+            if ($.browser.msie)
+            {
+                var h = vmlCorners(cs,r,bw,bc,bg, $(this).width() );
+                this.insertAdjacentHTML('beforeEnd', h);
+
+                if(settings.fixIE)
+                {
+                    var ow = $$.outerWidth();
+                    var oh = $$.outerHeight();
+
+                    if (ow % 2 == 1) {
+                        incrementProperty($$, "padding-right", 1);
+                        incrementProperty($$, "margin-right", 1);
+                    }
+
+                    if (oh % 2 == 1) {
+                        incrementProperty($$, "padding-bottom", 1);
+                        incrementProperty($$, "margin-bottom", 1);
+                    }
+                }
+
+            }
+            else
+            {
+                // canvasCorners returns a DOM element
+                $$.append(canvasCorners(cs,r,bw,bc,bg, this.id));
+            }
+
+      }
+    });
+  }
+})(jQuery);
+
+// TODO: 4/3/13 -- perhaps the following function could be placed in a more generic JS file since it could be handy in
+// other contexts.
+
+var supportsProp = (function() {
+  var elmDiv = document.createElement('div'),
+    vendors = 'Khtml Ms O Moz Webkit'.split(' '),
+    len = vendors.length;
+
+    return function(prop) {
+      var returnVal = false;
+
+      if (prop in elmDiv.style) {
+        returnVal = true;
+      } else {
+        prop = prop.replace(/^[a-z]/, function(val) {
+          return val.toUpperCase();
+        });
+
+        for (var i = 0; i < len; i++) {
+          if (vendors[i] + prop in elmDiv.style ) {
+            returnVal = true;
+            break;
+          }
+        }
+      }
+
+      return returnVal;
+    };
+})();

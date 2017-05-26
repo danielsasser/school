@@ -1,0 +1,83 @@
+if (typeof ga_analytics_data !== "undefined" && typeof ga_analytics_data.ids != "undefined")
+{
+    var ga_analytics_data = ga_analytics_data || [];
+    var _gaq = _gaq || [];
+
+    ga_report();
+}
+
+
+function ga_report()
+{
+    var furl = ga_calc_furl(ga_analytics_data.furl);
+
+    for (var index in ga_analytics_data.ids)
+    {
+        var id = ga_analytics_data.ids[index];
+        _gaq.push(
+                ['t' + index + '._setAccount', id],
+                ['t' + index + '._setAllowLinker', true],
+                ['t' + index + '._setAllowHash', false],
+                ['t' + index + '._setCustomVar', 1, 'Role', ga_analytics_data.role, 3],
+                ['t' + index + '._trackPageview', furl]
+                );
+    }
+
+    for (var wmindex in ga_analytics_data.wmids)
+    {
+        var wmid = ga_analytics_data.wmids[wmindex];
+
+        for (index in ga_analytics_data.ids)
+        {
+            id = ga_analytics_data.ids[index];
+            _gaq.push(
+                    ['t' + wmindex + '_' + index + '._setAccount', wmid],
+                    ['t' + wmindex + '_' + index + '._setAllowLinker', true],
+                    ['t' + wmindex + '_' + index + '._setAllowHash', false],
+                    ['t' + wmindex + '_' + index + '._setCustomVar', 1, 'Role', ga_analytics_data.role, 3],
+                    ['t' + wmindex + '_' + index + '._setCustomVar', 2, 'cid', id, 3],
+                    ['t' + wmindex + '_' + index + '._trackPageview', furl]
+                    );
+        }
+    }
+
+    (function()
+    {
+        var ga = document.createElement('script');
+        ga.type = 'text/javascript';
+        ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') +
+                  '.google-analytics.com/ga.js';
+
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(ga, s);
+    })();
+}
+
+
+function ga_calc_furl(furl)
+{
+    var result;
+    var href = window.location.href;
+    if (href.lastIndexOf('.page') != href.length-5)
+    {
+        result = furl;
+    }
+    else
+    {
+        var page = href.substring(href.lastIndexOf('/')+1);
+        if ('GroupHome.page' == page    ||
+            'DocView.page' == page      ||
+            'ResourceList.page' == page ||
+            'CalendarView.page' == page )
+        {
+            result = furl;
+        }
+        else
+        {
+            result = '/other';
+        }
+    }
+
+    return result;
+}

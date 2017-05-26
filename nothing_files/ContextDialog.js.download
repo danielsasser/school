@@ -1,0 +1,210 @@
+/*
+    Copyright 2013, Edline.
+    All Rights Reserved.
+
+    Shows a contextual pop-up dialog.
+
+    USAGE:
+
+     $('#buttonToFlyFrom').contextDialog({
+                            dialogPlacement : 'bottom', //or top
+                            dialogAlign     : 'right',  //or left or center
+                            dialogTitle     : 'This is my title',
+                            dialogContent   : "<div>Here is my content</div>",
+                            dialogWidth     : '400px',
+                            dialogShow      : function() { doSomething(); },
+                            dialogHide      : function() { doSomething(); },
+                            dialogFadeSpeed : 'fast',
+                            dialogManualMode: false,     //manual mode will not bind to click
+			    dialogShowTitleBar: false	//shows or hides the titlebar. default true.
+                        });
+
+ */
+
+(function( $ ) {
+
+    $.fn.contextDialog = function(method) {
+        if (methods[method]) {
+            return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
+        } else if (typeof method === 'object' || !method) {
+            return methods.init.apply(this, arguments);
+        } else {
+            $.error('Method ' + method + ' does not exist.');
+        }
+    };
+
+    var methods = {},
+
+    dialogHtml  = '<div class="contextDialog" role="dialog">' +
+                    '<div class="contextDialog-arrow"></div>' +
+                    '<div class="contextDialog-titlebar">' +
+                        '<div class="contextDialog-title"></div>'+
+                        '<a href="javascript://" class="contextDialog-close" tabindex="0" aria-label="Close Dialog">X</a>' +
+                        '<div style="clear: both;"></div>' +
+                    '</div>' +
+                    '<div class="contextDialog-contents"></div>' +
+                  '</div>',
+
+    defaults = {
+        dialogTitle         : "Default Title",
+        dialogContent       : "Default Content",
+        dialogPlacement     : "bottom",
+        dialogWidth         : "300px",
+        dialogHeight        : "auto",
+        dialogAlign         : "left",
+        dialogShow          : function() {},
+        dialogHide          : function() {},
+        dialogFadeSpeed     : 400,
+        dialogManualMode    : false,
+        dialogShowTitleBar  : true,
+        dialogShowArrow     : true,
+        dialogClass         : "",
+        dialogIsAccessible  : true
+    },
+
+    instanceId = 0;
+
+    methods.init = function(options) {
+
+        options = $.extend({}, defaults, options);
+
+        return this.each(function() {
+            var obj = $(this),
+                data = obj.data('contextDialog');
+
+            instanceId++;
+
+            if (!data) {
+                var dialogElm = $(dialogHtml);
+                dialogElm.css("width", options.dialogWidth)
+                    .css("height", options.dialogHeight)
+                    .addClass(options.dialogPlacement)
+                    .addClass(options.dialogAlign)
+                    .addClass(options.dialogClass)
+                    .attr("aria-labelledby", "contextDialog-" + instanceId + "-title");
+                dialogElm.find(".contextDialog-title")
+                    .html(options.dialogTitle)
+                    .prop("id", "contextDialog-" + instanceId + "-title");
+                dialogElm.find(".contextDialog-contents").html(options.dialogContent);
+
+                if (options.dialogShowTitleBar == false) {
+                    dialogElm.find(".contextDialog-titlebar").hide();
+                }
+
+                if (options.dialogShowArrow == false) {
+                    dialogElm.find('.contextDialog-arrow').hide();
+                }
+
+                obj.data('contextDialog', options);
+                obj.data('contextDialog').dialogElm = dialogElm;
+
+                if (!options.dialogManualMode) {
+                    obj.bind('click', function(e) {
+                        obj.contextDialog("show");
+                    });
+                }
+
+                if (options.dialogIsAccessible) {
+                    obj.bind('keydown', function(e) {
+                        var code = e.keyCode || e.which;
+                        switch (code) {
+                            case 13:
+                            case 39:
+                            case 40:
+                                obj.contextDialog("show");
+                                dialogElm.find('[tabindex]').first().focus();
+                                break;
+                            default:
+                                return;
+                        }
+                        e.preventDefault();
+                    });
+                }
+
+            }
+        });
+    }
+
+    methods.show = function() {
+        return this.each(function() {
+            var scope = this;
+            var pluginData = $(this).data('contextDialog');
+
+            $(".contextDialog-visible").hide().removeClass("contextDialog-visible");
+
+            pluginData.dialogElm.appendTo($("body"));
+
+            if (pluginData.dialogPlacement == 'bottom') {
+                pluginData.dialogElm.css("top", ($(this).offset().top + $(this).height() + 10) + "px");
+
+            } else {
+                pluginData.dialogElm.css("top", ($(this).offset().top - pluginData.dialogElm.height() - 10) + "px");
+            }
+
+            if (pluginData.dialogAlign == 'left') {
+                pluginData.dialogElm.css("left", ($(this).offset().left) + "px");
+            } else if (pluginData.dialogAlign == 'center') {
+                pluginData.dialogElm.css("left", ($(this).offset().left - (pluginData.dialogElm.width()/2) + ($(this).width()/2) ) + "px");
+            } else {
+                pluginData.dialogElm.css("left", ($(this).offset().left - pluginData.dialogElm.width() + $(this).width()) + "px");
+            }
+
+            pluginData.dialogElm.find(".contextDialog-close").bind("click", function() {
+                $(scope).contextDialog("hide");
+            });
+
+            if (pluginData.dialogIsAccessible) {
+                pluginData.dialogElm.find(".contextDialog-close").bind('keydown', function(e) {
+                    var code = e.keyCode || e.which;
+                    switch (code) {
+                        case 32:
+                        case 13:
+                            $(scope).contextDialog("hide");
+                            $(scope).focus();
+                            break;
+                        default:
+                            return;
+                    }
+                    e.preventDefault();
+                }).bind('focus', function(e) {
+                    $(this).addClass('hover');
+                }).bind('blur', function(e) {
+                    $(this).removeClass('hover');
+                });
+            }
+
+            pluginData.dialogElm.fadeIn(pluginData.dialogFadeSpeed, function() {
+                pluginData.dialogElm.addClass("contextDialog-visible");
+                pluginData.dialogShow.call(scope);
+            });
+        });
+    }
+
+    methods.hide = function() {
+        return this.each(function() {
+            var obj = $(this),
+                pluginData = obj.data('contextDialog');
+
+            pluginData.dialogElm.fadeOut(0, function() {
+                pluginData.dialogElm.removeClass("contextDialog-visible");
+                pluginData.dialogElm.find('.contextDialog-close').removeClass('hover');
+                pluginData.dialogHide.call(obj);
+                pluginData.dialogElm.remove();
+            });
+        });
+    }
+
+    methods.destroy = function() {
+        return this.each(function() {
+            var pluginData = $(this).data('contextDialog');
+
+            if(!pluginData)
+                return;
+
+            pluginData.dialogElm.remove();
+            $(this).removeData('contextDialog');
+        });
+    }
+
+})( jQuery );
+

@@ -1,0 +1,110 @@
+var puAjaxSimpleResponse;
+var puHasPopupBlockerBeenCheckedCached = false;
+
+
+function puIsPopupBlocked(pOnlyReportBlockedOncePerSession)
+{
+    if (pOnlyReportBlockedOncePerSession)
+    {
+        if (puHasPopupBlockerBeenCheckedCached)
+        {
+            return false;
+        }
+
+        var response = puMakeAjaxRequest("hasPopupBlockerBeenChecked", "");
+
+        if (response == "true")
+        {
+            puHasPopupBlockerBeenCheckedCached = true;
+            return false;
+        }
+    }
+
+    var popupTestWindow = window.open("about:blank","",
+        "directories=no,height=100,width=100,left=4000,top=4000,menubar=no,resizable=no,scrollbars=no,status=no,titlebar=no,location=no");
+
+    if (!popupTestWindow)
+    {
+        return true;
+    }
+    else
+    {
+        // Chrome requires a special test (although on 12/30/10 Chrome's popup blocker doesn't even appear to work)
+        if (navigator.userAgent.indexOf ('Chrome') != -1)
+        {
+            return puIsPopupBlockedChromePart2(popupTestWindow);
+        }
+        else
+        {
+            popupTestWindow.close();
+            return false;
+        }
+    }
+
+}
+
+
+function puIsPopupBlockedChromePart2(pPopupTestWindow)
+{
+    var error = false;
+
+    try
+    {
+        pPopupTestWindow.document.write("<script type='text/javascript'>function popTest() { var x = 0; }</script>");
+        pPopupTestWindow.popTest();
+    }
+    catch (ex)
+    {
+        error = true;
+    }
+
+    pPopupTestWindow.close();
+    return error;
+}
+
+
+// Example of event data: "someDataLabel:contents.box;;;otherLabel:200;;;anotherLabel:300"
+//    NOTICE triple semi-colon delimiter
+function puMakeAjaxRequest(pAjaxEvent, pEventData)
+{
+
+    var parameters = "ajaxEvent=" + pAjaxEvent + "&eventData=" + encodeURIComponent(pEventData);
+
+    // Note: This type of simple response only works with "async: false" below
+    puAjaxSimpleResponse = "NULL";
+
+    $.ajax({
+        type: "POST",
+        url: "/PopupAjax.page",
+        async: false,
+        data: parameters,
+        complete: function(xmlRequestObject, successString){
+            puReceiveAjaxResponse(xmlRequestObject, successString);
+        }
+    });
+
+    return puAjaxSimpleResponse;
+}
+
+
+function puReceiveAjaxResponse(pAjaxReq, pSuccessString)
+{
+    if (pSuccessString.indexOf("error") != -1)
+    {
+        if (hcjShowAjaxErrorsToWorldUsers && hcjIsWorldUser)
+        {
+            alert('There was an unexpected ' + pSuccessString + ' in function puReceiveAjaxResponse in PopupUtils.js.');
+        }
+        return;
+    }
+
+    var xmlRespDoc = pAjaxReq.responseXML ? pAjaxReq.responseXML : $.parseXML(pAjaxReq.responseText);
+
+    if (  (xmlRespDoc == null) || (xmlRespDoc.firstChild == null)  )
+    {
+        parent.document.write(pAjaxReq.responseText);
+        return;
+    }
+
+    puAjaxSimpleResponse = xmlRespDoc.getElementsByTagName("puAjax")[0].getAttribute("simpleResponse");
+}

@@ -1,0 +1,7860 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@import url(/dyncss/DesignFontFaceStylesheetAll?version=2015homerhf5-p112681&skipSettingPreviousGetUrl=true);
+
+
+.ed-jaws {
+	position:absolute;
+	left:-10000px;
+	overflow:hidden;
+	top:auto;
+	width:1px;
+	height:1px;
+}
+#bogus
+{
+margin:0;
+}
+
+body {
+color:black;
+font-size: 12pt;
+font-family: Arial, sans-serif;
+}
+
+#ghOuterMostDiv
+{
+margin:0px 0px 0px 0px;
+
+}
+
+html, body, form, div, p, span, img, ul, ol, li, a, select, h1, h2, h3, h4, h5, h6
+{
+margin:0; padding:0;
+}
+
+iframe
+{
+display:block;
+}
+
+img {border:0;}
+
+
+input
+{
+font-family: Arial, sans-serif;
+font-size: 10pt;
+font-weight:normal;
+}
+
+#moveSelectorInnerDiv input,
+#moveSelectorInnerDiv select,
+#designSidebarDiv input,
+#designSidebarDiv select,
+#dsPropertiesDiv input,
+#dsPropertiesDiv select
+{
+font-family:Geneva, sans-serif;
+font-size:9pt;
+font-weight:normal;
+border:1px solid gray;
+background:#f8f8f8;
+}
+
+
+
+.edlModernPageContent table,
+.edlModernPageContent tr
+
+{
+margin:0; padding:0;
+}
+
+
+.edlModernPageContent table {
+border-collapse:collapse;
+}
+
+.edlModernPageContent a {
+color:black;
+}
+
+.edlModernPageContent a:hover {
+text-decoration:underline;
+color:red;
+}
+
+form {
+display:inline;
+}
+
+a {
+text-decoration:underline;
+color:black;
+}
+
+a:hover {
+color:red;
+}
+
+h3
+{
+font-family: Arial, sans-serif;
+font-size: 12pt;
+font-weight:bold;
+}
+
+select
+{
+font-family: Arial, sans-serif;
+font-size: 10pt;
+}
+
+.hidden
+{
+display:none;
+}
+
+.tooltip
+{
+display:none;
+background-color:whitesmoke;
+color:#666;
+border:1px solid #cc9;
+padding:3px 6px;
+font:12px "Trebuchet MS",Arial,Helvetica,sans-serif;
+-moz-box-shadow:2px 2px 11px #666;
+-webkit-box-shadow:2px 2px 11px #666;
+z-index:1000;
+}
+
+
+.edlModernPageContent
+{
+background:white;
+
+
+width:700px;
+
+}
+
+
+
+.edlPageContent
+{
+background:white;
+padding-left:0px;
+padding-right:0px;
+
+
+width:700px;
+
+}
+
+
+
+.edlNoHorizontalPaddingPageContent
+{
+background:white;
+
+
+width:700px;
+
+}
+
+
+
+.edlDynamicPageContent
+{
+background:white;
+width:700px;
+}
+
+
+.edlDynamicPageContentWidth
+{
+width:700px;
+}
+
+.dbFlashOuterWrapper
+{
+text-align:center;
+overflow:hidden;
+}
+
+.dbFlashInnerWrapper
+{
+margin:0 auto;   
+overflow:hidden;
+}
+
+.rssFeedHeader
+{
+font-family: Arial, sans-serif;
+font-size: 12pt;
+}
+
+.rssFeedEntryHeader,
+.rssFeedEntryHeader a
+{
+font-family: Arial, sans-serif;
+font-size: 11pt;
+}
+
+.rssFeedEntryBody,
+.rssFeedEntryBody a,
+.rssFeedCopyright
+{
+font-family: Arial, sans-serif;
+font-size: 9pt;
+}
+
+#fsvItemsTable td
+{
+
+}
+
+#fsvItemsTable td .fsvEventDateSpan
+{
+
+
+font-weight:bold;
+cursor:default;
+
+}
+
+#fsvItemsTable td .fsvSummSpan,
+#GroupMessageBoxContent,
+#docViewBoxSummary
+{
+cursor:default;
+}
+
+#fsvItemsTable td a,
+#fsvItemsTable td a:hover,
+#fsvItemsTable td textarea
+{
+font-weight:bold;
+text-decoration:underline;
+}
+
+.edlFolderBoxItemTitle textarea
+{
+font-weight:bold!important;
+}
+
+
+.edlInlineTextBoxTitleAnchor,.edlInlineTextBoxTitleSpan,.edlInlineTextBoxListItem,.edlInlineTextNewsItem,.edlInlineTextCalendarItem,.edlInlineTextFsvItem,.edlInlineTextFolderBoxItem
+{
+display:none;
+margin:0;
+padding:0;
+border:0;
+background-color:transparent;
+overflow-x:hidden;
+
+}
+
+
+
+
+
+
+
+BIG
+{
+font-size:14pt;
+}
+
+BIG BIG
+{
+font-size:17pt;
+}
+
+
+.big
+{
+font-size:14pt;
+}
+
+.bigger
+{
+font-size:17pt;
+}
+
+
+
+SMALL
+{
+font-size:11pt;
+}
+
+SMALL SMALL
+{
+font-size:9pt;
+}
+
+SMALL SMALL SMALL
+{
+font-size:8pt;
+}
+
+
+.small
+{
+font-size:11pt;
+}
+
+.smaller
+{
+font-size:9pt;
+}
+
+.smallest
+{
+font-size:8pt;
+}
+
+
+
+.justify
+{
+font-size:11pt;
+}
+
+.small .justify
+{
+font-size:11pt;
+}
+
+.justify .small
+{
+font-size:11pt;
+}
+
+
+
+.defaultNavbar
+{
+color:#FFFFCE;
+background-color:#000066
+}
+
+.defaultHeader
+{
+color:#FFFFCE;
+background-color:#000066
+}
+
+.defaultFooter
+{
+color:#000066;
+background-color:#FFFFFF
+}
+
+
+
+.textfield
+{
+font-family: Arial, sans-serif;
+font-size: 10pt;
+}
+
+.checkbox
+{
+font-family: Arial, sans-serif;
+font-size: 10pt;
+}
+
+.radiobutton
+{
+font-family: Arial, sans-serif;
+font-size: 10pt;
+}
+
+.listmenu
+{
+font-family: Arial, sans-serif;
+font-size: 10pt;
+}
+
+.button
+{
+font-family: Arial, sans-serif;
+font-size: 10pt;
+}
+
+
+
+.navbar
+{
+color:#FFFFFF;
+}
+
+
+.quickTitleStyle
+{
+padding: 1px;
+font-weight:bold !important;
+border-style:none;
+background-color: transparent !important;
+}
+
+.quickContentStyle
+{
+padding: 1px;
+border-style:dashed;
+border-width:thin;
+background-color: transparent !important;
+-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";      /* IE 8 Opacity Fix */
+filter:alpha(opacity=40);   /*Work Around for IE's lack for support for RGBA */
+opacity: 0.4;           /* To set transparency levels for Contents Text (varies between 0.0 to 1.0) */
+}
+
+.quickLinkStyle
+{
+padding: 1px;
+border-style:none;
+background-color: transparent !important;
+}
+
+.quickDateStyle
+{
+  padding: 1px;
+  border-style:none;
+  background-color:transparent !important;
+}
+
+.quickSummaryStyle
+{
+  padding: 1px;
+  border-style:none;
+  background-color: transparent !important;;
+}
+
+.quickAddNewsBoxDivStyle
+{
+    background-color: transparent !important;
+}
+
+.quickAddCalendarBoxDivStyle
+{
+   background-color: transparent !important;;
+}
+
+
+.breadcrumbSpan
+{
+color:#666666;
+background:transparent;   
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+.breadcrumbSpan a
+{
+text-decoration:none;
+color:#666666;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+.breadcrumbSpan a:hover
+{
+text-decoration:underline;
+color:#666666;
+}
+
+
+
+#ed-navBarContainer
+{
+background-color:#efefef;
+}
+
+.ed-bcButton,
+.ed-bcButton a,
+.ed-bcButton a:hover,
+.ed-navDivider
+{
+color:#666666;
+
+font:normal normal normal 12px/26px Arial, Helvetica, sans-serif;
+
+font-size:12px;   
+}
+
+.header
+{
+color:#FFFFFF;
+background-color:#666666;
+font-family: Arial, sans-serif;
+font-size: 12pt;
+}
+
+
+
+.edlClassicTabTitle
+{
+color:black;
+background-color:#CCCCCC;
+font-weight:bold;
+font-family: Arial, sans-serif;
+font-size: 12pt;
+}
+
+.footer
+{
+color:#000066;
+background-color:#FFFFFF
+}
+
+
+.leftBody
+{
+color:black;
+background-color:#dddddd;
+}
+
+.middleBody
+{
+color:#000000;
+background-color:#FFFFFF;
+font-size :12pt;
+}
+
+.rightBody
+{
+color:#000000;
+background-color:#FFFFFF
+}
+
+
+.primTitle
+{
+color:#FFFFFF;
+background-color:#0000cc;
+font-family: Arial, sans-serif;
+font-size: 12pt;
+font-weight:bold;
+}
+
+
+.primElement
+{
+font-family: Arial, sans-serif;
+font-size: 12pt;
+color:#000000;
+background-color:#FFFFFF;
+}
+
+
+
+.leftFooter
+{
+color:#000066;
+background-color:#dddddd;
+}
+
+.middleFooter
+{
+color:#000066;
+background-color:#FFFFFF
+}
+
+.rightFooter
+{
+color:#000066;
+background-color:#FFFFFF
+}
+
+
+
+.leftBody .primTitle
+{
+font-family: Arial, sans-serif;
+font-size: 10pt;
+font-weight:bold;
+color:#000000;
+background-color:#FFFF00;
+}
+
+.middleBody .primTitle
+{
+font-family: Arial, sans-serif;
+font-size: 12pt;
+font-weight:bold;
+color:#FFFFFF;
+background-color:#0000cc;
+}
+
+.rightBody .primTitle
+{
+font-family: Arial, sans-serif;
+font-size: 12pt;
+font-weight:bold;
+color:#FFFFFF;
+background-color:#0000cc;
+}
+
+.leftBody BIG
+{
+color:black;
+font-size:14pt;
+}
+
+.leftBody BIG BIG
+{
+color:black;
+font-size:17pt;
+}
+
+
+
+.leftBody .primElement
+{
+font-family: Arial, sans-serif;
+font-size: 10pt;
+color:#000000;
+background-color:#FFFFFF;
+}
+
+.middleBody .primElement
+{
+font-family: Arial, sans-serif;
+font-size: 12pt;
+color:#000000;
+background-color:#FFFFFF;
+}
+
+.rightBody .primElement
+{
+font-family: Arial, sans-serif;
+font-size: 9pt;
+color:#000000;
+background-color:#CCCCCC;
+}
+
+
+
+.header BIG
+{
+font-family: Arial, sans-serif;
+font-size: 14pt;
+font-weight:bold;
+color:#FFFFFF;
+background-color:#666666;
+}
+
+
+
+
+A.header:link
+{
+color:#FFFFFF;
+font-family: Arial, sans-serif;
+font-size: 10pt;
+}
+
+A.header:visited
+{
+color:#FFFFFF;
+font-family: Arial, sans-serif;
+font-size: 10pt;
+}
+
+A.header:active
+{
+color:#FFFFFF;
+font-family: Arial, sans-serif;
+font-size: 10pt;
+}
+
+
+.listitem
+{
+font-family: Arial, sans-serif;
+font-size: 10pt;
+}
+
+
+FONT.header { color:#FFFFFF }
+TD.header { color:#FFFFFF }
+
+
+.leftBody .heading
+{
+font-family: Arial, sans-serif;
+font-weight:bold;
+color:black;
+background-color:#dddddd;
+}
+
+.leftBody BIG
+{
+color:black;
+}
+
+.leftBody BIG BIG
+{
+color:black;
+}
+
+.middleBody .heading
+{
+font-family: Arial, sans-serif;
+font-size: 12pt;
+font-weight:bold;
+color:#FFFFFF;
+background-color:#666666;
+}
+
+.rightBody .heading
+{
+font-family: Arial, sans-serif;
+font-weight:bold;
+color:#FFFFFF;
+background-color:#0000cc;
+}
+
+
+
+.dbnav
+{
+font-family: Arial, sans-serif;
+font-size: 9pt;
+font-weight:normal;
+}
+
+.dbnav a
+{
+font-family: Arial, sans-serif;
+font-size: 9pt;
+font-weight:normal;
+}
+
+
+
+.disabledText
+{
+color:#666666;
+}
+
+
+.middleBody .bulletText
+{
+color:#FFFFFF;
+font-size: 12pt;
+}
+
+
+
+.print
+{
+font-family:"Courier New", Courier, mono;
+}
+
+.print .small
+{
+font-family:"Courier New", Courier, mono;
+font-size:10pt;
+}
+
+.print .smaller
+{
+font-family:"Courier New", Courier, mono;
+font-size:9pt;
+}
+
+
+.calDayHdr { font-family: Arial; font-size: 9pt; padding-right: 1px; }.pageWrapper .calDayHdr { font-size: 10pt; text-align:center; padding-right: 0; }.pageWrapper .calDayHdr a { text-decoration:none; }.calDayHdr.currDay a { color: #ffffff; }
+.calDateHdr { font-family: Arial; font-size: 9pt; font-weight: bold; color: #000000; background-color: #CCCCCC; padding-right: 1px; }.pageWrapper .calDateHdr { color: #333333; background-color: #efefef; padding: 2px; width:16px; -moz-border-radius:0px 0px 6px 0px; -webkit-border-radius:0px 0px 6px 0px; border-radius:0px 0px 6px 0px; -moz-box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.2); text-align:center; }.pageWrapper .calDateHdr.offMonth {background-color: #f5f5f5; -moz-box-shadow: none;}.pageWrapper .calDateHdr.currDay {     background-image:-webkit-gradient(linear,left bottom,left top,color-stop(0,#2790bd),color-stop(1,#265465));      background-image:-webkit-linear-gradient(#2790bd,#265465);      background-image:-moz-linear-gradient(top,#2790bd,#265465);      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#2790bd, endColorstr=#265465);      -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#2790bd, endColorstr=#265465)";      background-image: -ms-linear-gradient(#2790bd,#265465);      background-image: -o-linear-gradient(#2790bd,#265465);      background-image: linear-gradient(#2790bd,#265465); }.pageWrapper .calDateHdr a { text-decoration: none; color: #000000; }.pageWrapper .calDateHdr.currDay a { color: #ffffff; }
+  .calColHdr { text-align: center; background-color:#cccccc; height: 20px; } .calColHdr > th {      background-image:-webkit-gradient(linear,left bottom,left top,color-stop(0,#cccccc),color-stop(1,#afafaf));      background-image:-webkit-linear-gradient(#cccccc,#afafaf);      background-image:-moz-linear-gradient(top,#cccccc,#afafaf);      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#cccccc, endColorstr=#afafaf);      -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#cccccc, endColorstr=#afafaf)";      background-image: -ms-linear-gradient(#cccccc,#afafaf);      background-image: -o-linear-gradient(#cccccc,#afafaf);      background-image: linear-gradient(#cccccc,#afafaf); } .calColHdr > th { border-left: 1px solid #cccccc; border-bottom: 1px solid #cccccc; height: 19px;}.calColHdr > th.currDay {      background-image:-webkit-gradient(linear,left bottom,left top,color-stop(0,#2790bd),color-stop(1,#265465));      background-image:-webkit-linear-gradient(#2790bd,#265465);      background-image:-moz-linear-gradient(top,#2790bd,#265465);      -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#2790bd, endColorstr=#265465)";      background-image: -ms-linear-gradient(#2790bd,#265465);      background-image: -o-linear-gradient(#2790bd,#265465);      background-image: linear-gradient(#2790bd,#265465);      color:#ffffff; }
+.calDateBox { border-right: 1px solid #ededed !important; border-bottom: 1px solid #ededed !important; height:130px; width:130px; vertical-align:top;}.calDateBox.currDay {background-color: #dfeef5;}.calWeekRow .calDateBox { height: 650px; padding-top: 5px;}
+.calTable { border-top: 1px solid #efefef; border-left: 1px solid #efefef; margin-top:6px;}
+.cal { font-family: Arial; font-size: 9pt; text-decoration: none; padding-left: 1px; padding-bottom: 2px;} .cal { border-bottom-style: solid; border-bottom-width: 1px; border-bottom-color: #aaaaaa; padding-left: 1px; padding-right: 1px; padding-bottom: 2px;} .cal a  { font-family: Arial; font-size: 9pt; text-decoration: none; padding-left: 1px; padding-bottom: 2px;} .pageWrapper .cal { font-size: 11px; padding: 0;} .pageWrapper .cal { border-bottom-color: #c9e5f2; padding: 4px 2px;}.pageWrapper .cal a  { font-size: 11px; padding: 0;} 
+.calNoLine    { font-family: Arial; font-size: 9pt; text-decoration: none; padding-left: 1px; padding-bottom: 2px; border-bottom: none !important;} .calNoLine  { border-bottom-style: none; padding-left: 1px; padding-right: 1px; padding-bottom: 2px; } .calNoLine a  { font-family: Arial; font-size: 9pt; text-decoration: none; padding-left: 1px; padding-bottom: 2px; text-decoration: none;} .pageWrapper .calNoLine    { font-size: 11px; padding: 0;} .pageWrapper .calNoLine { padding: 4px 2px;}.pageWrapper .calNoLine a  { font-size: 11px; padding: 0;} 
+.calButton { background: transparent url("/images/buttons/calendar_sprite.png") no-repeat; text-decoration: none; display:block; float:left; margin-top:4px; margin-bottom:4px;}.calButton.left { float:left; margin-right: 10px;}.calButton.right { float:right; margin-left: 10px;}.calButton.print { background-position: -192px 0px; width: 54px; height: 22px;}.calButton.print:hover { background-position: -192px -24px;}.calButton.print:active { background-position: -192px -48px;}.calButton.export { background-position: -248px 0px; width: 65px; height: 22px;}.calButton.export:hover { background-position: -248px -24px;}.calButton.export:active { background-position: -248px -48px;}.calButton.export.import-export { background-position: -430px 0px; width: 100px; height: 22px; }.calButton.export.import-export:hover { background-position: -430px -24px;}.calButton.export.import-export:active { background-position: -430px -48px;}.calButton.subscribe { background-position: -315px 0px; width: 81px; height: 22px;}.calButton.subscribe:hover { background-position: -315px -24px;}.calButton.subscribe:active { background-position: -315px -48px;}.calButton.today { background-position: -47px 0px; width: 46px; height: 22px;}.calButton.today:hover { background-position: -47px -24px;}.calButton.today:active { background-position: -47px -48px;}.calButton.previous {background-position: 0px 0px; width:23px; height: 22px;}.calButton.previous:hover {background-position: 0px -24px;}.calButton.previous:active {background-position: 0px -48px;}.calButton.next {background-position: -23px 0px; width: 22px; height:22px}.calButton.next:hover {background-position: -23px -24px;}.calButton.next:active {background-position: -23px -48px;}.calButton.add {background-position: -398px 0px; width: 30px; height: 28px; margin-top: 0; margin-bottom: 0;}.calButton.add:hover {background-position: -398px -30px;}.calButton.add:active {background-position: -398px -60px;}.calButton.month {background-position: -95px 0px; width: 48px; height: 22px; margin-left: 10px; margin-right: 0;}.calButton.month:hover {background-position: -95px -24px;}.calButton.month:active, .calButton.month.selected {background-position: -95px -48px;}.calButton.week {background-position: -143px 0px; width: 47px; height: 22px;}.calButton.week:hover {background-position: -143px -24px;}.calButton.week:active, .calButton.week.selected {background-position: -143px -48px;}.toolbar > li {list-style-type: none; margin: 0 !important; padding: 0 !important; list-style-image: url(); background: none !important;}
+.calHighlight { color: #095373;}.calLowlight { color: #878787;}
+.calEventBox { vertical-align: top; width: 90%; margin-left: auto; margin-right: auto;} .calEventBox.month { overflow: hidden;} .calEventBox ul li {list-style-image: url() !important; list-style-type: none; background-image: url(); background: none !important; border-bottom: 1px solid #C9E5F2; padding-left: 5px !important;}.calEventBox ul {margin: 0; padding: 0;}.calEventBox li a {font-size: 9pt; text-decoration: none;}
+
+NORMALSIZE {
+font-size: 12pt;
+}
+
+
+
+.justify { text-align:justify }
+.pageBrk { page-break-before:always }
+
+
+
+REPORT, PRE
+{
+
+font-family:mono,"Courier New", Courier;
+font-size:9pt;
+font:9pt "Courier New", Courier, monospace;
+
+text-align:left;
+}
+
+.report
+{
+
+font-family:mono,"Courier New", Courier;
+font-size:9pt;
+font:9pt "Courier New", Courier, monospace;
+
+}
+
+
+
+
+
+
+#edlHeaderArea
+{
+
+
+background-color: #efefef; 
+
+
+width:700px;
+
+}
+
+
+#edlGroupHomeBody #edlHeaderArea
+{
+
+}
+
+#edlThemedHeaderGraphicArea
+{
+background:#efefef;
+width:700px;
+}
+
+#edlThemedHeaderGraphicArea #edlHeaderImage
+{
+
+    display:block;
+
+}
+
+
+.edlHeaderControlsPane
+{
+
+
+padding:3px 0 3px 0;
+background:transparent;
+color:#666666;
+width:700px;
+}
+
+
+.edlHeaderControlsLoginPane
+{
+width:700px;
+}
+
+
+.edlNavBreadcrumbPane
+{
+padding:3px 0 3px 0;
+background:transparent;
+color:#666666;
+width:700px;
+}
+
+#edlLogoImage {
+margin-left:6px;
+vertical-align:baseline;
+margin-right:1px;
+}
+
+.edlHeaderControlsBtnSep {
+width:1px; height:12px; background:#666666; vertical-align:middle; text-align:center; 
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+
+#edlLoggedInUserName {
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+vertical-align:middle;
+color:#666666;
+}
+
+#edlHeaderTitle {
+border-left:1px solid #666666;
+padding-left:5px;
+}
+
+#edlViewingAsUserName {
+font-family: Arial, sans-serif;
+font-size: 10pt;
+font-weight:bold;
+vertical-align:baseline;
+}
+
+
+.edlHeaderControlsBtnText
+{
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+margin-right:6px;
+color:#666666;
+}
+
+
+.edlHeaderControlsBtnText a
+{
+text-decoration:none;
+color:#666666;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+.edlHeaderControlsBtnText a:hover
+{
+text-decoration:underline;
+color:#666666;
+}
+
+
+
+.edlMenuBar {
+border-bottom:1px black solid;
+
+
+padding:2px 6px 3px 6px;
+
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+color:#666666;
+background:#efefef;
+text-align:left;  
+}
+
+
+.edlMenu {
+float:left;
+position:relative;
+padding-right:12px;
+z-index:5;
+background:#efefef;
+}
+
+
+.edlMenu .edlMenuDropDown {
+display:none;
+position:absolute;
+top:1.15em;
+left:0;
+width:20em;
+padding-top:.5em;
+padding-bottom:.5em;
+background:#efefef;
+border-bottom:1px solid black;
+}
+
+.edlMenu:hover .edlMenuDropDown,
+.edlMenuMouseOver .edlMenuDropDown {
+display:block;
+}
+
+.edlMenuItem,
+.edlMenuItemSubtitle {
+padding-left:1em;
+padding-right:1em;
+}
+
+.edlMenuItem a {
+color:#666666;
+font-weight:normal;
+}
+
+.edlMenu a:hover {
+color:#efefef;
+background:#666666;
+text-decoration:none;
+}
+
+.edlMenuItemSubtitle {
+margin:10px 0 0 0;
+}
+
+
+.edlMenuBarLink
+{
+color:#666666;
+background:#efefef;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+
+text-decoration:none;
+}
+
+.edlMenuBarLink:hover
+{
+color:#666666;
+text-decoration:underline;
+}
+
+.edlMenuForm,
+.edlMenuSelect
+{
+display:inline;
+color:#666666;
+background:#efefef;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+
+font-weight:normal;
+}
+
+
+
+
+
+
+body
+{
+background-color: #efefef; 
+}
+
+#ghOuterWrapperDiv   
+{
+background-color: #efefef; background-image: url(/files/_qWIbo_/f3c2b2956d5aed883745a49013852ec4/pageBG.png?lastMod=1374499660963&isPlacedWithSiteDesigner=true); background-position: top left;background-repeat: repeat-x;
+}
+
+
+.ghOuterTable tr,
+.ghOuterTable td
+{
+background:transparent;
+}
+
+
+
+
+
+
+#edlThemeSidenavigationZoneFrame
+{
+background-color: #ffffff; 
+margin:0px 0px 0px 0px;
+padding:0px 0px 0px 0px;
+
+}
+
+            
+
+
+
+#edlThemeSidenavigationZoneContent
+{
+overflow:auto;
+}
+
+#edlThemeSidenavigationZonePane .edlBoxListItemTable,
+#edlThemeSidenavigationZoneContent .edlBoxTitle,
+#edlThemeSidenavigationZoneContent .edlBoxTitleTable,
+#edlThemeSidenavigationZoneContent .edlBoxTitleInnerWrapper
+{
+
+width:290px;
+}
+
+
+
+
+
+#edlGlobalSideNavBoxArea
+{
+padding:0px 0px 0px 0px;
+margin:0px 0px 0px 0px;
+}
+
+#edlThemeSidenavigationZonePane #edlGlobalSideNavBoxArea .edlBoxListItemTable,
+#edlThemeSidenavigationZoneContent #edlGlobalSideNavBoxArea .edlBoxTitle,
+#edlThemeSidenavigationZoneContent #edlGlobalSideNavBoxArea .edlBoxContent,
+#edlThemeSidenavigationZoneContent #edlGlobalSideNavBoxArea .edlBoxTitleTable,
+#edlThemeSidenavigationZoneContent #edlGlobalSideNavBoxArea .edlBoxTitleInnerWrapper
+{
+
+width:290px;
+}
+
+
+
+
+
+#edlLocalSideNavBoxArea
+{
+padding:0px 0px 0px 0px;
+margin:0px 0px 0px 0px;
+}
+
+#edlThemeSidenavigationZonePane #edlLocalSideNavBoxArea .edlBoxListItemTable,
+#edlThemeSidenavigationZoneContent #edlLocalSideNavBoxArea .edlBoxTitle,
+#edlThemeSidenavigationZoneContent #edlLocalSideNavBoxArea .edlBoxContent,
+#edlThemeSidenavigationZoneContent #edlLocalSideNavBoxArea .edlBoxTitleTable,
+#edlThemeSidenavigationZoneContent #edlLocalSideNavBoxArea .edlBoxTitleInnerWrapper
+{
+
+width:290px;
+}
+
+
+
+
+
+
+
+
+
+#edlThemeLeftcolumnZoneFrame
+{
+background-color: #ffffff; background-image: url(/files/_qWIbp_/36441e77856be7673745a49013852ec4/leftColumnFooter.png?lastMod=1374499661623&isPlacedWithSiteDesigner=true); background-position: bottom;background-repeat: no-repeat;
+margin:0px 10px 0px 0px;
+padding:0px 0px 0px 0px;
+border-top: 1px Solid #c0c0c0;
+border-right: 1px Solid #c0c0c0;
+border-bottom: 1px Solid #c0c0c0;
+border-left: 1px Solid #c0c0c0;
+
+}
+
+
+
+#edlThemeHeaderZoneFrame
+{
+background-color: transparent;
+margin:0px 0px 0px 0px;
+padding:0px 0px 0px 0px;
+
+}
+
+            
+
+
+
+#edlThemeHeaderZoneContent
+{
+overflow:auto;
+}
+
+#edlThemeHeaderZonePane .edlBoxListItemTable,
+#edlThemeHeaderZoneContent .edlBoxTitle,
+#edlThemeHeaderZoneContent .edlBoxTitleTable,
+#edlThemeHeaderZoneContent .edlBoxTitleInnerWrapper
+{
+
+width:960px;
+}
+
+
+
+
+
+#edlElement_804180853537141588_document
+{
+padding:0px 0px 0px 0px;
+margin:0px 0px 20px 0px;
+}
+
+#edlThemeHeaderZonePane #edlElement_804180853537141588_document .edlBoxListItemTable,
+#edlThemeHeaderZoneContent #edlElement_804180853537141588_document .edlBoxTitle,
+#edlThemeHeaderZoneContent #edlElement_804180853537141588_document .edlBoxContent,
+#edlThemeHeaderZoneContent #edlElement_804180853537141588_document .edlBoxTitleTable,
+#edlThemeHeaderZoneContent #edlElement_804180853537141588_document .edlBoxTitleInnerWrapper
+{
+
+width:960px;
+}
+
+
+
+
+
+#edlGlobalTopNavBoxArea
+{
+padding:0px 0px 0px 0px;
+margin:0px 0px 10px 0px;
+}
+
+#edlThemeHeaderZonePane #edlGlobalTopNavBoxArea .edlBoxListItemTable,
+#edlThemeHeaderZoneContent #edlGlobalTopNavBoxArea .edlBoxTitle,
+#edlThemeHeaderZoneContent #edlGlobalTopNavBoxArea .edlBoxContent,
+#edlThemeHeaderZoneContent #edlGlobalTopNavBoxArea .edlBoxTitleTable,
+#edlThemeHeaderZoneContent #edlGlobalTopNavBoxArea .edlBoxTitleInnerWrapper
+{
+
+width:960px;
+}
+
+
+
+
+
+#edlElement_804180927067359588_document
+{
+padding:0px 0px 0px 0px;
+margin:0px 0px 0px 0px;
+}
+
+#edlThemeHeaderZonePane #edlElement_804180927067359588_document .edlBoxListItemTable,
+#edlThemeHeaderZoneContent #edlElement_804180927067359588_document .edlBoxTitle,
+#edlThemeHeaderZoneContent #edlElement_804180927067359588_document .edlBoxContent,
+#edlThemeHeaderZoneContent #edlElement_804180927067359588_document .edlBoxTitleTable,
+#edlThemeHeaderZoneContent #edlElement_804180927067359588_document .edlBoxTitleInnerWrapper
+{
+
+width:960px;
+}
+
+
+
+
+
+
+
+
+
+#edlThemeBottomsectionZoneFrame
+{
+background-color: transparent;
+margin:0px 0px 0px 0px;
+padding:0px 0px 0px 0px;
+
+}
+
+            
+
+
+
+#edlThemeBottomsectionZoneContent
+{
+overflow:auto;
+}
+
+#edlThemeBottomsectionZonePane .edlBoxListItemTable,
+#edlThemeBottomsectionZoneContent .edlBoxTitle,
+#edlThemeBottomsectionZoneContent .edlBoxTitleTable,
+#edlThemeBottomsectionZoneContent .edlBoxTitleInnerWrapper
+{
+
+width:960px;
+}
+
+
+
+
+
+#edlElement_804180853523503572_document
+{
+padding:0px 0px 0px 0px;
+margin:20px 0px 10px 0px;
+}
+
+#edlThemeBottomsectionZonePane #edlElement_804180853523503572_document .edlBoxListItemTable,
+#edlThemeBottomsectionZoneContent #edlElement_804180853523503572_document .edlBoxTitle,
+#edlThemeBottomsectionZoneContent #edlElement_804180853523503572_document .edlBoxContent,
+#edlThemeBottomsectionZoneContent #edlElement_804180853523503572_document .edlBoxTitleTable,
+#edlThemeBottomsectionZoneContent #edlElement_804180853523503572_document .edlBoxTitleInnerWrapper
+{
+
+width:960px;
+}
+
+
+
+
+
+
+
+
+
+#edlThemeRootZoneFrame
+{
+background-color: transparent;
+margin:0px 0px 0px 0px;
+padding:0px 0px 0px 0px;
+
+}
+
+            
+
+
+
+#edlThemeRootZoneContent
+{
+overflow:auto;
+}
+
+#edlThemeRootZonePane .edlBoxListItemTable,
+#edlThemeRootZoneContent .edlBoxTitle,
+#edlThemeRootZoneContent .edlBoxTitleTable,
+#edlThemeRootZoneContent .edlBoxTitleInnerWrapper
+{
+
+width:960px;
+}
+
+
+
+
+
+#edlElement_header_zone
+{
+padding:0px 0px 0px 0px;
+margin:0px 0px 0px 0px;
+}
+
+#edlThemeRootZonePane #edlElement_header_zone .edlBoxListItemTable,
+#edlThemeRootZoneContent #edlElement_header_zone .edlBoxTitle,
+#edlThemeRootZoneContent #edlElement_header_zone .edlBoxContent,
+#edlThemeRootZoneContent #edlElement_header_zone .edlBoxTitleTable,
+#edlThemeRootZoneContent #edlElement_header_zone .edlBoxTitleInnerWrapper
+{
+
+width:960px;
+}
+
+
+
+
+
+#edlElement_topsection_zone
+{
+padding:0px 0px 0px 0px;
+margin:0px 0px 0px 0px;
+}
+
+#edlThemeRootZonePane #edlElement_topsection_zone .edlBoxListItemTable,
+#edlThemeRootZoneContent #edlElement_topsection_zone .edlBoxTitle,
+#edlThemeRootZoneContent #edlElement_topsection_zone .edlBoxContent,
+#edlThemeRootZoneContent #edlElement_topsection_zone .edlBoxTitleTable,
+#edlThemeRootZoneContent #edlElement_topsection_zone .edlBoxTitleInnerWrapper
+{
+
+width:960px;
+}
+
+
+
+
+
+#edlElement_mainsection_zone
+{
+padding:10px 10px 0px 10px;
+margin:0px 0px 0px 0px;
+}
+
+#edlThemeRootZonePane #edlElement_mainsection_zone .edlBoxListItemTable,
+#edlThemeRootZoneContent #edlElement_mainsection_zone .edlBoxTitle,
+#edlThemeRootZoneContent #edlElement_mainsection_zone .edlBoxContent,
+#edlThemeRootZoneContent #edlElement_mainsection_zone .edlBoxTitleTable,
+#edlThemeRootZoneContent #edlElement_mainsection_zone .edlBoxTitleInnerWrapper
+{
+
+width:940px;
+}
+
+
+
+
+
+#edlElement_bottomsection_zone
+{
+padding:0px 0px 0px 0px;
+margin:0px 0px 0px 0px;
+}
+
+#edlThemeRootZonePane #edlElement_bottomsection_zone .edlBoxListItemTable,
+#edlThemeRootZoneContent #edlElement_bottomsection_zone .edlBoxTitle,
+#edlThemeRootZoneContent #edlElement_bottomsection_zone .edlBoxContent,
+#edlThemeRootZoneContent #edlElement_bottomsection_zone .edlBoxTitleTable,
+#edlThemeRootZoneContent #edlElement_bottomsection_zone .edlBoxTitleInnerWrapper
+{
+
+width:960px;
+}
+
+
+
+
+
+
+
+
+
+#edlThemeMainsectionZoneFrame
+{
+background-color: transparent;
+margin:0px 0px 0px 0px;
+padding:10px 10px 0px 10px;
+
+}
+
+
+
+#edlThemeTopsectionZoneFrame
+{
+background-color: transparent;
+margin:0px 0px 0px 0px;
+padding:0px 0px 0px 0px;
+
+}
+
+            
+
+
+
+#edlThemeTopsectionZoneContent
+{
+overflow:auto;
+}
+
+#edlThemeTopsectionZonePane .edlBoxListItemTable,
+#edlThemeTopsectionZoneContent .edlBoxTitle,
+#edlThemeTopsectionZoneContent .edlBoxTitleTable,
+#edlThemeTopsectionZoneContent .edlBoxTitleInnerWrapper
+{
+
+width:960px;
+}
+
+
+
+
+
+#edlElement_804180853516501730_folder
+{
+padding:0px 14px 11px 14px;
+margin:0px 0px 0px 0px;
+}
+
+#edlThemeTopsectionZonePane #edlElement_804180853516501730_folder .edlBoxListItemTable,
+#edlThemeTopsectionZoneContent #edlElement_804180853516501730_folder .edlBoxTitle,
+#edlThemeTopsectionZoneContent #edlElement_804180853516501730_folder .edlBoxContent,
+#edlThemeTopsectionZoneContent #edlElement_804180853516501730_folder .edlBoxTitleTable,
+#edlThemeTopsectionZoneContent #edlElement_804180853516501730_folder .edlBoxTitleInnerWrapper
+{
+
+width:932px;
+}
+
+
+#edlThemeTopsectionZoneContent #edlElement_804180853516501730_folder .fmPseudoMenu,
+#edlThemeTopsectionZoneContent #edlElement_804180853516501730_folder .fbPseudoBox
+{
+
+
+
+
+width:948px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.edlBoxArea
+{
+margin-bottom:10px;
+}
+
+.edlBoxContent
+{
+margin:0;
+border:0;
+padding:0 8px 5px 8px;
+}
+
+.edlBoxContent a.phInstructions:hover
+{
+text-decoration:underline;
+}
+
+.edlBoxContent a.phInstructions,
+.edlBoxContent a.phInstructions:visited
+{
+text-decoration:none;
+}
+
+.edlBoxContent .edlBoxContentFooter
+{
+    font-size:12px;
+    font-weight: bold;
+    border-top:1px solid black;
+    padding:5px 5px 5px 5px;
+}
+
+.slideShowOverlay,
+.slideShowColorizer
+{
+margin:0;
+border:0;
+padding:0;
+}
+
+.slideShowOverlay a.phInstructions:hover
+{
+text-decoration:underline;
+}
+
+.slideShowOverlay a.phInstructions,
+.slideShowOverlay a.phInstructions:visited
+{
+text-decoration:none;
+}
+
+
+
+.edlBoxListElement
+{
+margin:0;
+border:0;
+padding:0;
+}
+
+.edlBoxListItem
+{
+margin-bottom:3px;
+}
+
+.edlBoxListItem
+{
+margin-top:5px;
+}
+
+
+
+
+#edlThemeControlZoneFrame {
+background-color: #ffffff; 
+margin:0px 0px 0px 0px;
+padding:0px 0px 0px 0px;
+
+}
+
+
+#edlThemeControlZoneContent
+{
+overflow:auto;
+}
+
+#edlThemeControlZonePane .edlBoxListItemTable,
+#edlThemeControlZonePane .edlBoxTitleTable,
+#edlThemeControlZonePane .edlBoxTitleInnerWrapper
+{
+
+width:289px;
+}
+
+
+
+
+
+#edlElement_804180853498288916_document
+{
+padding:0px 0px 0px 10px;
+margin:0px 0px 0px 0px;
+
+}
+
+
+#edlThemeControlZonePane #edlElement_804180853498288916_document .edlBoxListItemTable,
+#edlThemeControlZonePane #edlElement_804180853498288916_document .edlBoxTitleTable,
+#edlThemeControlZonePane #edlElement_804180853498288916_document .edlBoxTitleInnerWrapper
+{
+
+width:279px;
+}
+
+
+#edlNewsBoxArea
+{
+padding:0px 0px 0px 10px;
+margin:0px 0px 0px 0px;
+
+}
+
+
+#edlThemeControlZonePane #edlNewsBoxArea .edlBoxListItemTable,
+#edlThemeControlZonePane #edlNewsBoxArea .edlBoxTitleTable,
+#edlThemeControlZonePane #edlNewsBoxArea .edlBoxTitleInnerWrapper
+{
+
+width:279px;
+}
+
+
+
+
+
+
+#edlThemeMainZoneFrame {
+background-color: #ffffff; 
+margin:0px 10px 0px 10px;
+padding:0px 0px 0px 0px;
+border-top: 1px Solid #c0c0c0;
+border-right: 1px Solid #c0c0c0;
+border-bottom: 1px Solid #c0c0c0;
+border-left: 1px Solid #c0c0c0;
+
+}
+
+
+#edlThemeMainZoneContent
+{
+    overflow-x:auto;
+    overflow-y:hidden;
+}
+
+#edlThemeMainZonePane .edlBoxListItemTable,
+#edlThemeMainZonePane .edlBoxTitleTable,
+#edlThemeMainZonePane .edlBoxTitleInnerWrapper
+{
+
+width:280px;
+}
+
+
+
+
+
+#edlElement_804180853525878484_document
+{
+padding:0px 0px 0px 10px;
+margin:0px 0px 0px 0px;
+
+}
+
+
+#edlThemeMainZonePane #edlElement_804180853525878484_document .edlBoxListItemTable,
+#edlThemeMainZonePane #edlElement_804180853525878484_document .edlBoxTitleTable,
+#edlThemeMainZonePane #edlElement_804180853525878484_document .edlBoxTitleInnerWrapper
+{
+
+width:269px;
+}
+
+
+#edlCalendarBoxArea
+{
+padding:0px 0px 0px 10px;
+margin:0px 10px 0px 10px;
+
+}
+
+
+#edlThemeMainZonePane #edlCalendarBoxArea .edlBoxListItemTable,
+#edlThemeMainZonePane #edlCalendarBoxArea .edlBoxTitleTable,
+#edlThemeMainZonePane #edlCalendarBoxArea .edlBoxTitleInnerWrapper
+{
+
+width:249px;
+}
+
+
+
+
+
+
+#edlThemeSupportZoneFrame {
+background-color: #ffffff; 
+margin:0px 0px 0px 10px;
+padding:0px 0px 0px 0px;
+border-top: 1px Solid #c0c0c0;
+border-right: 1px Solid #c0c0c0;
+border-bottom: 1px Solid #c0c0c0;
+border-left: 1px Solid #c0c0c0;
+
+}
+
+
+#edlThemeSupportZoneContent
+{
+overflow:auto;
+}
+
+#edlThemeSupportZonePane .edlBoxListItemTable,
+#edlThemeSupportZonePane .edlBoxTitleTable,
+#edlThemeSupportZonePane .edlBoxTitleInnerWrapper
+{
+
+
+    width:288px;
+}
+
+
+
+
+
+#edlElement_804180853523905348_document
+{
+padding:0px 0px 0px 10px;
+margin:0px 0px 10px 0px;
+
+}
+
+
+#edlThemeSupportZonePane #edlElement_804180853523905348_document .edlBoxListItemTable,
+#edlThemeSupportZonePane #edlElement_804180853523905348_document .edlBoxTitleTable,
+#edlThemeSupportZonePane #edlElement_804180853523905348_document .edlBoxTitleInnerWrapper
+{
+
+width:277px;
+}
+
+
+#edlLinksBoxArea
+{
+padding:0px 0px 0px 0px;
+margin:0px 0px 0px 5px;
+
+}
+
+
+#edlThemeSupportZonePane #edlLinksBoxArea .edlBoxListItemTable,
+#edlThemeSupportZonePane #edlLinksBoxArea .edlBoxTitleTable,
+#edlThemeSupportZonePane #edlLinksBoxArea .edlBoxTitleInnerWrapper
+{
+
+width:282px;
+}
+
+
+
+img.edlBoxListItemArrow
+{
+margin-top:6px;
+margin-right:4px;
+margin-bottom:1px;
+}
+
+img.boxItemArrow
+{
+margin-top:7px;
+margin-right:4px;
+display:block;
+}
+
+.edlBoxListItem a,
+.edlBoxListItem textarea
+{
+font-family: Arial, sans-serif;
+font-size: 9pt;
+text-decoration:none;
+}
+
+.edlBoxListItem a:hover
+{
+text-decoration:underline;
+}
+
+
+.edlBoxTitle
+{
+padding:5px 0 0 0;
+font-weight:bold;
+font-family: Arial, sans-serif;
+font-size: 12pt;
+}
+
+.edlBoxTitleCell,
+.edlBoxTitleInnerWrapper
+{
+
+font-weight:bold;
+}
+
+
+.edlBlogEntryTitle
+{
+text-decoration:none;
+}
+
+.edlBlogEntryTitle:hover
+{
+text-decoration:underline;
+}
+
+
+
+
+
+
+
+
+
+#edlLoginAccessCodesBoxArea
+{
+
+}
+
+
+
+#edlLoginAccessCodesBoxArea
+{
+
+background:#efefef;
+
+}
+
+#edlLoginAccessCodesBoxArea .edlBoxTitle
+{
+
+margin-bottom:5px;
+
+
+
+
+
+padding-bottom:2px;
+
+
+margin-left:8px;
+margin-right:8px;
+padding-top:8px;
+
+
+}
+
+
+#edlLoginAccessCodesBoxArea .edlBlogEntryBoxTitle
+{
+padding-top:16px;
+border-top:1px solid #c0c0c0;
+border-bottom:none;
+}
+
+#edlLoginAccessCodesBoxArea .edlBoxTitle,
+#edlLoginAccessCodesBoxArea .edlBoxTitleCell,
+#edlLoginAccessCodesBoxArea .edlBoxTitleInnerWrapper
+{
+text-decoration:none;
+color:#525252;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+
+#edlLoginAccessCodesBoxArea .edlBoxContent
+{
+padding:5px 8px 5px 8px;
+}
+
+
+
+
+
+
+
+#edlLoginAccessCodesBoxArea .edlBoxTitle a,
+#edlLoginAccessCodesBoxArea .edlBoxTitle textarea
+{
+color:#525252;
+
+
+background:#efefef;
+
+}
+
+#edlLoginAccessCodesBoxArea .edlBoxTitle a:hover
+{
+
+color:#efefef;
+background:#525252;
+
+}
+
+
+
+#edlLoginAccessCodesBoxArea .edlBoxListItem,
+#edlLoginAccessCodesBoxArea .edlBoxListItem a,
+#edlLoginAccessCodesBoxArea .edlBoxListItem textarea,
+#edlLoginAccessCodesBoxArea .rssFeedEntryBody,
+#edlLoginAccessCodesBoxArea .rssFeedEntryBody a,
+#edlLoginAccessCodesBoxArea .rssFeedCopyright,
+#edlLoginAccessCodesBoxArea .edlBoxContent p,
+#edlLoginAccessCodesBoxArea .edlBoxContent a,
+#edlLoginAccessCodesBoxArea .edlBoxContent textarea,
+#edlLoginAccessCodesBoxArea .edlBoxContent span.smallest,
+#edlLoginAccessCodesBoxArea .edlBoxContent .deleteMultiPostSpan,
+#edlLoginAccessCodesBoxArea .edlBoxContent .edlLoginLabelSpan,
+#edlLoginAccessCodesBoxArea .edlBoxContent #fsvItemsTable td
+{
+color:#666666;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#edlLoginAccessCodesBoxArea .edlBoxLoginLabelSpan,
+#edlLoginAccessCodesBoxArea .edlBoxListItemSpan
+{
+color:#666666;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+#edlLoginAccessCodesBoxArea .pinnedFolderTitleStyle
+{
+color:#666666;
+padding: 1px;
+font-weight:bold !important;
+border-style:none;
+background-color: transparent !important;
+}
+
+#edlLoginAccessCodesBoxArea .pinnedFolderContentStyle
+{
+color:#666666;
+padding: 1px;
+border-color: #666666;
+border-style:dashed;
+border-width:thin;
+background-color: transparent !important;
+-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";      /* IE 8 Opacity Fix */
+filter:alpha(opacity=40);   /*Work Around for IE's lack for support for RGBA */
+opacity: 0.4;           /* To set transparency levels for Contents Text (varies between 0.0 to 1.0) */
+}
+
+
+#edlLoginAccessCodesBoxArea #edlBoxAuthEntryLostPasswordLink
+{
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+#edlLoginAccessCodesBoxArea .edlBoxTitleCell a,
+#edlLoginAccessCodesBoxArea .edlBoxTitleCell textarea,
+#edlLoginAccessCodesBoxArea .edlBoxTitleInnerWrapper a,
+#edlLoginAccessCodesBoxArea .edlBoxTitleInnerWrapper textarea
+{
+text-decoration:none;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlLoginAccessCodesBoxArea .edlBoxTitleCell a:hover,
+#edlLoginAccessCodesBoxArea .edlBoxTitleInnerWrapper a:hover
+{
+text-decoration:underline;
+color:#525252;
+
+
+
+
+background:#efefef;
+
+
+
+}
+
+
+#edlLoginAccessCodesBoxArea .edlBoxLoginLabelSpan,
+#edlLoginAccessCodesBoxArea #edlBoxAuthEntryLostPasswordLink
+{
+font-size: 10pt;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#edlLoginAccessCodesBoxArea .edlBoxListItem .edlBoxListMore,
+#edlLoginAccessCodesBoxArea .edlBoxListItem .edlBoxListMore a
+{
+font-weight:normal;
+text-decoration:none;
+}
+
+#edlLoginAccessCodesBoxArea .edlBoxListMoreNew
+{
+text-align: right;
+}
+
+
+}
+
+
+
+
+
+#edlLoginCompanyInfoBoxArea
+{
+
+}
+
+
+
+#edlLoginCompanyInfoBoxArea
+{
+
+background:#efefef;
+
+}
+
+#edlLoginCompanyInfoBoxArea .edlBoxTitle
+{
+
+margin-bottom:5px;
+
+
+
+
+
+padding-bottom:2px;
+
+
+margin-left:8px;
+margin-right:8px;
+padding-top:8px;
+
+
+}
+
+
+#edlLoginCompanyInfoBoxArea .edlBlogEntryBoxTitle
+{
+padding-top:16px;
+border-top:1px solid #c0c0c0;
+border-bottom:none;
+}
+
+#edlLoginCompanyInfoBoxArea .edlBoxTitle,
+#edlLoginCompanyInfoBoxArea .edlBoxTitleCell,
+#edlLoginCompanyInfoBoxArea .edlBoxTitleInnerWrapper
+{
+text-decoration:none;
+color:#525252;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+
+#edlLoginCompanyInfoBoxArea .edlBoxContent
+{
+padding:5px 8px 5px 8px;
+}
+
+
+
+
+
+
+
+#edlLoginCompanyInfoBoxArea .edlBoxTitle a,
+#edlLoginCompanyInfoBoxArea .edlBoxTitle textarea
+{
+color:#525252;
+
+
+background:#efefef;
+
+}
+
+#edlLoginCompanyInfoBoxArea .edlBoxTitle a:hover
+{
+
+color:#efefef;
+background:#525252;
+
+}
+
+
+
+#edlLoginCompanyInfoBoxArea .edlBoxListItem,
+#edlLoginCompanyInfoBoxArea .edlBoxListItem a,
+#edlLoginCompanyInfoBoxArea .edlBoxListItem textarea,
+#edlLoginCompanyInfoBoxArea .rssFeedEntryBody,
+#edlLoginCompanyInfoBoxArea .rssFeedEntryBody a,
+#edlLoginCompanyInfoBoxArea .rssFeedCopyright,
+#edlLoginCompanyInfoBoxArea .edlBoxContent p,
+#edlLoginCompanyInfoBoxArea .edlBoxContent a,
+#edlLoginCompanyInfoBoxArea .edlBoxContent textarea,
+#edlLoginCompanyInfoBoxArea .edlBoxContent span.smallest,
+#edlLoginCompanyInfoBoxArea .edlBoxContent .deleteMultiPostSpan,
+#edlLoginCompanyInfoBoxArea .edlBoxContent .edlLoginLabelSpan,
+#edlLoginCompanyInfoBoxArea .edlBoxContent #fsvItemsTable td
+{
+color:#666666;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#edlLoginCompanyInfoBoxArea .edlBoxLoginLabelSpan,
+#edlLoginCompanyInfoBoxArea .edlBoxListItemSpan
+{
+color:#666666;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+#edlLoginCompanyInfoBoxArea .pinnedFolderTitleStyle
+{
+color:#666666;
+padding: 1px;
+font-weight:bold !important;
+border-style:none;
+background-color: transparent !important;
+}
+
+#edlLoginCompanyInfoBoxArea .pinnedFolderContentStyle
+{
+color:#666666;
+padding: 1px;
+border-color: #666666;
+border-style:dashed;
+border-width:thin;
+background-color: transparent !important;
+-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";      /* IE 8 Opacity Fix */
+filter:alpha(opacity=40);   /*Work Around for IE's lack for support for RGBA */
+opacity: 0.4;           /* To set transparency levels for Contents Text (varies between 0.0 to 1.0) */
+}
+
+
+#edlLoginCompanyInfoBoxArea #edlBoxAuthEntryLostPasswordLink
+{
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+#edlLoginCompanyInfoBoxArea .edlBoxTitleCell a,
+#edlLoginCompanyInfoBoxArea .edlBoxTitleCell textarea,
+#edlLoginCompanyInfoBoxArea .edlBoxTitleInnerWrapper a,
+#edlLoginCompanyInfoBoxArea .edlBoxTitleInnerWrapper textarea
+{
+text-decoration:none;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlLoginCompanyInfoBoxArea .edlBoxTitleCell a:hover,
+#edlLoginCompanyInfoBoxArea .edlBoxTitleInnerWrapper a:hover
+{
+text-decoration:underline;
+color:#525252;
+
+
+
+
+background:#efefef;
+
+
+
+}
+
+
+#edlLoginCompanyInfoBoxArea .edlBoxLoginLabelSpan,
+#edlLoginCompanyInfoBoxArea #edlBoxAuthEntryLostPasswordLink
+{
+font-size: 10pt;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#edlLoginCompanyInfoBoxArea .edlBoxListItem .edlBoxListMore,
+#edlLoginCompanyInfoBoxArea .edlBoxListItem .edlBoxListMore a
+{
+font-weight:normal;
+text-decoration:none;
+}
+
+#edlLoginCompanyInfoBoxArea .edlBoxListMoreNew
+{
+text-align: right;
+}
+
+
+}
+
+
+
+
+
+#edlElement_804180853537141588_document
+{
+
+}
+
+
+
+#edlElement_804180853537141588_document
+{
+
+background-color: transparent;
+
+}
+
+#edlElement_804180853537141588_document .edlBoxTitle
+{
+
+margin-bottom:5px;
+
+
+
+
+
+padding-bottom:2px;
+
+
+margin-left:8px;
+margin-right:8px;
+padding-top:8px;
+
+
+}
+
+
+#edlElement_804180853537141588_document .edlBlogEntryBoxTitle
+{
+padding-top:16px;
+border-top:1px solid #c0c0c0;
+border-bottom:none;
+}
+
+#edlElement_804180853537141588_document .edlBoxTitle,
+#edlElement_804180853537141588_document .edlBoxTitleCell,
+#edlElement_804180853537141588_document .edlBoxTitleInnerWrapper
+{
+text-decoration:none;
+color:#525252;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+
+#edlElement_804180853537141588_document .edlBoxContent
+{
+padding:5px 8px 5px 8px;
+}
+
+
+
+
+
+
+
+#edlElement_804180853537141588_document .edlBoxTitle a,
+#edlElement_804180853537141588_document .edlBoxTitle textarea
+{
+color:#525252;
+
+
+background:transparent;
+
+}
+
+#edlElement_804180853537141588_document .edlBoxTitle a:hover
+{
+
+color:#525252;
+background:transparent;
+
+}
+
+
+
+#edlElement_804180853537141588_document .edlBoxListItem,
+#edlElement_804180853537141588_document .edlBoxListItem a,
+#edlElement_804180853537141588_document .edlBoxListItem textarea,
+#edlElement_804180853537141588_document .rssFeedEntryBody,
+#edlElement_804180853537141588_document .rssFeedEntryBody a,
+#edlElement_804180853537141588_document .rssFeedCopyright,
+#edlElement_804180853537141588_document .edlBoxContent p,
+#edlElement_804180853537141588_document .edlBoxContent a,
+#edlElement_804180853537141588_document .edlBoxContent textarea,
+#edlElement_804180853537141588_document .edlBoxContent span.smallest,
+#edlElement_804180853537141588_document .edlBoxContent .deleteMultiPostSpan,
+#edlElement_804180853537141588_document .edlBoxContent .edlLoginLabelSpan,
+#edlElement_804180853537141588_document .edlBoxContent #fsvItemsTable td
+{
+color:#666666;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#edlElement_804180853537141588_document .rssFeedHeader
+{
+color:#666666;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+
+font-size:15px;
+}
+
+#edlElement_804180853537141588_document .rssFeedEntryHeader,
+#edlElement_804180853537141588_document .rssFeedEntryHeader a
+{
+color:#666666;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+
+font-size:14px;
+}
+
+
+
+
+#edlElement_804180853537141588_document .edlBoxLoginLabelSpan,
+#edlElement_804180853537141588_document .edlBoxListItemSpan
+{
+color:#666666;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+#edlElement_804180853537141588_document .pinnedFolderTitleStyle
+{
+color:#666666;
+padding: 1px;
+font-weight:bold !important;
+border-style:none;
+background-color: transparent !important;
+}
+
+#edlElement_804180853537141588_document .pinnedFolderContentStyle
+{
+color:#666666;
+padding: 1px;
+border-color: #666666;
+border-style:dashed;
+border-width:thin;
+background-color: transparent !important;
+-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";      /* IE 8 Opacity Fix */
+filter:alpha(opacity=40);   /*Work Around for IE's lack for support for RGBA */
+opacity: 0.4;           /* To set transparency levels for Contents Text (varies between 0.0 to 1.0) */
+}
+
+
+#edlElement_804180853537141588_document #edlBoxAuthEntryLostPasswordLink
+{
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+#edlElement_804180853537141588_document .edlBoxTitleCell a,
+#edlElement_804180853537141588_document .edlBoxTitleCell textarea,
+#edlElement_804180853537141588_document .edlBoxTitleInnerWrapper a,
+#edlElement_804180853537141588_document .edlBoxTitleInnerWrapper textarea
+{
+text-decoration:none;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlElement_804180853537141588_document .edlBoxTitleCell a:hover,
+#edlElement_804180853537141588_document .edlBoxTitleInnerWrapper a:hover
+{
+text-decoration:underline;
+color:#525252;
+
+
+
+
+background:transparent;
+
+
+
+}
+
+
+#edlElement_804180853537141588_document .edlBoxLoginLabelSpan,
+#edlElement_804180853537141588_document #edlBoxAuthEntryLostPasswordLink
+{
+font-size: 10pt;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#edlElement_804180853537141588_document .edlBoxListItem .edlBoxListMore,
+#edlElement_804180853537141588_document .edlBoxListItem .edlBoxListMore a
+{
+font-weight:normal;
+text-decoration:none;
+}
+
+#edlElement_804180853537141588_document .edlBoxListMoreNew
+{
+text-align: right;
+}
+
+
+#edlElement_804180853537141588_document .edlBoxListMoreNew a
+{
+font-size:11px;
+font-weight:normal;
+text-decoration:none;
+
+}
+
+
+
+
+
+#edlGlobalTopNavBoxArea
+{
+
+}
+
+
+
+#edlGlobalTopNavBoxArea
+{
+
+background-color: transparent;
+
+}
+
+#edlGlobalTopNavBoxArea .edlBoxTitle
+{
+
+margin-bottom:5px;
+
+
+
+
+
+padding-bottom:2px;
+
+
+margin-left:8px;
+margin-right:8px;
+padding-top:8px;
+
+
+}
+
+
+#edlGlobalTopNavBoxArea .edlBlogEntryBoxTitle
+{
+padding-top:16px;
+border-top:1px solid #c0c0c0;
+border-bottom:none;
+}
+
+#edlGlobalTopNavBoxArea .edlBoxTitle,
+#edlGlobalTopNavBoxArea .edlBoxTitleCell,
+#edlGlobalTopNavBoxArea .edlBoxTitleInnerWrapper
+{
+text-decoration:none;
+color:#525252;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+
+#edlGlobalTopNavBoxArea .edlBoxContent
+{
+padding:5px 8px 5px 8px;
+}
+
+
+
+
+
+
+
+#edlGlobalTopNavBoxArea .edlBoxTitle a,
+#edlGlobalTopNavBoxArea .edlBoxTitle textarea
+{
+color:#525252;
+
+
+background:transparent;
+
+}
+
+#edlGlobalTopNavBoxArea .edlBoxTitle a:hover
+{
+
+color:#525252;
+background:transparent;
+
+}
+
+
+
+#edlGlobalTopNavBoxArea .edlBoxListItem,
+#edlGlobalTopNavBoxArea .edlBoxListItem a,
+#edlGlobalTopNavBoxArea .edlBoxListItem textarea,
+#edlGlobalTopNavBoxArea .rssFeedEntryBody,
+#edlGlobalTopNavBoxArea .rssFeedEntryBody a,
+#edlGlobalTopNavBoxArea .rssFeedCopyright,
+#edlGlobalTopNavBoxArea .edlBoxContent p,
+#edlGlobalTopNavBoxArea .edlBoxContent a,
+#edlGlobalTopNavBoxArea .edlBoxContent textarea,
+#edlGlobalTopNavBoxArea .edlBoxContent span.smallest,
+#edlGlobalTopNavBoxArea .edlBoxContent .deleteMultiPostSpan,
+#edlGlobalTopNavBoxArea .edlBoxContent .edlLoginLabelSpan,
+#edlGlobalTopNavBoxArea .edlBoxContent #fsvItemsTable td
+{
+color:#666666;
+font:normal normal normal 15px/normal lato-bold-webfont, sans-serif;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#edlGlobalTopNavBoxArea .edlBoxLoginLabelSpan,
+#edlGlobalTopNavBoxArea .edlBoxListItemSpan
+{
+color:#666666;
+font:normal normal normal 15px/normal lato-bold-webfont, sans-serif;
+
+}
+
+#edlGlobalTopNavBoxArea .pinnedFolderTitleStyle
+{
+color:#666666;
+padding: 1px;
+font-weight:bold !important;
+border-style:none;
+background-color: transparent !important;
+}
+
+#edlGlobalTopNavBoxArea .pinnedFolderContentStyle
+{
+color:#666666;
+padding: 1px;
+border-color: #666666;
+border-style:dashed;
+border-width:thin;
+background-color: transparent !important;
+-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";      /* IE 8 Opacity Fix */
+filter:alpha(opacity=40);   /*Work Around for IE's lack for support for RGBA */
+opacity: 0.4;           /* To set transparency levels for Contents Text (varies between 0.0 to 1.0) */
+}
+
+
+#edlGlobalTopNavBoxArea #edlBoxAuthEntryLostPasswordLink
+{
+font:normal normal normal 15px/normal lato-bold-webfont, sans-serif;
+
+}
+
+#edlGlobalTopNavBoxArea .edlBoxTitleCell a,
+#edlGlobalTopNavBoxArea .edlBoxTitleCell textarea,
+#edlGlobalTopNavBoxArea .edlBoxTitleInnerWrapper a,
+#edlGlobalTopNavBoxArea .edlBoxTitleInnerWrapper textarea
+{
+text-decoration:none;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlGlobalTopNavBoxArea .edlBoxTitleCell a:hover,
+#edlGlobalTopNavBoxArea .edlBoxTitleInnerWrapper a:hover
+{
+text-decoration:underline;
+color:#525252;
+
+
+
+
+background:transparent;
+
+
+
+}
+
+
+#edlGlobalTopNavBoxArea .edlBoxLoginLabelSpan,
+#edlGlobalTopNavBoxArea #edlBoxAuthEntryLostPasswordLink
+{
+font-size: 10pt;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#edlGlobalTopNavBoxArea .edlBoxListItem .edlBoxListMore,
+#edlGlobalTopNavBoxArea .edlBoxListItem .edlBoxListMore a
+{
+font-weight:normal;
+text-decoration:none;
+}
+
+#edlGlobalTopNavBoxArea .edlBoxListMoreNew
+{
+text-align: right;
+}
+
+
+#edlGlobalTopNavBoxArea .edlBoxListMoreNew a
+{
+font-size:14px;
+font-weight:normal;
+text-decoration:none;
+
+}
+
+
+
+
+
+#edlElement_804180927067359588_document
+{
+
+}
+
+
+
+#edlElement_804180927067359588_document
+{
+
+background-color: transparent;
+
+}
+
+#edlElement_804180927067359588_document .edlBoxTitle
+{
+
+
+
+
+
+padding-bottom:2px;
+
+
+margin-left:8px;
+margin-right:8px;
+padding-top:8px;
+
+
+}
+
+
+#edlElement_804180927067359588_document .edlBlogEntryBoxTitle
+{
+padding-top:16px;
+border-top:1px solid #c0c0c0;
+border-bottom:none;
+}
+
+#edlElement_804180927067359588_document .edlBoxTitle,
+#edlElement_804180927067359588_document .edlBoxTitleCell,
+#edlElement_804180927067359588_document .edlBoxTitleInnerWrapper
+{
+text-decoration:none;
+color:#525252;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+
+#edlElement_804180927067359588_document .edlBoxContent
+{
+padding:5px 8px 5px 8px;
+}
+
+
+
+
+
+
+
+#edlElement_804180927067359588_document .edlBoxTitle a,
+#edlElement_804180927067359588_document .edlBoxTitle textarea
+{
+color:#525252;
+
+
+background:transparent;
+
+}
+
+#edlElement_804180927067359588_document .edlBoxTitle a:hover
+{
+
+color:#525252;
+background:transparent;
+
+}
+
+
+
+#edlElement_804180927067359588_document .edlBoxListItem,
+#edlElement_804180927067359588_document .edlBoxListItem a,
+#edlElement_804180927067359588_document .edlBoxListItem textarea,
+#edlElement_804180927067359588_document .rssFeedEntryBody,
+#edlElement_804180927067359588_document .rssFeedEntryBody a,
+#edlElement_804180927067359588_document .rssFeedCopyright,
+#edlElement_804180927067359588_document .edlBoxContent p,
+#edlElement_804180927067359588_document .edlBoxContent a,
+#edlElement_804180927067359588_document .edlBoxContent textarea,
+#edlElement_804180927067359588_document .edlBoxContent span.smallest,
+#edlElement_804180927067359588_document .edlBoxContent .deleteMultiPostSpan,
+#edlElement_804180927067359588_document .edlBoxContent .edlLoginLabelSpan,
+#edlElement_804180927067359588_document .edlBoxContent #fsvItemsTable td
+{
+color:#004281;
+font:normal normal bold 14px/normal Arial, Helvetica, sans-serif;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#edlElement_804180927067359588_document .rssFeedHeader
+{
+color:#004281;
+font:normal normal bold 14px/normal Arial, Helvetica, sans-serif;
+
+
+font-size:17px;
+}
+
+#edlElement_804180927067359588_document .rssFeedEntryHeader,
+#edlElement_804180927067359588_document .rssFeedEntryHeader a
+{
+color:#004281;
+font:normal normal bold 14px/normal Arial, Helvetica, sans-serif;
+
+
+font-size:16px;
+}
+
+
+
+
+#edlElement_804180927067359588_document .edlBoxLoginLabelSpan,
+#edlElement_804180927067359588_document .edlBoxListItemSpan
+{
+color:#004281;
+font:normal normal bold 14px/normal Arial, Helvetica, sans-serif;
+
+}
+
+#edlElement_804180927067359588_document .pinnedFolderTitleStyle
+{
+color:#004281;
+padding: 1px;
+font-weight:bold !important;
+border-style:none;
+background-color: transparent !important;
+}
+
+#edlElement_804180927067359588_document .pinnedFolderContentStyle
+{
+color:#004281;
+padding: 1px;
+border-color: #004281;
+border-style:dashed;
+border-width:thin;
+background-color: transparent !important;
+-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";      /* IE 8 Opacity Fix */
+filter:alpha(opacity=40);   /*Work Around for IE's lack for support for RGBA */
+opacity: 0.4;           /* To set transparency levels for Contents Text (varies between 0.0 to 1.0) */
+}
+
+
+#edlElement_804180927067359588_document #edlBoxAuthEntryLostPasswordLink
+{
+font:normal normal bold 14px/normal Arial, Helvetica, sans-serif;
+
+}
+
+#edlElement_804180927067359588_document .edlBoxTitleCell a,
+#edlElement_804180927067359588_document .edlBoxTitleCell textarea,
+#edlElement_804180927067359588_document .edlBoxTitleInnerWrapper a,
+#edlElement_804180927067359588_document .edlBoxTitleInnerWrapper textarea
+{
+text-decoration:none;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlElement_804180927067359588_document .edlBoxTitleCell a:hover,
+#edlElement_804180927067359588_document .edlBoxTitleInnerWrapper a:hover
+{
+text-decoration:underline;
+color:#525252;
+
+
+
+
+background:transparent;
+
+
+
+}
+
+
+#edlElement_804180927067359588_document .edlBoxLoginLabelSpan,
+#edlElement_804180927067359588_document #edlBoxAuthEntryLostPasswordLink
+{
+font-size: 10pt;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#edlElement_804180927067359588_document .edlBoxListItem .edlBoxListMore,
+#edlElement_804180927067359588_document .edlBoxListItem .edlBoxListMore a
+{
+font-weight:normal;
+text-decoration:none;
+}
+
+#edlElement_804180927067359588_document .edlBoxListMoreNew
+{
+text-align: right;
+}
+
+
+#edlElement_804180927067359588_document .edlBoxListMoreNew a
+{
+font-size:13px;
+font-weight:normal;
+text-decoration:none;
+
+}
+
+
+
+
+
+#edlElement_804180853516501730_folder
+{
+
+}
+
+
+
+#edlElement_804180853516501730_folder
+{
+
+background-color: transparent;
+
+}
+
+#edlElement_804180853516501730_folder .edlBoxTitle
+{
+
+margin-bottom:5px;
+
+
+
+
+
+padding-bottom:2px;
+
+
+margin-left:8px;
+margin-right:8px;
+padding-top:8px;
+
+
+}
+
+
+#edlElement_804180853516501730_folder .edlBlogEntryBoxTitle
+{
+padding-top:16px;
+border-top:1px solid #c0c0c0;
+border-bottom:none;
+}
+
+#edlElement_804180853516501730_folder .edlBoxTitle,
+#edlElement_804180853516501730_folder .edlBoxTitleCell,
+#edlElement_804180853516501730_folder .edlBoxTitleInnerWrapper
+{
+text-decoration:none;
+color:#525252;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+
+#edlElement_804180853516501730_folder .edlBoxContent
+{
+padding:5px 8px 5px 8px;
+}
+
+
+
+
+
+
+
+#edlElement_804180853516501730_folder .edlBoxTitle a,
+#edlElement_804180853516501730_folder .edlBoxTitle textarea
+{
+color:#525252;
+
+
+background:transparent;
+
+}
+
+#edlElement_804180853516501730_folder .edlBoxTitle a:hover
+{
+
+color:#525252;
+background:transparent;
+
+}
+
+
+
+#edlElement_804180853516501730_folder .edlBoxListItem,
+#edlElement_804180853516501730_folder .edlBoxListItem a,
+#edlElement_804180853516501730_folder .edlBoxListItem textarea,
+#edlElement_804180853516501730_folder .rssFeedEntryBody,
+#edlElement_804180853516501730_folder .rssFeedEntryBody a,
+#edlElement_804180853516501730_folder .rssFeedCopyright,
+#edlElement_804180853516501730_folder .edlBoxContent p,
+#edlElement_804180853516501730_folder .edlBoxContent a,
+#edlElement_804180853516501730_folder .edlBoxContent textarea,
+#edlElement_804180853516501730_folder .edlBoxContent span.smallest,
+#edlElement_804180853516501730_folder .edlBoxContent .deleteMultiPostSpan,
+#edlElement_804180853516501730_folder .edlBoxContent .edlLoginLabelSpan,
+#edlElement_804180853516501730_folder .edlBoxContent #fsvItemsTable td
+{
+color:#ffffff;
+font:normal normal normal 10pt/20px Arial, Helvetica, sans-serif;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#edlElement_804180853516501730_folder .edlBoxLoginLabelSpan,
+#edlElement_804180853516501730_folder .edlBoxListItemSpan
+{
+color:#ffffff;
+font:normal normal normal 10pt/20px Arial, Helvetica, sans-serif;
+
+}
+
+#edlElement_804180853516501730_folder .pinnedFolderTitleStyle
+{
+color:#ffffff;
+padding: 1px;
+font-weight:bold !important;
+border-style:none;
+background-color: transparent !important;
+}
+
+#edlElement_804180853516501730_folder .pinnedFolderContentStyle
+{
+color:#ffffff;
+padding: 1px;
+border-color: #ffffff;
+border-style:dashed;
+border-width:thin;
+background-color: transparent !important;
+-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";      /* IE 8 Opacity Fix */
+filter:alpha(opacity=40);   /*Work Around for IE's lack for support for RGBA */
+opacity: 0.4;           /* To set transparency levels for Contents Text (varies between 0.0 to 1.0) */
+}
+
+
+#edlElement_804180853516501730_folder #edlBoxAuthEntryLostPasswordLink
+{
+font:normal normal normal 10pt/20px Arial, Helvetica, sans-serif;
+
+}
+
+#edlElement_804180853516501730_folder .edlBoxTitleCell a,
+#edlElement_804180853516501730_folder .edlBoxTitleCell textarea,
+#edlElement_804180853516501730_folder .edlBoxTitleInnerWrapper a,
+#edlElement_804180853516501730_folder .edlBoxTitleInnerWrapper textarea
+{
+text-decoration:none;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlElement_804180853516501730_folder .edlBoxTitleCell a:hover,
+#edlElement_804180853516501730_folder .edlBoxTitleInnerWrapper a:hover
+{
+text-decoration:underline;
+color:#525252;
+
+
+
+
+background:transparent;
+
+
+
+}
+
+
+#edlElement_804180853516501730_folder .edlBoxLoginLabelSpan,
+#edlElement_804180853516501730_folder #edlBoxAuthEntryLostPasswordLink
+{
+font-size: 10pt;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#edlElement_804180853516501730_folder .edlFolderBoxItem {
+margin-top:0;
+margin-bottom:0;
+}
+
+#edlElement_804180853516501730_folder .edlFolderBoxItemTitle {
+font-family: Arial, sans-serif;
+font-weight:bold;
+}
+
+#edlElement_804180853516501730_folder .edlFolderBoxItemTitleText {
+padding-bottom:2px;
+}
+
+#edlElement_804180853516501730_folder .edlFolderBoxItemTitle a,
+#edlElement_804180853516501730_folder .edlFolderBoxItemTitle textarea
+{
+text-decoration:underline;
+
+
+color:#ffffff;
+font:normal normal normal 10pt/20px Arial, Helvetica, sans-serif;
+
+}
+
+#edlElement_804180853516501730_folder .edlFolderBoxItemSummary {
+text-align:left;
+cursor:default;
+font:normal normal normal 10pt/20px Arial, Helvetica, sans-serif;
+
+color:#ffffff;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#edlElement_804180853516501730_folder .edlBoxListItem .edlBoxListMore,
+#edlElement_804180853516501730_folder .edlBoxListItem .edlBoxListMore a
+{
+font-weight:normal;
+text-decoration:none;
+}
+
+#edlElement_804180853516501730_folder .edlBoxListMoreNew
+{
+text-align: right;
+}
+
+
+#edlElement_804180853516501730_folder .edlBoxListMoreNew a
+{
+font-size:9pt;
+font-weight:normal;
+text-decoration:none;
+
+}
+
+
+
+
+
+#edlGlobalSideNavBoxArea
+{
+
+}
+
+
+
+#edlGlobalSideNavBoxArea
+{
+
+background-color: #ffffff; 
+
+}
+
+#edlGlobalSideNavBoxArea .edlBoxTitle
+{
+
+margin-bottom:5px;
+
+
+
+
+
+padding-bottom:2px;
+
+
+margin-left:8px;
+margin-right:8px;
+padding-top:8px;
+
+
+}
+
+
+#edlGlobalSideNavBoxArea .edlBlogEntryBoxTitle
+{
+padding-top:16px;
+border-top:1px solid #c0c0c0;
+border-bottom:none;
+}
+
+#edlGlobalSideNavBoxArea .edlBoxTitle,
+#edlGlobalSideNavBoxArea .edlBoxTitleCell,
+#edlGlobalSideNavBoxArea .edlBoxTitleInnerWrapper
+{
+text-decoration:none;
+color:#525252;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+
+#edlGlobalSideNavBoxArea .edlBoxContent
+{
+padding:5px 8px 5px 8px;
+}
+
+
+
+
+
+
+
+#edlGlobalSideNavBoxArea .edlBoxTitle a,
+#edlGlobalSideNavBoxArea .edlBoxTitle textarea
+{
+color:#525252;
+
+
+background:transparent;
+
+}
+
+#edlGlobalSideNavBoxArea .edlBoxTitle a:hover
+{
+
+color:#525252;
+background:transparent;
+
+}
+
+
+
+#edlGlobalSideNavBoxArea .edlBoxListItem,
+#edlGlobalSideNavBoxArea .edlBoxListItem a,
+#edlGlobalSideNavBoxArea .edlBoxListItem textarea,
+#edlGlobalSideNavBoxArea .rssFeedEntryBody,
+#edlGlobalSideNavBoxArea .rssFeedEntryBody a,
+#edlGlobalSideNavBoxArea .rssFeedCopyright,
+#edlGlobalSideNavBoxArea .edlBoxContent p,
+#edlGlobalSideNavBoxArea .edlBoxContent a,
+#edlGlobalSideNavBoxArea .edlBoxContent textarea,
+#edlGlobalSideNavBoxArea .edlBoxContent span.smallest,
+#edlGlobalSideNavBoxArea .edlBoxContent .deleteMultiPostSpan,
+#edlGlobalSideNavBoxArea .edlBoxContent .edlLoginLabelSpan,
+#edlGlobalSideNavBoxArea .edlBoxContent #fsvItemsTable td
+{
+color:#666666;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#edlGlobalSideNavBoxArea .edlBoxLoginLabelSpan,
+#edlGlobalSideNavBoxArea .edlBoxListItemSpan
+{
+color:#666666;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+#edlGlobalSideNavBoxArea .pinnedFolderTitleStyle
+{
+color:#666666;
+padding: 1px;
+font-weight:bold !important;
+border-style:none;
+background-color: transparent !important;
+}
+
+#edlGlobalSideNavBoxArea .pinnedFolderContentStyle
+{
+color:#666666;
+padding: 1px;
+border-color: #666666;
+border-style:dashed;
+border-width:thin;
+background-color: transparent !important;
+-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";      /* IE 8 Opacity Fix */
+filter:alpha(opacity=40);   /*Work Around for IE's lack for support for RGBA */
+opacity: 0.4;           /* To set transparency levels for Contents Text (varies between 0.0 to 1.0) */
+}
+
+
+#edlGlobalSideNavBoxArea #edlBoxAuthEntryLostPasswordLink
+{
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+#edlGlobalSideNavBoxArea .edlBoxTitleCell a,
+#edlGlobalSideNavBoxArea .edlBoxTitleCell textarea,
+#edlGlobalSideNavBoxArea .edlBoxTitleInnerWrapper a,
+#edlGlobalSideNavBoxArea .edlBoxTitleInnerWrapper textarea
+{
+text-decoration:none;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlGlobalSideNavBoxArea .edlBoxTitleCell a:hover,
+#edlGlobalSideNavBoxArea .edlBoxTitleInnerWrapper a:hover
+{
+text-decoration:underline;
+color:#525252;
+
+
+
+
+background:transparent;
+
+
+
+}
+
+
+#edlGlobalSideNavBoxArea .edlBoxLoginLabelSpan,
+#edlGlobalSideNavBoxArea #edlBoxAuthEntryLostPasswordLink
+{
+font-size: 10pt;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#edlGlobalSideNavBoxArea .edlBoxListItem .edlBoxListMore,
+#edlGlobalSideNavBoxArea .edlBoxListItem .edlBoxListMore a
+{
+font-weight:normal;
+text-decoration:none;
+}
+
+#edlGlobalSideNavBoxArea .edlBoxListMoreNew
+{
+text-align: right;
+}
+
+
+#edlGlobalSideNavBoxArea .edlBoxListMoreNew a
+{
+font-size:11px;
+font-weight:normal;
+text-decoration:none;
+
+}
+
+
+
+
+
+#edlLocalSideNavBoxArea
+{
+
+}
+
+
+
+#edlLocalSideNavBoxArea
+{
+
+background-color: #ffffff; 
+
+}
+
+#edlLocalSideNavBoxArea .edlBoxTitle
+{
+
+margin-bottom:5px;
+
+
+
+
+
+padding-bottom:2px;
+
+
+margin-left:8px;
+margin-right:8px;
+padding-top:8px;
+
+
+}
+
+
+#edlLocalSideNavBoxArea .edlBlogEntryBoxTitle
+{
+padding-top:16px;
+border-top:1px solid #c0c0c0;
+border-bottom:none;
+}
+
+#edlLocalSideNavBoxArea .edlBoxTitle,
+#edlLocalSideNavBoxArea .edlBoxTitleCell,
+#edlLocalSideNavBoxArea .edlBoxTitleInnerWrapper
+{
+text-decoration:none;
+color:#525252;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+
+#edlLocalSideNavBoxArea .edlBoxContent
+{
+padding:5px 8px 5px 8px;
+}
+
+
+
+
+
+
+
+#edlLocalSideNavBoxArea .edlBoxTitle a,
+#edlLocalSideNavBoxArea .edlBoxTitle textarea
+{
+color:#525252;
+
+
+background:transparent;
+
+}
+
+#edlLocalSideNavBoxArea .edlBoxTitle a:hover
+{
+
+color:#525252;
+background:transparent;
+
+}
+
+
+
+#edlLocalSideNavBoxArea .edlBoxListItem,
+#edlLocalSideNavBoxArea .edlBoxListItem a,
+#edlLocalSideNavBoxArea .edlBoxListItem textarea,
+#edlLocalSideNavBoxArea .rssFeedEntryBody,
+#edlLocalSideNavBoxArea .rssFeedEntryBody a,
+#edlLocalSideNavBoxArea .rssFeedCopyright,
+#edlLocalSideNavBoxArea .edlBoxContent p,
+#edlLocalSideNavBoxArea .edlBoxContent a,
+#edlLocalSideNavBoxArea .edlBoxContent textarea,
+#edlLocalSideNavBoxArea .edlBoxContent span.smallest,
+#edlLocalSideNavBoxArea .edlBoxContent .deleteMultiPostSpan,
+#edlLocalSideNavBoxArea .edlBoxContent .edlLoginLabelSpan,
+#edlLocalSideNavBoxArea .edlBoxContent #fsvItemsTable td
+{
+color:#666666;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#edlLocalSideNavBoxArea .edlBoxLoginLabelSpan,
+#edlLocalSideNavBoxArea .edlBoxListItemSpan
+{
+color:#666666;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+#edlLocalSideNavBoxArea .pinnedFolderTitleStyle
+{
+color:#666666;
+padding: 1px;
+font-weight:bold !important;
+border-style:none;
+background-color: transparent !important;
+}
+
+#edlLocalSideNavBoxArea .pinnedFolderContentStyle
+{
+color:#666666;
+padding: 1px;
+border-color: #666666;
+border-style:dashed;
+border-width:thin;
+background-color: transparent !important;
+-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";      /* IE 8 Opacity Fix */
+filter:alpha(opacity=40);   /*Work Around for IE's lack for support for RGBA */
+opacity: 0.4;           /* To set transparency levels for Contents Text (varies between 0.0 to 1.0) */
+}
+
+
+#edlLocalSideNavBoxArea #edlBoxAuthEntryLostPasswordLink
+{
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+#edlLocalSideNavBoxArea .edlBoxTitleCell a,
+#edlLocalSideNavBoxArea .edlBoxTitleCell textarea,
+#edlLocalSideNavBoxArea .edlBoxTitleInnerWrapper a,
+#edlLocalSideNavBoxArea .edlBoxTitleInnerWrapper textarea
+{
+text-decoration:none;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlLocalSideNavBoxArea .edlBoxTitleCell a:hover,
+#edlLocalSideNavBoxArea .edlBoxTitleInnerWrapper a:hover
+{
+text-decoration:underline;
+color:#525252;
+
+
+
+
+background:transparent;
+
+
+
+}
+
+
+#edlLocalSideNavBoxArea .edlBoxLoginLabelSpan,
+#edlLocalSideNavBoxArea #edlBoxAuthEntryLostPasswordLink
+{
+font-size: 10pt;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#edlLocalSideNavBoxArea .edlBoxListItem .edlBoxListMore,
+#edlLocalSideNavBoxArea .edlBoxListItem .edlBoxListMore a
+{
+font-weight:normal;
+text-decoration:none;
+}
+
+#edlLocalSideNavBoxArea .edlBoxListMoreNew
+{
+text-align: right;
+}
+
+
+#edlLocalSideNavBoxArea .edlBoxListMoreNew a
+{
+font-size:11px;
+font-weight:normal;
+text-decoration:none;
+
+}
+
+
+
+
+
+#edlElement_804180853498288916_document
+{
+
+}
+
+
+
+#edlElement_804180853498288916_document
+{
+
+background-color: #004281; background-image: url(/files/_qWIcr_/8bc391a582ad6bed3745a49013852ec4/headerTile.png?lastMod=1374499723007&isPlacedWithSiteDesigner=true); background-position: top left;background-repeat: repeat-x;
+
+}
+
+#edlElement_804180853498288916_document .edlBoxTitle
+{
+
+margin-bottom:5px;
+
+
+
+
+
+padding-bottom:2px;
+
+
+margin-left:8px;
+margin-right:8px;
+padding-top:8px;
+
+
+}
+
+
+#edlElement_804180853498288916_document .edlBlogEntryBoxTitle
+{
+padding-top:16px;
+border-top:1px solid #c0c0c0;
+border-bottom:none;
+}
+
+#edlElement_804180853498288916_document .edlBoxTitle,
+#edlElement_804180853498288916_document .edlBoxTitleCell,
+#edlElement_804180853498288916_document .edlBoxTitleInnerWrapper
+{
+text-decoration:none;
+color:#525252;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+
+#edlElement_804180853498288916_document .edlBoxContent
+{
+padding:5px 8px 5px 8px;
+}
+
+
+
+
+
+
+
+#edlElement_804180853498288916_document .edlBoxTitle a,
+#edlElement_804180853498288916_document .edlBoxTitle textarea
+{
+color:#525252;
+
+
+background:transparent;
+
+}
+
+#edlElement_804180853498288916_document .edlBoxTitle a:hover
+{
+
+color:#525252;
+background:transparent;
+
+}
+
+
+
+#edlElement_804180853498288916_document .edlBoxListItem,
+#edlElement_804180853498288916_document .edlBoxListItem a,
+#edlElement_804180853498288916_document .edlBoxListItem textarea,
+#edlElement_804180853498288916_document .rssFeedEntryBody,
+#edlElement_804180853498288916_document .rssFeedEntryBody a,
+#edlElement_804180853498288916_document .rssFeedCopyright,
+#edlElement_804180853498288916_document .edlBoxContent p,
+#edlElement_804180853498288916_document .edlBoxContent a,
+#edlElement_804180853498288916_document .edlBoxContent textarea,
+#edlElement_804180853498288916_document .edlBoxContent span.smallest,
+#edlElement_804180853498288916_document .edlBoxContent .deleteMultiPostSpan,
+#edlElement_804180853498288916_document .edlBoxContent .edlLoginLabelSpan,
+#edlElement_804180853498288916_document .edlBoxContent #fsvItemsTable td
+{
+color:#ffffff;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#edlElement_804180853498288916_document .rssFeedHeader
+{
+color:#ffffff;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+
+font-size:21px;
+}
+
+#edlElement_804180853498288916_document .rssFeedEntryHeader,
+#edlElement_804180853498288916_document .rssFeedEntryHeader a
+{
+color:#ffffff;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+
+font-size:20px;
+}
+
+
+
+
+#edlElement_804180853498288916_document .edlBoxLoginLabelSpan,
+#edlElement_804180853498288916_document .edlBoxListItemSpan
+{
+color:#ffffff;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlElement_804180853498288916_document .pinnedFolderTitleStyle
+{
+color:#ffffff;
+padding: 1px;
+font-weight:bold !important;
+border-style:none;
+background-color: transparent !important;
+}
+
+#edlElement_804180853498288916_document .pinnedFolderContentStyle
+{
+color:#ffffff;
+padding: 1px;
+border-color: #ffffff;
+border-style:dashed;
+border-width:thin;
+background-color: transparent !important;
+-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";      /* IE 8 Opacity Fix */
+filter:alpha(opacity=40);   /*Work Around for IE's lack for support for RGBA */
+opacity: 0.4;           /* To set transparency levels for Contents Text (varies between 0.0 to 1.0) */
+}
+
+
+#edlElement_804180853498288916_document #edlBoxAuthEntryLostPasswordLink
+{
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlElement_804180853498288916_document .edlBoxTitleCell a,
+#edlElement_804180853498288916_document .edlBoxTitleCell textarea,
+#edlElement_804180853498288916_document .edlBoxTitleInnerWrapper a,
+#edlElement_804180853498288916_document .edlBoxTitleInnerWrapper textarea
+{
+text-decoration:none;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlElement_804180853498288916_document .edlBoxTitleCell a:hover,
+#edlElement_804180853498288916_document .edlBoxTitleInnerWrapper a:hover
+{
+text-decoration:underline;
+color:#525252;
+
+
+
+
+background:transparent;
+
+
+
+}
+
+
+#edlElement_804180853498288916_document .edlBoxLoginLabelSpan,
+#edlElement_804180853498288916_document #edlBoxAuthEntryLostPasswordLink
+{
+font-size: 10pt;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#edlElement_804180853498288916_document .edlBoxListItem .edlBoxListMore,
+#edlElement_804180853498288916_document .edlBoxListItem .edlBoxListMore a
+{
+font-weight:normal;
+text-decoration:none;
+}
+
+#edlElement_804180853498288916_document .edlBoxListMoreNew
+{
+text-align: right;
+}
+
+
+#edlElement_804180853498288916_document .edlBoxListMoreNew a
+{
+font-size:17px;
+font-weight:normal;
+text-decoration:none;
+
+}
+
+
+
+
+
+#edlNewsBoxArea
+{
+
+}
+
+
+
+#edlNewsBoxArea
+{
+
+background-color: #ffffff; 
+
+}
+
+#edlNewsBoxArea .edlBoxTitle
+{
+
+margin-bottom:5px;
+
+
+
+
+
+padding-bottom:2px;
+
+
+margin-left:8px;
+margin-right:8px;
+padding-top:8px;
+
+
+}
+
+
+#edlNewsBoxArea .edlBlogEntryBoxTitle
+{
+padding-top:16px;
+border-top:1px solid #c0c0c0;
+border-bottom:none;
+}
+
+#edlNewsBoxArea .edlBoxTitle,
+#edlNewsBoxArea .edlBoxTitleCell,
+#edlNewsBoxArea .edlBoxTitleInnerWrapper
+{
+text-decoration:none;
+color:#525252;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+
+#edlNewsBoxArea .edlBoxContent
+{
+padding:5px 8px 5px 8px;
+}
+
+
+
+
+
+
+
+#edlNewsBoxArea .edlBoxTitle a,
+#edlNewsBoxArea .edlBoxTitle textarea
+{
+color:#525252;
+
+
+background:transparent;
+
+}
+
+#edlNewsBoxArea .edlBoxTitle a:hover
+{
+
+color:#525252;
+background:transparent;
+
+}
+
+
+
+#edlNewsBoxArea .edlBoxListItem,
+#edlNewsBoxArea .edlBoxListItem a,
+#edlNewsBoxArea .edlBoxListItem textarea,
+#edlNewsBoxArea .rssFeedEntryBody,
+#edlNewsBoxArea .rssFeedEntryBody a,
+#edlNewsBoxArea .rssFeedCopyright,
+#edlNewsBoxArea .edlBoxContent p,
+#edlNewsBoxArea .edlBoxContent a,
+#edlNewsBoxArea .edlBoxContent textarea,
+#edlNewsBoxArea .edlBoxContent span.smallest,
+#edlNewsBoxArea .edlBoxContent .deleteMultiPostSpan,
+#edlNewsBoxArea .edlBoxContent .edlLoginLabelSpan,
+#edlNewsBoxArea .edlBoxContent #fsvItemsTable td
+{
+color:#666666;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#edlNewsBoxArea .edlBoxLoginLabelSpan,
+#edlNewsBoxArea .edlBoxListItemSpan
+{
+color:#666666;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+#edlNewsBoxArea .pinnedFolderTitleStyle
+{
+color:#666666;
+padding: 1px;
+font-weight:bold !important;
+border-style:none;
+background-color: transparent !important;
+}
+
+#edlNewsBoxArea .pinnedFolderContentStyle
+{
+color:#666666;
+padding: 1px;
+border-color: #666666;
+border-style:dashed;
+border-width:thin;
+background-color: transparent !important;
+-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";      /* IE 8 Opacity Fix */
+filter:alpha(opacity=40);   /*Work Around for IE's lack for support for RGBA */
+opacity: 0.4;           /* To set transparency levels for Contents Text (varies between 0.0 to 1.0) */
+}
+
+
+#edlNewsBoxArea #edlBoxAuthEntryLostPasswordLink
+{
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+#edlNewsBoxArea .edlBoxTitleCell a,
+#edlNewsBoxArea .edlBoxTitleCell textarea,
+#edlNewsBoxArea .edlBoxTitleInnerWrapper a,
+#edlNewsBoxArea .edlBoxTitleInnerWrapper textarea
+{
+text-decoration:none;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlNewsBoxArea .edlBoxTitleCell a:hover,
+#edlNewsBoxArea .edlBoxTitleInnerWrapper a:hover
+{
+text-decoration:underline;
+color:#525252;
+
+
+
+
+background:transparent;
+
+
+
+}
+
+
+#edlNewsBoxArea .edlBoxLoginLabelSpan,
+#edlNewsBoxArea #edlBoxAuthEntryLostPasswordLink
+{
+font-size: 10pt;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#edlNewsBoxArea .edlBoxListItem .edlBoxListMore,
+#edlNewsBoxArea .edlBoxListItem .edlBoxListMore a
+{
+font-weight:normal;
+text-decoration:none;
+}
+
+#edlNewsBoxArea .edlBoxListMoreNew
+{
+text-align: right;
+}
+
+
+#edlNewsBoxArea .edlBoxListMoreNew a
+{
+font-size:11px;
+font-weight:normal;
+text-decoration:none;
+
+}
+
+
+
+
+
+#edlElement_804180853525878484_document
+{
+
+}
+
+
+
+#edlElement_804180853525878484_document
+{
+
+background-color: #a3a60f; background-image: url(/files/_qWIcr_/8bc391a582ad6bed3745a49013852ec4/headerTile.png?lastMod=1374499723007&isPlacedWithSiteDesigner=true); background-position: top left;background-repeat: repeat-x;
+
+}
+
+#edlElement_804180853525878484_document .edlBoxTitle
+{
+
+margin-bottom:5px;
+
+
+
+
+
+padding-bottom:2px;
+
+
+margin-left:8px;
+margin-right:8px;
+padding-top:8px;
+
+
+}
+
+
+#edlElement_804180853525878484_document .edlBlogEntryBoxTitle
+{
+padding-top:16px;
+border-top:1px solid #c0c0c0;
+border-bottom:none;
+}
+
+#edlElement_804180853525878484_document .edlBoxTitle,
+#edlElement_804180853525878484_document .edlBoxTitleCell,
+#edlElement_804180853525878484_document .edlBoxTitleInnerWrapper
+{
+text-decoration:none;
+color:#525252;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+
+#edlElement_804180853525878484_document .edlBoxContent
+{
+padding:5px 8px 5px 8px;
+}
+
+
+
+
+
+
+
+#edlElement_804180853525878484_document .edlBoxTitle a,
+#edlElement_804180853525878484_document .edlBoxTitle textarea
+{
+color:#525252;
+
+
+background:transparent;
+
+}
+
+#edlElement_804180853525878484_document .edlBoxTitle a:hover
+{
+
+color:#525252;
+background:transparent;
+
+}
+
+
+
+#edlElement_804180853525878484_document .edlBoxListItem,
+#edlElement_804180853525878484_document .edlBoxListItem a,
+#edlElement_804180853525878484_document .edlBoxListItem textarea,
+#edlElement_804180853525878484_document .rssFeedEntryBody,
+#edlElement_804180853525878484_document .rssFeedEntryBody a,
+#edlElement_804180853525878484_document .rssFeedCopyright,
+#edlElement_804180853525878484_document .edlBoxContent p,
+#edlElement_804180853525878484_document .edlBoxContent a,
+#edlElement_804180853525878484_document .edlBoxContent textarea,
+#edlElement_804180853525878484_document .edlBoxContent span.smallest,
+#edlElement_804180853525878484_document .edlBoxContent .deleteMultiPostSpan,
+#edlElement_804180853525878484_document .edlBoxContent .edlLoginLabelSpan,
+#edlElement_804180853525878484_document .edlBoxContent #fsvItemsTable td
+{
+color:#ffffff;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#edlElement_804180853525878484_document .rssFeedHeader
+{
+color:#ffffff;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+
+font-size:21px;
+}
+
+#edlElement_804180853525878484_document .rssFeedEntryHeader,
+#edlElement_804180853525878484_document .rssFeedEntryHeader a
+{
+color:#ffffff;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+
+font-size:20px;
+}
+
+
+
+
+#edlElement_804180853525878484_document .edlBoxLoginLabelSpan,
+#edlElement_804180853525878484_document .edlBoxListItemSpan
+{
+color:#ffffff;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlElement_804180853525878484_document .pinnedFolderTitleStyle
+{
+color:#ffffff;
+padding: 1px;
+font-weight:bold !important;
+border-style:none;
+background-color: transparent !important;
+}
+
+#edlElement_804180853525878484_document .pinnedFolderContentStyle
+{
+color:#ffffff;
+padding: 1px;
+border-color: #ffffff;
+border-style:dashed;
+border-width:thin;
+background-color: transparent !important;
+-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";      /* IE 8 Opacity Fix */
+filter:alpha(opacity=40);   /*Work Around for IE's lack for support for RGBA */
+opacity: 0.4;           /* To set transparency levels for Contents Text (varies between 0.0 to 1.0) */
+}
+
+
+#edlElement_804180853525878484_document #edlBoxAuthEntryLostPasswordLink
+{
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlElement_804180853525878484_document .edlBoxTitleCell a,
+#edlElement_804180853525878484_document .edlBoxTitleCell textarea,
+#edlElement_804180853525878484_document .edlBoxTitleInnerWrapper a,
+#edlElement_804180853525878484_document .edlBoxTitleInnerWrapper textarea
+{
+text-decoration:none;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlElement_804180853525878484_document .edlBoxTitleCell a:hover,
+#edlElement_804180853525878484_document .edlBoxTitleInnerWrapper a:hover
+{
+text-decoration:underline;
+color:#525252;
+
+
+
+
+background:transparent;
+
+
+
+}
+
+
+#edlElement_804180853525878484_document .edlBoxLoginLabelSpan,
+#edlElement_804180853525878484_document #edlBoxAuthEntryLostPasswordLink
+{
+font-size: 10pt;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#edlElement_804180853525878484_document .edlBoxListItem .edlBoxListMore,
+#edlElement_804180853525878484_document .edlBoxListItem .edlBoxListMore a
+{
+font-weight:normal;
+text-decoration:none;
+}
+
+#edlElement_804180853525878484_document .edlBoxListMoreNew
+{
+text-align: right;
+}
+
+
+#edlElement_804180853525878484_document .edlBoxListMoreNew a
+{
+font-size:17px;
+font-weight:normal;
+text-decoration:none;
+
+}
+
+
+
+
+
+#edlCalendarBoxArea
+{
+
+}
+
+
+
+#edlCalendarBoxArea
+{
+
+background-color: #ffffff; 
+
+}
+
+#edlCalendarBoxArea .edlBoxTitle
+{
+
+margin-bottom:5px;
+
+
+
+
+
+padding-bottom:2px;
+
+
+margin-left:8px;
+margin-right:8px;
+padding-top:8px;
+
+
+}
+
+
+#edlCalendarBoxArea .edlBlogEntryBoxTitle
+{
+padding-top:16px;
+border-top:1px solid #c0c0c0;
+border-bottom:none;
+}
+
+#edlCalendarBoxArea .edlBoxTitle,
+#edlCalendarBoxArea .edlBoxTitleCell,
+#edlCalendarBoxArea .edlBoxTitleInnerWrapper
+{
+text-decoration:none;
+color:#525252;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+
+#edlCalendarBoxArea .edlBoxContent
+{
+padding:5px 8px 5px 8px;
+}
+
+
+
+
+
+
+
+#edlCalendarBoxArea .edlBoxTitle a,
+#edlCalendarBoxArea .edlBoxTitle textarea
+{
+color:#525252;
+
+
+background:transparent;
+
+}
+
+#edlCalendarBoxArea .edlBoxTitle a:hover
+{
+
+color:#525252;
+background:transparent;
+
+}
+
+
+
+#edlCalendarBoxArea .edlBoxListItem,
+#edlCalendarBoxArea .edlBoxListItem a,
+#edlCalendarBoxArea .edlBoxListItem textarea,
+#edlCalendarBoxArea .rssFeedEntryBody,
+#edlCalendarBoxArea .rssFeedEntryBody a,
+#edlCalendarBoxArea .rssFeedCopyright,
+#edlCalendarBoxArea .edlBoxContent p,
+#edlCalendarBoxArea .edlBoxContent a,
+#edlCalendarBoxArea .edlBoxContent textarea,
+#edlCalendarBoxArea .edlBoxContent span.smallest,
+#edlCalendarBoxArea .edlBoxContent .deleteMultiPostSpan,
+#edlCalendarBoxArea .edlBoxContent .edlLoginLabelSpan,
+#edlCalendarBoxArea .edlBoxContent #fsvItemsTable td
+{
+color:#666666;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#edlCalendarBoxArea .edlBoxLoginLabelSpan,
+#edlCalendarBoxArea .edlBoxListItemSpan
+{
+color:#666666;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+#edlCalendarBoxArea .pinnedFolderTitleStyle
+{
+color:#666666;
+padding: 1px;
+font-weight:bold !important;
+border-style:none;
+background-color: transparent !important;
+}
+
+#edlCalendarBoxArea .pinnedFolderContentStyle
+{
+color:#666666;
+padding: 1px;
+border-color: #666666;
+border-style:dashed;
+border-width:thin;
+background-color: transparent !important;
+-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";      /* IE 8 Opacity Fix */
+filter:alpha(opacity=40);   /*Work Around for IE's lack for support for RGBA */
+opacity: 0.4;           /* To set transparency levels for Contents Text (varies between 0.0 to 1.0) */
+}
+
+
+#edlCalendarBoxArea #edlBoxAuthEntryLostPasswordLink
+{
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+#edlCalendarBoxArea .edlBoxTitleCell a,
+#edlCalendarBoxArea .edlBoxTitleCell textarea,
+#edlCalendarBoxArea .edlBoxTitleInnerWrapper a,
+#edlCalendarBoxArea .edlBoxTitleInnerWrapper textarea
+{
+text-decoration:none;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlCalendarBoxArea .edlBoxTitleCell a:hover,
+#edlCalendarBoxArea .edlBoxTitleInnerWrapper a:hover
+{
+text-decoration:underline;
+color:#525252;
+
+
+
+
+background:transparent;
+
+
+
+}
+
+
+#edlCalendarBoxArea .edlBoxLoginLabelSpan,
+#edlCalendarBoxArea #edlBoxAuthEntryLostPasswordLink
+{
+font-size: 10pt;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#edlCalendarBoxArea .edlBoxListItem .edlBoxListMore,
+#edlCalendarBoxArea .edlBoxListItem .edlBoxListMore a
+{
+font-weight:normal;
+text-decoration:none;
+}
+
+#edlCalendarBoxArea .edlBoxListMoreNew
+{
+text-align: right;
+}
+
+
+#edlCalendarBoxArea .edlBoxListMoreNew a
+{
+font-size:11px;
+font-weight:normal;
+text-decoration:none;
+
+}
+
+
+
+
+
+#edlElement_804180853523905348_document
+{
+
+}
+
+
+
+#edlElement_804180853523905348_document
+{
+
+background-color: #004281; background-image: url(/files/_qWIcr_/8bc391a582ad6bed3745a49013852ec4/headerTile.png?lastMod=1374499723007&isPlacedWithSiteDesigner=true); background-position: top left;background-repeat: repeat-x;
+
+}
+
+#edlElement_804180853523905348_document .edlBoxTitle
+{
+
+margin-bottom:5px;
+
+
+
+
+
+padding-bottom:2px;
+
+
+margin-left:8px;
+margin-right:8px;
+padding-top:8px;
+
+
+}
+
+
+#edlElement_804180853523905348_document .edlBlogEntryBoxTitle
+{
+padding-top:16px;
+border-top:1px solid #c0c0c0;
+border-bottom:none;
+}
+
+#edlElement_804180853523905348_document .edlBoxTitle,
+#edlElement_804180853523905348_document .edlBoxTitleCell,
+#edlElement_804180853523905348_document .edlBoxTitleInnerWrapper
+{
+text-decoration:none;
+color:#525252;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+
+#edlElement_804180853523905348_document .edlBoxContent
+{
+padding:5px 8px 5px 8px;
+}
+
+
+
+
+
+
+
+#edlElement_804180853523905348_document .edlBoxTitle a,
+#edlElement_804180853523905348_document .edlBoxTitle textarea
+{
+color:#525252;
+
+
+background:transparent;
+
+}
+
+#edlElement_804180853523905348_document .edlBoxTitle a:hover
+{
+
+color:#525252;
+background:transparent;
+
+}
+
+
+
+#edlElement_804180853523905348_document .edlBoxListItem,
+#edlElement_804180853523905348_document .edlBoxListItem a,
+#edlElement_804180853523905348_document .edlBoxListItem textarea,
+#edlElement_804180853523905348_document .rssFeedEntryBody,
+#edlElement_804180853523905348_document .rssFeedEntryBody a,
+#edlElement_804180853523905348_document .rssFeedCopyright,
+#edlElement_804180853523905348_document .edlBoxContent p,
+#edlElement_804180853523905348_document .edlBoxContent a,
+#edlElement_804180853523905348_document .edlBoxContent textarea,
+#edlElement_804180853523905348_document .edlBoxContent span.smallest,
+#edlElement_804180853523905348_document .edlBoxContent .deleteMultiPostSpan,
+#edlElement_804180853523905348_document .edlBoxContent .edlLoginLabelSpan,
+#edlElement_804180853523905348_document .edlBoxContent #fsvItemsTable td
+{
+color:#ffffff;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#edlElement_804180853523905348_document .rssFeedHeader
+{
+color:#ffffff;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+
+font-size:21px;
+}
+
+#edlElement_804180853523905348_document .rssFeedEntryHeader,
+#edlElement_804180853523905348_document .rssFeedEntryHeader a
+{
+color:#ffffff;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+
+font-size:20px;
+}
+
+
+
+
+#edlElement_804180853523905348_document .edlBoxLoginLabelSpan,
+#edlElement_804180853523905348_document .edlBoxListItemSpan
+{
+color:#ffffff;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlElement_804180853523905348_document .pinnedFolderTitleStyle
+{
+color:#ffffff;
+padding: 1px;
+font-weight:bold !important;
+border-style:none;
+background-color: transparent !important;
+}
+
+#edlElement_804180853523905348_document .pinnedFolderContentStyle
+{
+color:#ffffff;
+padding: 1px;
+border-color: #ffffff;
+border-style:dashed;
+border-width:thin;
+background-color: transparent !important;
+-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";      /* IE 8 Opacity Fix */
+filter:alpha(opacity=40);   /*Work Around for IE's lack for support for RGBA */
+opacity: 0.4;           /* To set transparency levels for Contents Text (varies between 0.0 to 1.0) */
+}
+
+
+#edlElement_804180853523905348_document #edlBoxAuthEntryLostPasswordLink
+{
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlElement_804180853523905348_document .edlBoxTitleCell a,
+#edlElement_804180853523905348_document .edlBoxTitleCell textarea,
+#edlElement_804180853523905348_document .edlBoxTitleInnerWrapper a,
+#edlElement_804180853523905348_document .edlBoxTitleInnerWrapper textarea
+{
+text-decoration:none;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlElement_804180853523905348_document .edlBoxTitleCell a:hover,
+#edlElement_804180853523905348_document .edlBoxTitleInnerWrapper a:hover
+{
+text-decoration:underline;
+color:#525252;
+
+
+
+
+background:transparent;
+
+
+
+}
+
+
+#edlElement_804180853523905348_document .edlBoxLoginLabelSpan,
+#edlElement_804180853523905348_document #edlBoxAuthEntryLostPasswordLink
+{
+font-size: 10pt;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#edlElement_804180853523905348_document .edlBoxListItem .edlBoxListMore,
+#edlElement_804180853523905348_document .edlBoxListItem .edlBoxListMore a
+{
+font-weight:normal;
+text-decoration:none;
+}
+
+#edlElement_804180853523905348_document .edlBoxListMoreNew
+{
+text-align: right;
+}
+
+
+#edlElement_804180853523905348_document .edlBoxListMoreNew a
+{
+font-size:17px;
+font-weight:normal;
+text-decoration:none;
+
+}
+
+
+
+
+
+#edlLinksBoxArea
+{
+
+}
+
+
+
+#edlLinksBoxArea
+{
+
+background-color: #ffffff; 
+
+}
+
+#edlLinksBoxArea .edlBoxTitle
+{
+
+margin-bottom:5px;
+
+
+
+
+
+padding-bottom:2px;
+
+
+margin-left:8px;
+margin-right:8px;
+padding-top:8px;
+
+
+}
+
+
+#edlLinksBoxArea .edlBlogEntryBoxTitle
+{
+padding-top:16px;
+border-top:1px solid #c0c0c0;
+border-bottom:none;
+}
+
+#edlLinksBoxArea .edlBoxTitle,
+#edlLinksBoxArea .edlBoxTitleCell,
+#edlLinksBoxArea .edlBoxTitleInnerWrapper
+{
+text-decoration:none;
+color:#525252;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+
+#edlLinksBoxArea .edlBoxContent
+{
+padding:5px 8px 5px 8px;
+}
+
+
+
+
+
+
+
+#edlLinksBoxArea .edlBoxTitle a,
+#edlLinksBoxArea .edlBoxTitle textarea
+{
+color:#525252;
+
+
+background:transparent;
+
+}
+
+#edlLinksBoxArea .edlBoxTitle a:hover
+{
+
+color:#525252;
+background:transparent;
+
+}
+
+
+
+#edlLinksBoxArea .edlBoxListItem,
+#edlLinksBoxArea .edlBoxListItem a,
+#edlLinksBoxArea .edlBoxListItem textarea,
+#edlLinksBoxArea .rssFeedEntryBody,
+#edlLinksBoxArea .rssFeedEntryBody a,
+#edlLinksBoxArea .rssFeedCopyright,
+#edlLinksBoxArea .edlBoxContent p,
+#edlLinksBoxArea .edlBoxContent a,
+#edlLinksBoxArea .edlBoxContent textarea,
+#edlLinksBoxArea .edlBoxContent span.smallest,
+#edlLinksBoxArea .edlBoxContent .deleteMultiPostSpan,
+#edlLinksBoxArea .edlBoxContent .edlLoginLabelSpan,
+#edlLinksBoxArea .edlBoxContent #fsvItemsTable td
+{
+color:#666666;
+font:normal normal bold 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#edlLinksBoxArea .edlBoxLoginLabelSpan,
+#edlLinksBoxArea .edlBoxListItemSpan
+{
+color:#666666;
+font:normal normal bold 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+#edlLinksBoxArea .pinnedFolderTitleStyle
+{
+color:#666666;
+padding: 1px;
+font-weight:bold !important;
+border-style:none;
+background-color: transparent !important;
+}
+
+#edlLinksBoxArea .pinnedFolderContentStyle
+{
+color:#666666;
+padding: 1px;
+border-color: #666666;
+border-style:dashed;
+border-width:thin;
+background-color: transparent !important;
+-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";      /* IE 8 Opacity Fix */
+filter:alpha(opacity=40);   /*Work Around for IE's lack for support for RGBA */
+opacity: 0.4;           /* To set transparency levels for Contents Text (varies between 0.0 to 1.0) */
+}
+
+
+#edlLinksBoxArea #edlBoxAuthEntryLostPasswordLink
+{
+font:normal normal bold 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+#edlLinksBoxArea .edlBoxTitleCell a,
+#edlLinksBoxArea .edlBoxTitleCell textarea,
+#edlLinksBoxArea .edlBoxTitleInnerWrapper a,
+#edlLinksBoxArea .edlBoxTitleInnerWrapper textarea
+{
+text-decoration:none;
+font:normal normal normal 18px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlLinksBoxArea .edlBoxTitleCell a:hover,
+#edlLinksBoxArea .edlBoxTitleInnerWrapper a:hover
+{
+text-decoration:underline;
+color:#525252;
+
+
+
+
+background:transparent;
+
+
+
+}
+
+
+#edlLinksBoxArea .edlBoxLoginLabelSpan,
+#edlLinksBoxArea #edlBoxAuthEntryLostPasswordLink
+{
+font-size: 10pt;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#edlLinksBoxArea .edlBoxListItem .edlBoxListMore,
+#edlLinksBoxArea .edlBoxListItem .edlBoxListMore a
+{
+font-weight:normal;
+text-decoration:none;
+}
+
+#edlLinksBoxArea .edlBoxListMoreNew
+{
+text-align: right;
+}
+
+
+#edlLinksBoxArea .edlBoxListMoreNew a
+{
+font-size:11px;
+font-weight:normal;
+text-decoration:none;
+
+}
+
+
+
+
+
+#edlElement_804180853523503572_document
+{
+
+}
+
+
+
+#edlElement_804180853523503572_document
+{
+
+background-color: transparent;
+
+}
+
+#edlElement_804180853523503572_document .edlBoxTitle
+{
+
+margin-bottom:5px;
+
+
+
+
+
+padding-bottom:2px;
+
+
+margin-left:8px;
+margin-right:8px;
+padding-top:8px;
+
+
+}
+
+
+#edlElement_804180853523503572_document .edlBlogEntryBoxTitle
+{
+padding-top:16px;
+border-top:1px solid #c0c0c0;
+border-bottom:none;
+}
+
+#edlElement_804180853523503572_document .edlBoxTitle,
+#edlElement_804180853523503572_document .edlBoxTitleCell,
+#edlElement_804180853523503572_document .edlBoxTitleInnerWrapper
+{
+text-decoration:none;
+color:#525252;
+font:normal normal normal 14px/normal lato-regular-webfont, sans-serif;
+
+}
+
+
+#edlElement_804180853523503572_document .edlBoxContent
+{
+padding:5px 8px 5px 8px;
+}
+
+
+
+
+
+
+
+#edlElement_804180853523503572_document .edlBoxTitle a,
+#edlElement_804180853523503572_document .edlBoxTitle textarea
+{
+color:#525252;
+
+
+background:transparent;
+
+}
+
+#edlElement_804180853523503572_document .edlBoxTitle a:hover
+{
+
+color:#525252;
+background:transparent;
+
+}
+
+
+
+#edlElement_804180853523503572_document .edlBoxListItem,
+#edlElement_804180853523503572_document .edlBoxListItem a,
+#edlElement_804180853523503572_document .edlBoxListItem textarea,
+#edlElement_804180853523503572_document .rssFeedEntryBody,
+#edlElement_804180853523503572_document .rssFeedEntryBody a,
+#edlElement_804180853523503572_document .rssFeedCopyright,
+#edlElement_804180853523503572_document .edlBoxContent p,
+#edlElement_804180853523503572_document .edlBoxContent a,
+#edlElement_804180853523503572_document .edlBoxContent textarea,
+#edlElement_804180853523503572_document .edlBoxContent span.smallest,
+#edlElement_804180853523503572_document .edlBoxContent .deleteMultiPostSpan,
+#edlElement_804180853523503572_document .edlBoxContent .edlLoginLabelSpan,
+#edlElement_804180853523503572_document .edlBoxContent #fsvItemsTable td
+{
+color:#666666;
+font:normal normal normal 14px/normal lato-regular-webfont, sans-serif;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#edlElement_804180853523503572_document .rssFeedHeader
+{
+color:#666666;
+font:normal normal normal 14px/normal lato-regular-webfont, sans-serif;
+
+
+font-size:17px;
+}
+
+#edlElement_804180853523503572_document .rssFeedEntryHeader,
+#edlElement_804180853523503572_document .rssFeedEntryHeader a
+{
+color:#666666;
+font:normal normal normal 14px/normal lato-regular-webfont, sans-serif;
+
+
+font-size:16px;
+}
+
+
+
+
+#edlElement_804180853523503572_document .edlBoxLoginLabelSpan,
+#edlElement_804180853523503572_document .edlBoxListItemSpan
+{
+color:#666666;
+font:normal normal normal 14px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlElement_804180853523503572_document .pinnedFolderTitleStyle
+{
+color:#666666;
+padding: 1px;
+font-weight:bold !important;
+border-style:none;
+background-color: transparent !important;
+}
+
+#edlElement_804180853523503572_document .pinnedFolderContentStyle
+{
+color:#666666;
+padding: 1px;
+border-color: #666666;
+border-style:dashed;
+border-width:thin;
+background-color: transparent !important;
+-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";      /* IE 8 Opacity Fix */
+filter:alpha(opacity=40);   /*Work Around for IE's lack for support for RGBA */
+opacity: 0.4;           /* To set transparency levels for Contents Text (varies between 0.0 to 1.0) */
+}
+
+
+#edlElement_804180853523503572_document #edlBoxAuthEntryLostPasswordLink
+{
+font:normal normal normal 14px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlElement_804180853523503572_document .edlBoxTitleCell a,
+#edlElement_804180853523503572_document .edlBoxTitleCell textarea,
+#edlElement_804180853523503572_document .edlBoxTitleInnerWrapper a,
+#edlElement_804180853523503572_document .edlBoxTitleInnerWrapper textarea
+{
+text-decoration:none;
+font:normal normal normal 14px/normal lato-regular-webfont, sans-serif;
+
+}
+
+#edlElement_804180853523503572_document .edlBoxTitleCell a:hover,
+#edlElement_804180853523503572_document .edlBoxTitleInnerWrapper a:hover
+{
+text-decoration:underline;
+color:#525252;
+
+
+
+
+background:transparent;
+
+
+
+}
+
+
+#edlElement_804180853523503572_document .edlBoxLoginLabelSpan,
+#edlElement_804180853523503572_document #edlBoxAuthEntryLostPasswordLink
+{
+font-size: 10pt;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#edlElement_804180853523503572_document .edlBoxListItem .edlBoxListMore,
+#edlElement_804180853523503572_document .edlBoxListItem .edlBoxListMore a
+{
+font-weight:normal;
+text-decoration:none;
+}
+
+#edlElement_804180853523503572_document .edlBoxListMoreNew
+{
+text-align: right;
+}
+
+
+#edlElement_804180853523503572_document .edlBoxListMoreNew a
+{
+font-size:13px;
+font-weight:normal;
+text-decoration:none;
+
+}
+
+
+
+
+
+
+.edlEditButtonCell
+{
+text-align:right;
+padding-left:2px;
+padding-right:2px;
+}
+
+.edlEditButtonCell div
+{
+margin:0;
+padding:1px 0;
+}
+
+.edlEditButtonCell a {
+font-family: Arial, sans-serif;
+font-size: 8pt;
+font-weight:bold;
+text-decoration:none;
+border:1px solid;
+padding:0 2px;
+margin:0;
+}
+
+.edlEditButtonCell a:hover
+{
+text-decoration:none;
+}
+
+.edlViewAsLinkMarker {
+vertical-align:middle;
+margin-right:5px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.edlNewsItem {
+margin-top:.5em;
+margin-bottom:1em;
+}
+
+.edlNewsItemTitle {
+font-family: Arial, sans-serif;
+font-weight:bold;
+}
+
+.edlNewsItemTitleText {
+padding-bottom:2px;
+}
+
+.edlNewsItemTitle a,
+.edlNewsItemTitle textarea
+{
+text-decoration:underline;
+
+
+color:#666666;
+}
+
+.edlNewsItemTitle textarea
+{
+font-weight:bold!important;
+}
+
+.edlNewsItemSummary {
+cursor:default;
+text-align:left;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+color:#666666;
+}
+
+
+
+
+
+
+
+
+.edlEventDiv {
+margin:10px 0;
+}
+
+.edlEventTable {
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+color:#666666;
+padding-top:3px;
+padding-bottom:3px;
+border-collapse:collapse;
+}
+
+.edlEventDateCell {
+cursor:default;
+vertical-align:top;
+padding-top:2px;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+color:#666666;
+}
+
+.edlEventContentCell {
+vertical-align:top;
+word-wrap:break-word;
+-ms-word-wrap:break-word;
+}
+
+span.edlEventTitleText {
+font-weight:bold;
+}
+
+.edlEventTitleDiv a,
+.edlEventTitleDiv textarea
+{
+text-decoration:underline;
+
+
+color:#666666;
+}
+
+.edlEventTitleDiv textarea
+{
+font-weight:bold!important;
+}
+
+
+.edlEventSummary
+{
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+color:#666666;
+cursor:default;
+}
+
+.edlEventTime
+{
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+color:#666666;
+cursor:default;
+font-style: italic;
+}
+
+
+
+
+
+
+
+
+span.Submitted
+{
+background:#ffff00;
+}
+
+span.Rejected
+{
+background:#ffb6c1;
+}
+
+span.CalendarHighlight
+{
+background:11a2df;
+}
+
+
+
+
+
+.edlCalendarTitle
+{
+width:50%;
+float:left;
+}
+
+.edlCalendardNavBar
+{
+width:49%;
+float:right;
+text-align:right;
+}
+
+.edlDocViewTitle,
+.edlDocViewSummary
+{
+text-align:center;
+width:100%;
+font-size:10pt;
+}
+
+.edlDocViewEventTimes
+{
+    text-align:center;
+    width:100%;
+    font-size:10pt;
+    font-style:italic;
+}
+
+.edlDocViewEventLocation
+{
+    text-align:center;
+    width:100%;
+    font-size:10pt;
+    font-style:italic;
+}
+
+.edlDocViewContents
+{
+margin:4px;
+padding-top:1ex;
+font-size:11pt;
+font-family:"Times New Roman", serif;
+text-align:left;
+}
+
+.edlDocViewContents PRE
+{
+text-align:left;
+font-size:10pt;
+}
+
+.edlDocViewLinks
+{
+text-align:center;
+}
+
+
+.edlDocViewFooter
+{
+padding-top:4px;
+padding-bottom:4px;
+text-align:center;
+}
+
+.edlDocViewBoxContents
+{
+padding-top:1ex;
+}
+
+#edlCalendarHeaderTable td.primTitle,
+#edlUserListAddUserTable td.primTitle,
+#edlUserDocListHeaderTable td.primTitle,
+#edlFormDisplayHeaderTable td.primTitle,
+#edlCourseReqMgmtHeaderTable td,
+#edlCourseReqMgmtHeaderTable td.primTitle,
+#edlUserListHeaderTable,
+#edlUserListHeaderTable td.primTitle,
+#edlUserListHeaderTable td.dbnav,
+#edlUserListHeaderTable td.dbnav a,
+#edlUserListHeaderTable td.dbnav a:hover
+{
+background:#efefef;
+color:#666666;
+}
+
+.edlCalendar
+{
+margin-top:4px;
+}
+
+.edlCalendar H3
+{
+text-align:left;
+}
+
+.edlCalendar .edlCalendarMonth H3
+{
+width:33%;
+text-align:left;
+padding-left:2em;
+margin-top:8px;
+border-left:1px solid #a0a0a0;
+border-right:1px solid #a0a0a0;
+border-top:1px solid #a0a0a0;
+}
+
+.edlCalendar TH
+{
+text-align:right;
+}
+
+.edlCalendar .edlCalendarDay
+{
+text-align:right;
+font-weight:bold;
+background:#ededca;
+padding-top:2px;
+padding-bottom:2px;
+padding-right:2px;
+}
+
+.edlCalendar .edlCalendarDay A
+{
+font-weight:bold;
+border:1px solid #a0a0a0;
+text-decoration:none;
+font-size:9pt;
+}
+
+.edlCalendar .edlCalendarDay A:hover
+{
+background:#a0a0a0;
+}
+
+.edlCalendar .edlCalendarEvent A
+{
+text-decoration:none;
+margin-left:2px;
+font-size:9pt;
+}
+
+.edlCalendar .edlCalendarEvent A:hover
+{
+background:#a0a0a0;
+}
+
+.edlCalendar .edlCalendardNavBar
+{
+text-align:right;
+background:#cccc99;
+font-size:9pt;
+}
+
+.edlCalendar .edlCalendardNavBar A
+{
+background:#ededca;
+border:1px solid #a0a0a0;
+text-decoration:none;
+padding-left:2px;
+padding-right:2px;
+font-size:9pt;
+}
+
+.edlCalendar .edlCalendardNavBar A:hover
+{
+background:#a0a0a0;
+}
+
+.edlCalendar .edlCalendarMonthNav
+{
+margin-top:4px;
+text-align:center;
+padding-top:2px;
+padding-bottom:2px;
+background:#ededca;
+}
+
+.edlCalendar .edlCalendarMonthNav A
+{
+background:#ededca;
+border:1px solid #a0a0a0;
+text-decoration:none;
+padding-left:2px;
+padding-right:2px;
+margin-left:8px;
+margin-right:8px;
+font-size:9pt;
+}
+
+.edlCalendar .edlCalendarMonthNav A:hover
+{
+    background:#a0a0a0;
+}
+
+
+
+
+
+
+.edlLoginTwoColumnFormat
+{
+margin-bottom:8px;
+}
+
+#edlLoginTwoColumnSidebarCell
+{
+background:#ffffff;
+width:300px;
+}
+
+.edlLoginTwoColumnSidebar h3
+{
+padding-top:25px;
+padding-bottom:7px;
+font-size: 14pt;
+}
+
+.edlLoginTwoColumnSidebar .edlBoxArea,
+.edlLoginTwoColumnSidebar .edlBoxArea a
+{
+color:#666666;
+}
+
+.edlLoginTwoColumnSidebar .edlBoxArea
+{
+background:#efefef;
+}
+
+.edlLoginTwoColumnSidebar .edlBoxArea a
+{
+text-decoration:underline;
+}
+
+#edlLoginTwoColumnBodyCell
+{
+background:#ffffff;
+width:400px;
+}
+
+#edlAuthEntryTable tr
+{
+height:27px;
+}
+
+#edlAuthEntryLostPasswordLink
+{
+font-size: 12pt;
+}
+
+.edltcItemLabel
+{
+font-family:Geneva, sans-serif;
+font-size:10pt;
+}
+
+
+
+.edlNotification p
+{
+padding:10px;
+}
+
+.edlNotification li
+{
+padding:10px;
+margin-left:30px;
+}
+
+.edlNotification a
+{
+text-decoration:underline;
+color:blue;
+margin-top:200px;
+font-size: 12pt;
+}
+
+.edlNotification a:hover
+{
+ color:red;
+}
+
+.edlRed
+{
+    color:red;
+}
+
+.edlImportantMessage
+{
+    color:red;
+    font-weight:bold;
+    font-size: 18pt;
+}
+
+
+#edlResListPageSummaryHeader
+{
+margin-top:4px;
+margin-bottom:6px;
+}
+
+#edlResListPageSummaryHeader span
+{
+font-size:12pt;
+font-weight:bold;
+color:black;
+}
+
+#edlResListPageSummaryHeader td
+{
+background-color:white;
+}
+
+#edlResListItemTable td
+{
+border-bottom:1px solid #dddddd;
+padding-top:2px;
+}
+
+#edlResListItemTableHeader td
+{
+padding:2px 0;
+}
+
+#edlResListItemTableHeader span
+{
+font-size:10pt;
+font-weight:bold;
+}
+
+#edlResListItemTableHeader a
+{
+text-decoration:none;
+}
+
+#edlResListItemTableHeader a:hover
+{
+text-decoration:underline;
+}
+
+
+#edlResListTopJumpBar
+{
+margin-top:6px;
+}
+
+#edlResListBottomJumpBar
+{
+margin-bottom:7px;
+}
+
+#edlResListTopJumpBar,
+#edlResListTopJumpBar a,
+#edlResListBottomJumpBar,
+#edlResListBottomJumpBar b
+{
+font-size:9pt;
+}
+
+.edlResListSortableColHeaderCell span
+{
+text-decoration:underline;
+}
+
+.edlResListTabTitle
+{
+color:black;
+background-color:#efefef;
+font-weight:bold;
+font-family: Arial, sans-serif;
+font-size: 12pt;
+}
+
+
+
+
+
+
+
+.jsdomenudiv
+{
+background-color:#efefef;
+color:#666666;
+
+
+
+border:1px solid #8A867A;
+cursor:default;
+padding-bottom:1px;
+padding-top:1px;
+position:absolute; 
+visibility:hidden;
+z-index:10;
+
+}
+
+.jsdomenuitem
+{
+word-wrap:break-word;
+background:transparent;
+border:0;
+color:#666666;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+padding:3px 15px 3px 30px;
+position:relative; 
+}
+
+.jsdomenuitemover
+{
+word-wrap:break-word;
+background-color:#b8d8ff;
+color:#000000;
+border:1px solid #316AC5;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+margin-left:1px;
+margin-right:1px;
+padding:2px 15px 2px 28px;
+position:relative; 
+}
+
+
+
+.jsdomenuarrow
+{
+background-image:url('/jscripts/jsdomenubar/themes/edline/office_xp_arrow_o.gif');
+background-repeat:no-repeat; 
+height:7px;
+position:absolute; 
+right:8px;
+width:4px;
+}
+
+.jsdomenuarrowover
+{
+background-image:url('/jscripts/jsdomenubar/themes/edline/office_xp_arrow_o.gif');
+background-repeat:no-repeat; 
+height:7px;
+position:absolute; 
+right:8px;
+width:4px;
+}
+
+.jsdomenusep
+{
+padding-left:28px;
+}
+
+
+
+.jsdomenubardiv
+{
+background-color:#efefef;
+color:#666666;
+border:1px solid #efefef;
+cursor:default;
+padding:3px 1px 3px 1px;
+position:absolute; 
+visibility:visible;
+}
+
+.jsdomenubardragdiv
+{
+cursor:move;
+display:none;
+padding:2px 5px 2px 5px;
+position:relative; 
+visibility:hidden;
+width:9px;
+}
+
+.jsdomenubaritem
+{
+word-wrap:break-word;
+border:0;
+background-color:#efefef;
+color:#666666;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+display:inline;
+padding:2px 9px 2px 1px;
+position:relative; 
+}
+
+.jsdomenubaritemover
+{
+word-wrap:break-word;
+background-color:#b8d8ff;
+color:#000000;
+border:2px solid gray;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+display:inline;
+padding:2px 8px 2px 0;
+position:relative; 
+}
+
+.jsdomenubaritemclick
+{
+word-wrap:break-word;
+background-color:#b8d8ff;
+color:#000000;
+border:2px solid gray;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+display:inline;
+padding:2px 9px 2px 1px;
+position:relative; 
+}
+
+
+.miselectedicon
+{
+background-image:url('/jscripts/jsdomenubar/themes/edline/office_xp_arrow_o.gif');
+background-repeat:no-repeat;
+height:7px;
+left:16px;
+position:absolute; 
+width:4px;
+}
+
+.miselectediconover
+{
+background-image:url('/jscripts/jsdomenubar/themes/edline/office_xp_arrow_o.gif');
+background-repeat:no-repeat;
+height:7px;
+left:16px;
+position:absolute; 
+width:4px;
+}
+
+
+.xplorIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.xplorIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.xplorIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.xplor-quizIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.xplor-quizIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.xplor-quizIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.xplor-pageIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.xplor-pageIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.xplor-pageIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.xplor-linkIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.xplor-linkIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.xplor-linkIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.xplor-fileIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.xplor-fileIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.xplor-fileIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.xplor-discussionIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.xplor-discussionIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.xplor-discussionIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.xplor-assignmentIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.xplor-assignmentIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.xplor-assignmentIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.rssFeedIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.rssFeedIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.rssFeedIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.discussionIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.discussionIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.discussionIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.formIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.formIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.formIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.linkIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.linkIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.linkIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.dropboxIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.dropboxIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.dropboxIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.google_driveIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.google_driveIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.google_driveIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.districtIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.districtIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.districtIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.schoolIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.schoolIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.schoolIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.classIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.classIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.classIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.folderIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.folderIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.folderIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.slideShowFolderIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.slideShowFolderIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.slideShowFolderIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.blogIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.blogIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.blogIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.groupIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.groupIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.groupIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.webPageIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.webPageIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.webPageIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.documentIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.documentIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.documentIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.worldIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.worldIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.worldIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.communityIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.communityIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.communityIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.excelIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.excelIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.excelIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.powerpointIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.powerpointIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.powerpointIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.zipIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.zipIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.zipIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.flashIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.flashIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.flashIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.wordIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.wordIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.wordIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.pdfIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.pdfIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.pdfIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.imageIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.imageIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.imageIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.movieIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.movieIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.movieIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.audioIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.audioIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.audioIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+.widgetIcon {
+background-image:url('/images/icons/sets/None/transparent.gif');
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.widgetIconOver {
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat; 
+height:16px;
+left:4px;
+position:absolute; 
+width:16px;
+}
+
+.widgetIconNewNavBar {
+
+background-image:url(/images/icons/sets/None/transparent.gif);
+background-repeat:no-repeat;
+height:16px;
+width:16px;
+display:inline-block;
+margin-right:5px;
+}
+
+
+
+ 
+
+
+
+
+
+.edlInlineTMCE form,
+.edlInlineTMCE div,
+.edlInlineTMCE p,
+.edlInlineTMCE span,
+.edlInlineTMCE img,
+.edlInlineTMCE ul,
+.edlInlineTMCE ol,
+.edlInlineTMCE li,
+.edlInlineTMCE a,
+.edlInlineTMCE select,
+.edlInlineTMCE h1,
+.edlInlineTMCE h2,
+.edlInlineTMCE h3,
+.edlInlineTMCE h4,
+.edlInlineTMCE h5,
+.edlInlineTMCE h6
+{
+margin:auto;
+}
+
+.edlInlineTMCE p,
+.edlInlineTMCE ul,
+.edlInlineTMCE ol
+{
+margin:16px 0 16px 0;
+}
+
+.edlInlineTMCE blockquote
+{
+margin:16px 40px 16px 40px;
+}
+
+.edlInlineTMCE ul,
+.edlInlineTMCE ol
+{
+padding:0 0 0 40px;
+}
+
+.edlInlineTMCE table
+{
+    border-collapse: separate;
+}
+
+.edlInlineOverridesTMCE p
+{
+margin:0;
+padding:0;
+}
+
+.edlInlineOverridesTMCE ul,
+.edlInlineOverridesTMCE ol
+{
+margin:auto;
+}
+
+.edlInlineOverridesTMCE blockquote
+{
+margin:auto 40px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.mbmenu
+{
+display:none;
+}
+
+
+
+
+
+#edlGlobalSideNavBoxArea .edlBoxContent
+{
+
+padding-left:0;
+padding-right:0;
+
+}
+
+
+
+#globalSideNavMenu .rootVoices
+{
+padding:0;
+}
+
+#globalSideNavMenu .rootVoices td.rootVoice
+{
+vertical-align:middle;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+color: #666666;
+padding: 2px 10px 2px 10px;   
+cursor: pointer;
+
+text-align:left;
+
+}
+
+#globalSideNavMenu .rootVoices td.rootVoice div.rootDiv
+{
+word-wrap:break-word;
+}
+
+
+#globalSideNavMenu .rootVoices.vertical td.rootVoice div.rootDiv
+{
+width:286px;   
+}
+
+
+#globalSideNavMenu .rootVoices td.rootVoice a,
+#globalSideNavMenu .rootVoices td.rootVoice a:hover
+{
+text-decoration:none;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+#globalSideNavMenu .rootVoices td.rootVoice.selected a,
+#globalSideNavMenu .rootVoices td.rootVoice.selected a:hover
+{
+text-decoration:none;
+color:#ffffff;
+}
+
+
+
+#globalSideNavMenu .rootVoices td.rootVoice.selected
+{
+background: #72829f;
+color:#ffffff;
+cursor: pointer;
+}
+
+#globalSideNavMenu .rootVoices td.rootVoice.spacerTD,
+#globalSideNavMenu .rootVoices td.rootVoice.selected.spacerTD
+{
+background: transparent;
+cursor: default;
+}
+
+
+#globalSideNavMenu .rootVoices td.rootVoice.selected.disabled
+{
+background:#999!important;
+color:#666;
+}
+
+#globalSideNavMenu .rootVoices.vertical
+{
+width:306px;
+}
+
+#globalSideNavMenu .rootVoices.vertical td.vertSpacer
+{
+padding-top: 6px;
+padding-bottom: 6px;
+}
+
+
+#globalSideNavMenu .rootVoices.vertical td.vertSpacer div.vertSeparator
+{
+border-bottom: 1px solid #666666;
+}
+
+
+
+.globalSideNavMenuDropDownMenuContainer
+{
+
+
+
+position:absolute;
+padding:0;
+background-color: #ffffff;
+border: 1px solid gray;
+}
+
+.globalSideNavMenuDropDownMenuContainer.submenuContainer
+{
+border-top:none!important;
+}
+
+.globalSideNavMenuDropDownMenuContainer.disabled
+{
+border-top:5px solid #999;
+background-color:#555555;
+}
+
+.globalSideNavMenuDropDownMenuContainer .line
+{
+background-color:transparent;
+width:100%;
+}
+
+.globalSideNavMenuDropDownMenuContainer .line.title
+{
+background-color:black;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+font-size:13px;
+}
+
+.globalSideNavMenuDropDownMenuContainer.disabled .line.title
+{
+background-color:#999;
+}
+
+.globalSideNavMenuDropDownMenuContainer .line.title a
+{
+font-size:13px;
+color:#ccc;
+}
+
+.globalSideNavMenuDropDownMenuContainer.disabled .line.title a
+{
+font-size:13px;
+color:#666;
+}
+
+.globalSideNavMenuDropDownMenuContainer td a
+{
+text-decoration:none;
+color:#666666;
+}
+
+.globalSideNavMenuDropDownMenuContainer td.voice
+{
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+font-size:13px;
+padding:5px;
+}
+
+.globalSideNavMenuDropDownMenuContainer .separator
+{
+background-color:#999;
+height:1px;
+padding:0;
+margin:0;
+}
+
+.globalSideNavMenuDropDownMenuContainer td.img
+{
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+text-align:center;
+font-size:12px;
+color: #c3c3c3;
+background-color:transparent;
+width:24px;
+min-width:24px;
+max-width:24px;
+padding-top:5px;
+padding-bottom:5px;
+}
+
+.globalSideNavMenuDropDownMenuContainer .textBox
+{
+padding: 10px;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+font-size:12px;
+color: #c3c3c3;
+}
+
+.globalSideNavMenuDropDownMenuContainer .selected td
+{
+background-color:#72829f;
+color:#ffffff;
+
+
+}
+
+.globalSideNavMenuDropDownMenuContainer .selected td a
+{
+color:#ffffff;
+/* display:block; */
+}
+
+.globalSideNavMenuDropDownMenuContainer .disabled td, .navDropDownMenuContainer .disabled td a
+{
+color:#555;
+}
+
+.globalSideNavMenuDropDownMenuContainer .subMenuOpener
+{
+background-image:url("/jscripts/jquery/pluginMod/jquery.mb.menu.2.8.5/images/menuArrow_w.gif");
+background-repeat:no-repeat;
+background-position:right;
+}
+
+.globalSideNavMenuDropDownMenuContainer .selected .subMenuOpener
+{
+background-image:url("/jscripts/jquery/pluginMod/jquery.mb.menu.2.8.5/images/menuArrow.gif");
+background-repeat:no-repeat;
+background-position:right;
+}
+
+
+
+
+
+#edlLocalSideNavBoxArea .edlBoxContent
+{
+
+padding-left:0;
+padding-right:0;
+
+}
+
+
+
+#localSideNavMenu .rootVoices
+{
+padding:0;
+}
+
+#localSideNavMenu .rootVoices td.rootVoice
+{
+vertical-align:middle;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+color: #666666;
+padding: 2px 10px 2px 10px;   
+cursor: pointer;
+
+text-align:left;
+
+}
+
+#localSideNavMenu .rootVoices td.rootVoice div.rootDiv
+{
+word-wrap:break-word;
+}
+
+
+#localSideNavMenu .rootVoices.vertical td.rootVoice div.rootDiv
+{
+width:286px;   
+}
+
+
+#localSideNavMenu .rootVoices td.rootVoice a,
+#localSideNavMenu .rootVoices td.rootVoice a:hover
+{
+text-decoration:none;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+}
+
+#localSideNavMenu .rootVoices td.rootVoice.selected a,
+#localSideNavMenu .rootVoices td.rootVoice.selected a:hover
+{
+text-decoration:none;
+color:#ffffff;
+}
+
+
+
+#localSideNavMenu .rootVoices td.rootVoice.selected
+{
+background: #2d374a;
+color:#ffffff;
+cursor: pointer;
+}
+
+#localSideNavMenu .rootVoices td.rootVoice.spacerTD,
+#localSideNavMenu .rootVoices td.rootVoice.selected.spacerTD
+{
+background: transparent;
+cursor: default;
+}
+
+
+#localSideNavMenu .rootVoices td.rootVoice.selected.disabled
+{
+background:#999!important;
+color:#666;
+}
+
+#localSideNavMenu .rootVoices.vertical
+{
+width:306px;
+}
+
+#localSideNavMenu .rootVoices.vertical td.vertSpacer
+{
+padding-top: 6px;
+padding-bottom: 6px;
+}
+
+
+#localSideNavMenu .rootVoices.vertical td.vertSpacer div.vertSeparator
+{
+border-bottom: 1px solid #666666;
+}
+
+
+
+.localSideNavMenuDropDownMenuContainer
+{
+
+
+
+position:absolute;
+padding:0;
+background-color: #ffffff;
+border: 1px solid gray;
+}
+
+.localSideNavMenuDropDownMenuContainer.submenuContainer
+{
+border-top:none!important;
+}
+
+.localSideNavMenuDropDownMenuContainer.disabled
+{
+border-top:5px solid #999;
+background-color:#555555;
+}
+
+.localSideNavMenuDropDownMenuContainer .line
+{
+background-color:transparent;
+width:100%;
+}
+
+.localSideNavMenuDropDownMenuContainer .line.title
+{
+background-color:black;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+font-size:13px;
+}
+
+.localSideNavMenuDropDownMenuContainer.disabled .line.title
+{
+background-color:#999;
+}
+
+.localSideNavMenuDropDownMenuContainer .line.title a
+{
+font-size:13px;
+color:#ccc;
+}
+
+.localSideNavMenuDropDownMenuContainer.disabled .line.title a
+{
+font-size:13px;
+color:#666;
+}
+
+.localSideNavMenuDropDownMenuContainer td a
+{
+text-decoration:none;
+color:#666666;
+}
+
+.localSideNavMenuDropDownMenuContainer td.voice
+{
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+font-size:13px;
+padding:5px;
+}
+
+.localSideNavMenuDropDownMenuContainer .separator
+{
+background-color:#999;
+height:1px;
+padding:0;
+margin:0;
+}
+
+.localSideNavMenuDropDownMenuContainer td.img
+{
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+text-align:center;
+font-size:12px;
+color: #c3c3c3;
+background-color:transparent;
+width:24px;
+min-width:24px;
+max-width:24px;
+padding-top:5px;
+padding-bottom:5px;
+}
+
+.localSideNavMenuDropDownMenuContainer .textBox
+{
+padding: 10px;
+font:normal normal normal 12px/normal Arial, Helvetica, sans-serif;
+
+font-size:12px;
+color: #c3c3c3;
+}
+
+.localSideNavMenuDropDownMenuContainer .selected td
+{
+background-color:#2d374a;
+color:#ffffff;
+
+
+}
+
+.localSideNavMenuDropDownMenuContainer .selected td a
+{
+color:#ffffff;
+/* display:block; */
+}
+
+.localSideNavMenuDropDownMenuContainer .disabled td, .navDropDownMenuContainer .disabled td a
+{
+color:#555;
+}
+
+.localSideNavMenuDropDownMenuContainer .subMenuOpener
+{
+background-image:url("/jscripts/jquery/pluginMod/jquery.mb.menu.2.8.5/images/menuArrow_w.gif");
+background-repeat:no-repeat;
+background-position:right;
+}
+
+.localSideNavMenuDropDownMenuContainer .selected .subMenuOpener
+{
+background-image:url("/jscripts/jquery/pluginMod/jquery.mb.menu.2.8.5/images/menuArrow.gif");
+background-repeat:no-repeat;
+background-position:right;
+}
+
+
+
+
+#edlGlobalTopNavBoxArea
+{
+overflow:hidden;
+}
+
+
+#edlGlobalTopNavBoxArea .edlBoxContent
+{
+
+text-align:left;
+
+}
+
+
+#globalTopNavMenu
+{
+display:inline-block;
+}
+
+
+#globalTopNavMenu .rootVoices
+{
+padding:0;
+}
+
+#globalTopNavMenu .rootVoices td.rootVoice
+{
+vertical-align:middle;
+font:normal normal normal 15px/normal lato-bold-webfont, sans-serif;
+color: #666666;
+padding: 2px 10px 2px 10px;   
+cursor: pointer;
+
+}
+
+#globalTopNavMenu .rootVoices td.rootVoice div.rootDiv
+{
+word-wrap:break-word;
+}
+
+
+#globalTopNavMenu .rootVoices.vertical td.rootVoice div.rootDiv
+{
+width:956px;   
+}
+
+
+#globalTopNavMenu .rootVoices td.rootVoice a,
+#globalTopNavMenu .rootVoices td.rootVoice a:hover
+{
+text-decoration:none;
+font:normal normal normal 15px/normal lato-bold-webfont, sans-serif;
+
+}
+
+#globalTopNavMenu .rootVoices td.rootVoice.selected a,
+#globalTopNavMenu .rootVoices td.rootVoice.selected a:hover
+{
+text-decoration:none;
+color:#00a1b1;
+}
+
+
+#globalTopNavMenu .rootVoices td.horSpacer
+{
+padding-left: 5px;
+padding-right: 5px;
+}
+
+#globalTopNavMenu .rootVoices td.horSpacer span.horSeparator
+{
+color: #666666;
+
+display:none;
+
+}
+
+
+#globalTopNavMenu .rootVoices td.rootVoice.selected
+{
+background: #efefef;
+color:#00a1b1;
+cursor: pointer;
+}
+
+#globalTopNavMenu .rootVoices td.rootVoice.spacerTD,
+#globalTopNavMenu .rootVoices td.rootVoice.selected.spacerTD
+{
+background: transparent;
+cursor: default;
+}
+
+
+#globalTopNavMenu .rootVoices td.rootVoice.selected.disabled
+{
+background:#999!important;
+color:#666;
+}
+
+#globalTopNavMenu .rootVoices.vertical
+{
+width:976px;
+}
+
+#globalTopNavMenu .rootVoices.vertical td.vertSpacer
+{
+padding-top: 10px;
+padding-bottom: 10px;
+}
+
+
+
+
+.globalTopNavMenuDropDownMenuContainer
+{
+
+
+
+position:absolute;
+padding:0;
+background-color: #efefef;
+border: 1px solid gray;
+}
+
+.globalTopNavMenuDropDownMenuContainer.submenuContainer
+{
+border-top:none!important;
+}
+
+.globalTopNavMenuDropDownMenuContainer.disabled
+{
+border-top:5px solid #999;
+background-color:#555555;
+}
+
+.globalTopNavMenuDropDownMenuContainer .line
+{
+background-color:transparent;
+width:100%;
+}
+
+.globalTopNavMenuDropDownMenuContainer .line.title
+{
+background-color:black;
+font:normal normal normal 15px/normal lato-bold-webfont, sans-serif;
+
+font-size:13px;
+}
+
+.globalTopNavMenuDropDownMenuContainer.disabled .line.title
+{
+background-color:#999;
+}
+
+.globalTopNavMenuDropDownMenuContainer .line.title a
+{
+font-size:13px;
+color:#ccc;
+}
+
+.globalTopNavMenuDropDownMenuContainer.disabled .line.title a
+{
+font-size:13px;
+color:#666;
+}
+
+.globalTopNavMenuDropDownMenuContainer td a
+{
+text-decoration:none;
+color:#666666;
+}
+
+.globalTopNavMenuDropDownMenuContainer td.voice
+{
+font:normal normal normal 15px/normal lato-bold-webfont, sans-serif;
+
+font-size:13px;
+padding:5px;
+}
+
+.globalTopNavMenuDropDownMenuContainer .separator
+{
+background-color:#999;
+height:1px;
+padding:0;
+margin:0;
+}
+
+.globalTopNavMenuDropDownMenuContainer td.img
+{
+font:normal normal normal 15px/normal lato-bold-webfont, sans-serif;
+
+text-align:center;
+font-size:12px;
+color: #c3c3c3;
+background-color:transparent;
+width:24px;
+min-width:24px;
+max-width:24px;
+padding-top:5px;
+padding-bottom:5px;
+}
+
+.globalTopNavMenuDropDownMenuContainer .textBox
+{
+padding: 10px;
+font:normal normal normal 15px/normal lato-bold-webfont, sans-serif;
+
+font-size:12px;
+color: #c3c3c3;
+}
+
+.globalTopNavMenuDropDownMenuContainer .selected td
+{
+background-color:#efefef;
+color:#00a1b1;
+
+
+}
+
+.globalTopNavMenuDropDownMenuContainer .selected td a
+{
+color:#00a1b1;
+/* display:block; */
+}
+
+.globalTopNavMenuDropDownMenuContainer .disabled td, .navDropDownMenuContainer .disabled td a
+{
+color:#555;
+}
+
+.globalTopNavMenuDropDownMenuContainer .subMenuOpener
+{
+background-image:url("/jscripts/jquery/pluginMod/jquery.mb.menu.2.8.5/images/menuArrow_w.gif");
+background-repeat:no-repeat;
+background-position:right;
+}
+
+.globalTopNavMenuDropDownMenuContainer .selected .subMenuOpener
+{
+background-image:url("/jscripts/jquery/pluginMod/jquery.mb.menu.2.8.5/images/menuArrow.gif");
+background-repeat:no-repeat;
+background-position:right;
+}
+
+
+
+/*BOX MENU*/
+
+.boxMenu
+{
+color:#f3f3f3;
+border-top:8px solid black;
+background:url("/jscripts/jquery/pluginMod/jquery.mb.menu.2.8.5/images/box_top.png") repeat-x;
+}
+
+.boxMenu h4
+{
+white-space:nowrap;
+margin:0 0 20px 0;
+padding:3px;
+font:18px/20px georgia, serif;
+padding-right:20px;
+
+}
+
+.boxMenu td
+{
+min-width:160px;
+vertical-align:top;
+border-right:1px solid #999;
+}
+
+.boxMenu td:hover
+{
+background:url(/jscripts/jquery/pluginMod/jquery.mb.menu.2.8.5/images/box_menu_over.png);
+-moz-box-shadow:#666 2px 2px 4px;
+-webkit-box-shadow:#666 2px 2px 4px;
+}
+
+.boxMenu td:hover a
+{
+margin-right:3px;
+
+color:#000;
+}
+
+.boxMenu td:last-child
+{
+min-width:160px;
+vertical-align:top;
+border-right:none;
+}
+
+.boxMenu a
+{
+font-size:13px; 
+white-space:nowrap;
+display:block;
+padding:5px;
+margin-bottom:5px;
+}
+
+.boxMenu a img
+{
+padding-right:5px;
+}
+
+.boxMenu a:hover
+{
+color:#000;
+
+background-image:url("/jscripts/jquery/pluginMod/jquery.mb.menu.2.8.5/images/bgnd_sel_2.jpg");
+-moz-box-shadow:#666 2px 2px 4px;
+-webkit-box-shadow:#666 2px 2px 4px;
+}
+
+.boxMenu a img
+{
+border:0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
